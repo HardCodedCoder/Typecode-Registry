@@ -28,5 +28,6 @@ jobs:
         fi
     - name: Lint
       run: go vet ./...
+      working-directory: backend/cmd/app
     - name: Test
       run: go test -v ./...
