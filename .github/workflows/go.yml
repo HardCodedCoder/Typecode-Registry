@@ -31,4 +31,4 @@ jobs:
       working-directory: backend/cmd/app
     - name: Test
       run: go test -v ./...
-      working-directory: backend/cmd/apps
+      working-directory: backend/cmd/app
