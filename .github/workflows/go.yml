@@ -18,6 +18,7 @@ jobs:
       uses: actions/checkout@v2
     - name: Get dependencies
       run: go mod download
+      working-directory: backend
     - name: Format Check
       run: |
         if [ -n "$(gofmt -l .)" ]; then
