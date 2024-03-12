@@ -26,12 +26,11 @@ CREATE TABLE extension (
        FOREIGN KEY (project_id) REFERENCES project(id)
 );
 
-
 CREATE TABLE item (
         id INT PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         extension_id INT REFERENCES extension (id),
-        table_name VARCHAR(255), -- As discussed table must not be provided by hybris types.
+        table_name VARCHAR(255),
         typecode INT NOT NULL
 );
 
