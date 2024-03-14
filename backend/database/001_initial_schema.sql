@@ -23,6 +23,7 @@ CREATE TABLE extension (
        name VARCHAR(255) NOT NULL,
        description TEXT,
        scope VARCHAR(50),
+       creation_date TIMESTAMPTZ NOT NULL,
        FOREIGN KEY (project_id) REFERENCES project(id)
 );
 
@@ -31,7 +32,8 @@ CREATE TABLE item (
         name VARCHAR(255) NOT NULL,
         extension_id INT REFERENCES extension (id),
         table_name VARCHAR(255),
-        typecode INT NOT NULL
+        typecode INT NOT NULL,
+        creation_date TIMESTAMPTZ NOT NULL
 );
 
 CREATE TABLE role_assignment (
