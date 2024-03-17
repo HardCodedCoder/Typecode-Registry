@@ -1,0 +1,35 @@
+\makeatletter
+
+%%% BEGIN Address and Logo
+\begin{titlepage}
+\noindent
+\begin{minipage}[t]{0.5\textwidth}
+\vspace{0pt} % Ensures alignment at the top of the minipage
+\textsc{Fachhochschule Burgenland GmbH\\Campus 1\\A-7000 Eisenstadt}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.4\textwidth}
+\vspace{0pt} % Ensures alignment at the top of the minipage
+\raggedleft % Aligns the image to the right side of the minipage
+\includegraphics[scale=0.4]{images/logofh}
+\end{minipage}
+%%% END Address and Logo
+
+\vspace*{\stretch{1}} % Add space above the title that will stretch
+
+\begin{center}
+{ \huge \bfseries \@title}\\[0.4cm]
+\subtitle\\
+\end{center}
+
+\vspace*{\stretch{1}} % Add space below the title that will stretch
+
+\vfills
+\begin{minipage}{\textwidth}
+\makebox[5cm][l]{Author:}\@author\\
+\makebox[5cm][l]{Supervisor:}\supervisor\\
+\makebox[5cm][l]{Date:}\today, \city\\
+\end{minipage}
+
+
+\end{titlepage}
