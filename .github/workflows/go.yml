@@ -1,4 +1,4 @@
-name: Go
+name: Go Backend CI
 
 on:
   pull_request:
@@ -6,29 +6,63 @@ on:
       - main
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.22
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+      - name: Get dependencies
+        run: go mod download
+        working-directory: backend
+      - name: Format Check
+        run: |
+          if [ -n "$(gofmt -l .)" ]; then
+            echo "Go code is not properly formatted:"
+            gofmt -d .
+            exit 1
+          fi
+        working-directory: backend
+      - name: Lint
+        run: go vet ./...
+        working-directory: backend/cmd/app
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.22
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+      - name: Get dependencies
+        run: go mod download
+        working-directory: backend
+      - name: Test
+        run: go test -v ./...
+        working-directory: backend/cmd/app
+
   build:
     name: Build
     runs-on: ubuntu-latest
+    needs: test
     steps:
-    - name: Set up Go 1.x
-      uses: actions/setup-go@v2
-      with:
-        go-version: ^1.22
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
-    - name: Get dependencies
-      run: go mod download
-      working-directory: backend
-    - name: Format Check
-      run: |
-        if [ -n "$(gofmt -l .)" ]; then
-          echo "Go code is not properly formatted:"
-          gofmt -d .
-          exit 1
-        fi
-    - name: Lint
-      run: go vet ./...
-      working-directory: backend/cmd/app
-    - name: Test
-      run: go test -v ./...
-      working-directory: backend/cmd/app
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.22
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+      - name: Get dependencies
+        run: go mod download
+        working-directory: backend
+      - name: Build
+        run: go build ./...
+        working-directory: backend/cmd/app
