@@ -3,7 +3,17 @@
   "ignorePatterns": ["projects/*/"],
   "overrides": [
     {
-      "files": [".ts"],
+      "files": ["*.ts"],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "ecmaVersion": 2020,
+        "sourceType": "module",
+        "project": "./tsconfig.json",
+        "createDefaultProgram": true
+      },
+      "plugins": [
+        "@typescript-eslint"
+      ],
       "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
@@ -34,9 +44,9 @@
       }
     },
     {
-      "files": [".html"],
-      "extends": ["plugin:@angular-eslint/template/recommended", "plugin:@angular-eslint/template/accessibility"],
-      "rules": {}
+      "files": ["*.html"],
+      "parser": "@angular-eslint/template-parser",
+      "extends": ["plugin:@angular-eslint/template/recommended", "plugin:@angular-eslint/template/accessibility"]
     }
   ]
 }

@@ -19,7 +19,7 @@ jobs:
         run: npm install
         working-directory: frontend
       - name: Run Linter
-        run: npm run lint
+        run: npx eslint . --ext .ts,.html
         working-directory: frontend
 
   test:
