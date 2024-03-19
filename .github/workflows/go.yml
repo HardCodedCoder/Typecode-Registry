@@ -46,7 +46,7 @@ jobs:
         run: go mod download
         working-directory: backend
       - name: Install goveralls
-        run: GO111MODULE=off go get github.com/mattn/goveralls
+        run: go get github.com/mattn/goveralls@latest
         working-directory: backend/cmd/app
       - name: Test with coverage
         run: go test -v -coverprofile=coverage.out ./...
