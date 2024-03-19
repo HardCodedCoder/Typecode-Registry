@@ -58,3 +58,8 @@ jobs:
       - name: Build
         run: npm run build -- --configuration production
         working-directory: frontend
+      - name: Upload Angular build Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: angular-build
+          path: frontend/dist

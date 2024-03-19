@@ -64,5 +64,10 @@ jobs:
         run: go mod download
         working-directory: backend
       - name: Build
-        run: go build ./...
+        run: go build -o server ./...
         working-directory: backend/cmd/app
+      - name: Upload Go build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: go-build
+          path: backend/cmd/app/server
