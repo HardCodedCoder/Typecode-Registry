@@ -1,3 +1,4 @@
+console.log('Lade Karma-Konfiguration...');
 module.exports = function (config) {
   config.set({
     basePath: '',
@@ -8,26 +9,15 @@ module.exports = function (config) {
       require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
       require('@angular-devkit/build-angular/plugins/karma'),
-      require('karma-coverage-istanbul-reporter')
+      require('karma-coverage-istanbul-reporter'),
     ],
     client: {
       clearContext: false,
-      jasmine: {
-
-      }
+      jasmine: {},
     },
     jasmineHtmlReporter: {
       suppressAll: true,
-      suppressFailed: true
-    },
-    coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/my-angular-app'),
-      subdir: '.',
-      reporters: [
-        { type: 'html' },
-        { type: 'lcov', subdir: 'lcov' },
-        { type: 'text-summary' }
-      ]
+      suppressFailed: true,
     },
     coverageIstanbulReporter: {
       dir: require('path').join(__dirname, './coverage'),
@@ -37,8 +27,8 @@ module.exports = function (config) {
         statements: 80,
         lines: 80,
         branches: 80,
-        functions: 80
-      }
+        functions: 80,
+      },
     },
     reporters: ['progress', 'kjhtml', 'coverage-istanbul'],
     port: 9876,
@@ -47,6 +37,6 @@ module.exports = function (config) {
     autoWatch: true,
     browsers: ['ChromeHeadless'],
     singleRun: false,
-    restartOnFileChange: true
+    restartOnFileChange: true,
   });
 };
