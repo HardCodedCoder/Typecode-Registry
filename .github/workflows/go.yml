@@ -52,7 +52,7 @@ jobs:
         run: go test -v -coverprofile=coverage.out ./...
         working-directory: backend/cmd/app
       - name: Upload coverage to Coveralls
-        run: goveralls -coverprofile=coverage.out -service=github
+        run: ${{ github.workspace }}/go/bin/goveralls -coverprofile=coverage.out -service=github
         working-directory: backend/cmd/app
 
   build:
