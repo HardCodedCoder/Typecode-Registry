@@ -41,7 +41,7 @@ jobs:
         uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./frontend/coverage/lcov.info
+          file: ./frontend/coverage/frontend/lcov.info
           flags: frontend
           fail_ci_if_error: true
           verbose: true
