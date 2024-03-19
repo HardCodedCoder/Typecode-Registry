@@ -32,7 +32,7 @@ jobs:
         working-directory: backend/cmd/app
 
   test:
-    name: Test
+    name: Go Test with Coverage
     runs-on: ubuntu-latest
     needs: lint
     steps:
@@ -45,8 +45,11 @@ jobs:
       - name: Get dependencies
         run: go mod download
         working-directory: backend
-      - name: Test
-        run: go test -v ./...
+      - name: Test with coverage
+        run: go test -v -coverprofile=coverage.out ./...
+        working-directory: backend/cmd/app
+      - name: Upload coverage to Coveralls
+        run: goveralls -coverprofile=coverage.out -service=github
         working-directory: backend/cmd/app
 
   build:
