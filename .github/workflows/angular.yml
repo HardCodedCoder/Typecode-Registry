@@ -36,7 +36,7 @@ jobs:
         run: npm install
         working-directory: frontend
       - name: Run Tests
-        run: npm run test -- --watch=false --no-progress --browsers=ChromeHeadlessCI
+        run: npm run test -- --watch=false --no-progress --browsers=ChromeHeadless
         working-directory: frontend
 
   build:
