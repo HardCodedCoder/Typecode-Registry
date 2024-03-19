@@ -56,5 +56,5 @@ jobs:
         run: npx prettier --check .
         working-directory: frontend
       - name: Build
-        run: npm run build -- --prod
+        run: npm run build -- --configuration production
         working-directory: frontend
