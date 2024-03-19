@@ -51,10 +51,10 @@ jobs:
           node-version: '18'
       - name: Install dependencies
         run: npm install
-        working-directory: /frontend
+        working-directory: frontend
       - name: Check Formatting with Prettier
         run: npx prettier --check .
-        working-directory: /frontend
+        working-directory: frontend
       - name: Build
         run: npm run build -- --prod
         working-directory: frontend
