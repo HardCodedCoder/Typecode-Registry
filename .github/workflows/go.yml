@@ -1,4 +1,4 @@
-name: Go
+name: Go Backend CI
 
 on:
   pull_request:
@@ -6,29 +6,80 @@ on:
       - main
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.22
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+      - name: Get dependencies
+        run: go mod download
+        working-directory: backend
+      - name: Format Check
+        run: |
+          if [ -n "$(gofmt -l .)" ]; then
+            echo "Go code is not properly formatted:"
+            gofmt -d .
+            exit 1
+          fi
+        working-directory: backend
+      - name: Lint
+        run: go vet ./...
+        working-directory: backend/cmd/app
+
+  test:
+    name: Test and Upload Coverage to Codecov
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.22
+
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Get dependencies
+        run: go mod download
+        working-directory: backend
+
+      - name: Run tests with coverage
+        run: go test -v -coverprofile=coverage.out ./...
+        working-directory: backend/cmd/app
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV }}
+          file: ./backend/cmd/app/coverage.out
+          flags: backend
+          fail_ci_if_error: true
+          verbose: true
+
+
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
-    - name: Set up Go 1.x
-      uses: actions/setup-go@v2
-      with:
-        go-version: ^1.22
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
-    - name: Get dependencies
-      run: go mod download
-      working-directory: backend
-    - name: Format Check
-      run: |
-        if [ -n "$(gofmt -l .)" ]; then
-          echo "Go code is not properly formatted:"
-          gofmt -d .
-          exit 1
-        fi
-    - name: Lint
-      run: go vet ./...
-      working-directory: backend/cmd/app
-    - name: Test
-      run: go test -v ./...
-      working-directory: backend/cmd/app
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.22
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+      - name: Get dependencies
+        run: go mod download
+        working-directory: backend
+      - name: Build
+        run: go build -o server ./...
+        working-directory: backend/cmd/app
+      - name: Upload Go build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: go-build
+          path: backend/cmd/app/server

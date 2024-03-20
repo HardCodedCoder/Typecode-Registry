@@ -1,3 +1,5 @@
 .idea/
 *.iml
-out
+out/*
+frontend/.vscode/
+frontend/.editorconfig
