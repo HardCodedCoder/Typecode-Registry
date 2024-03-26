@@ -1,4 +1,4 @@
-<app-sidebar-menu></app-sidebar-menu>
-<div class="main-content">
-    <router-outlet></router-outlet>
+<app-sidebar-menu (toggleSidebar)="onToggleSidebar($event) "></app-sidebar-menu>
+<div class="main-content" [class.active]="isSidebarActive">
+        <router-outlet></router-outlet>
 </div>

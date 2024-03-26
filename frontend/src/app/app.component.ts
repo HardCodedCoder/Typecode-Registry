@@ -6,5 +6,10 @@ import { Component } from '@angular/core';
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  title = 'frontend';
+  title = 'Typecode Registry';
+  isSidebarActive = false;
+
+  onToggleSidebar(isActive: boolean) {
+    this.isSidebarActive = isActive;
+  }
 }

@@ -9,7 +9,7 @@
     padding: 1rem;
 }
 
-.container {
-    display: flex;
-    justify-content: space-between;
+.main-content.active {
+    left: 250px;
+    width: calc(100% - 250px);
 }

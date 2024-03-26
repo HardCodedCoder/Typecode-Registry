@@ -13,11 +13,4 @@ export class SidebarMenuComponent {
     this.isActive = !this.isActive;
     this.toggleSidebar.emit(this.isActive);
   }
-
-  // const btn = document.querySelector("#btn");
-  // const sidebar = document.querySelector('.sidebar');
-
-  //   btn.onclick = function () {
-  //   sidebar.classList.toggle('active');
-  // }
 }
