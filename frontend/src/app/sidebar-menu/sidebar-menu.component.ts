@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'app-sidebar-menu',
@@ -6,5 +6,18 @@ import { Component } from '@angular/core';
   styleUrl: './sidebar-menu.component.scss'
 })
 export class SidebarMenuComponent {
+  @Output() toggleSidebar = new EventEmitter<boolean>();
+  isActive: boolean = false;
 
+  toggle() {
+    this.isActive = !this.isActive;
+    this.toggleSidebar.emit(this.isActive);
+  }
+
+  // const btn = document.querySelector("#btn");
+  // const sidebar = document.querySelector('.sidebar');
+
+  //   btn.onclick = function () {
+  //   sidebar.classList.toggle('active');
+  // }
 }
