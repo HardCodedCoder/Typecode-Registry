@@ -51,7 +51,6 @@ func testRouting(t *testing.T, routes []TestRoute, mux *http.ServeMux) {
 }
 
 func getResponseItem(resp *http.Response, t *testing.T) ResponseItem {
-	resp.Body.Close()
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		t.Fatal(err)
