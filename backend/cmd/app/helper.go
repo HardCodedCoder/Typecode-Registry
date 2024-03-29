@@ -69,7 +69,7 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data envelo
 	js, err := json.MarshalIndent(data, "", "\t")
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		app.logger.Printf("Error occurred during writing json data") //TODO: Fix error message
+		app.logger.Printf("Error occurred during writing json data. Err: %v", err)
 		return err
 	}
 
@@ -81,7 +81,10 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data envelo
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	w.Write(js)
+	_, err = w.Write(js)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
