@@ -1,160 +1,160 @@
 a span {
-    pointer-events: none;
+  pointer-events: none;
 }
 
 .user-img {
-    width: 48px;
-    border-radius: 100%;
-    border: 1px solid #eee;
+  width: 48px;
+  border-radius: 100%;
+  border: 1px solid #eee;
 }
 
 .sidebar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 80px;
-    height: 100vh;
-    background-color: #12171e;
-    padding: 0.4rem 0.8rem;
-    transition: all 0.5s ease;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 80px;
+  height: 100vh;
+  background-color: #12171e;
+  padding: 0.4rem 0.8rem;
+  transition: all 0.5s ease;
 }
 
 .orientation {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: calc(100% - 50px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: calc(100% - 50px);
 }
 
 .sidebar.active {
-    width: 250px;
+  width: 250px;
 }
 
 .sidebar button {
-    position: absolute;
-    background: none;
-    color: white;
-    top: .4rem;
-    left: 50%;
-    font-size: 1.2rem;
-    line-height: 50px;
-    cursor: pointer;
-    transform: translateX(-50%);
-    border: none;
+  position: absolute;
+  background: none;
+  color: white;
+  top: 0.4rem;
+  left: 50%;
+  font-size: 1.2rem;
+  line-height: 50px;
+  cursor: pointer;
+  transform: translateX(-50%);
+  border: none;
 }
 
 .sidebar.active #btn {
-    position: unset;
+  position: unset;
 }
 
 .sidebar .top {
-    display: flex;
+  display: flex;
 }
 
 .sidebar .top .logo {
-    color: #fff;
-    display: flex;
-    width: 50px;
-    width: 100%;
-    white-space: nowrap;
-    align-items: center;
-    pointer-events: none;
-    opacity: 0;
+  color: #fff;
+  display: flex;
+  width: 50px;
+  width: 100%;
+  white-space: nowrap;
+  align-items: center;
+  pointer-events: none;
+  opacity: 0;
 }
 
 .no-line-break {
-    white-space: nowrap;
+  white-space: nowrap;
 }
 
 .sidebar.active .top .logo {
-    opacity: 1;
+  opacity: 1;
 }
 
 .top .logo i {
-    font-size: 2rem;
-    margin-right: 16px;
+  font-size: 2rem;
+  margin-right: 16px;
 }
 
 .user {
-    display: flex;
-    align-items: center;
-    margin: 1rem 0 0;
+  display: flex;
+  align-items: center;
+  margin: 1rem 0 0;
 }
 
 .user p {
-    color: #fff;
-    opacity: 1;
-    margin-left: 1rem;
+  color: #fff;
+  opacity: 1;
+  margin-left: 1rem;
 }
 
 .bold {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .sidebar p {
-    opacity: 0;
+  opacity: 0;
 }
 
 .sidebar.active p {
-    opacity: 1;
+  opacity: 1;
 }
 
 .sidebar ul li {
-    position: relative;
-    list-style-type: none;
-    height: 50px;
-    width: 90%;
-    margin: 0.8rem auto;
-    line-height: 50px;
+  position: relative;
+  list-style-type: none;
+  height: 50px;
+  width: 90%;
+  margin: 0.8rem auto;
+  line-height: 50px;
 }
 
 .sidebar ul li a {
-    color: #fff;
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    border-radius: 0.8rem;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  border-radius: 0.8rem;
 }
 
 .sidebar ul li a:hover {
-    background-color: #fff;
-    color: #12171e
+  background-color: #fff;
+  color: #12171e;
 }
 
 .sidebar ul li a i {
-    min-width: 50px;
-    text-align: center;
-    height: 50px;
-    border-radius: 12px;
-    line-height: 50px;
+  min-width: 50px;
+  text-align: center;
+  height: 50px;
+  border-radius: 12px;
+  line-height: 50px;
 }
 
 .sidebar .nav-item {
-    opacity: 0;
+  opacity: 0;
 }
 
 .sidebar.active .nav-item {
-    opacity: 1;
+  opacity: 1;
 }
 
 .sidebar ul li .tooltip {
-    position: absolute;
-    left: 125px;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0.5rem 0.8rem rgba(0, 0, 0, 0.2);
-    border-radius: .6rem;
-    padding: .4rem 1.2rem;
-    line-height: 1.8rem;
-    pointer-events: none;
-    z-index: 20;
-    opacity: 0;
+  position: absolute;
+  left: 125px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0.5rem 0.8rem rgba(0, 0, 0, 0.2);
+  border-radius: 0.6rem;
+  padding: 0.4rem 1.2rem;
+  line-height: 1.8rem;
+  pointer-events: none;
+  z-index: 20;
+  opacity: 0;
 }
 
 .sidebar ul li:hover .tooltip {
-    opacity: 1;
+  opacity: 1;
 }
 
 .sidebar.active ul li .tooltip {
-    display: none;
+  display: none;
 }

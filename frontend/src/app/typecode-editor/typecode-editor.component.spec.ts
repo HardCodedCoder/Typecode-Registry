@@ -8,10 +8,9 @@ describe('TypecodeEditorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TypecodeEditorComponent]
-    })
-    .compileComponents();
-    
+      declarations: [TypecodeEditorComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(TypecodeEditorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
