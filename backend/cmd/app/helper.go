@@ -62,10 +62,6 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst any
 		return errors.New("body must only contain a single JSON object")
 	}
 
-	type Linda struct {
-		Name string
-	}
-
 	return nil
 }
 
