@@ -1,0 +1,3 @@
+codecov:
+  ignore:
+    - "backend/cmd/app/main.go"
