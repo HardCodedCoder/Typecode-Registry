@@ -209,7 +209,7 @@ func TestItemsRouteCreatesItemForProjectExtension(t *testing.T) {
 	// Mock Extension Query
 	extensionArgs := []driver.Value{1}
 	extensionRows := sqlmock.NewRows([]string{"id", "project_id", "name", "description", "scope", "creation_date"}).
-		AddRow(testExtension.ID, testExtension.ProjectID, testExtension.Name, testExtension.Description, testExtension.Scope, testExtension.CreationDate)
+		AddRow(testExtension.ID, testExtension.ProjectID.Int32, testExtension.Name, testExtension.Description, testExtension.Scope, testExtension.CreationDate)
 	mockExtensionQuery(mock, extensionArgs, extensionRows)
 
 	// Simulate that the next free typecode is 14000 if there are no existing entries in the range.
