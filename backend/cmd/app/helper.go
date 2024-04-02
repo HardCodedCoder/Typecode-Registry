@@ -65,6 +65,13 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst any
 	return nil
 }
 
+// writeJSON is a utility method of the application struct that facilitates the process of sending data to the client.
+// It takes in a http.ResponseWriter, a status code, a map of data, and a set of headers.
+// The primary function of this method is to convert the provided data into a format that can be easily consumed by the client.
+// This is achieved by marshalling the data into JSON format. The marshalled data is then written to the HTTP response.
+// The method also handles setting the appropriate headers and status code for the response.
+// In case of any errors during this process, such as an error during marshalling or writing to the response, the method returns the error.
+// If the process completes successfully without any errors, the method returns nil.
 func (app *application) writeJSON(w http.ResponseWriter, status int, data envelope, headers http.Header) error {
 	js, err := json.MarshalIndent(data, "", "\t")
 	if err != nil {

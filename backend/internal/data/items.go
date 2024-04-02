@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Item represents an item in the database.
 type Item struct {
 	ID           int64     `json:"id"`
 	Name         string    `json:"name"`
@@ -14,10 +15,13 @@ type Item struct {
 	CreationDate time.Time `json:"creation_date"`
 }
 
+// ItemModel wraps the database connection pool.
 type ItemModel struct {
 	DB *sql.DB
 }
 
+// Insert adds a new item to the database.
+// It returns an error if the SQL query or scan fails.
 func (i ItemModel) Insert(item *Item) error {
 	query := `
 		INSERT INTO item (name, extension_id, table_name, typecode)
@@ -28,6 +32,9 @@ func (i ItemModel) Insert(item *Item) error {
 	return i.DB.QueryRow(query, args...).Scan(&item.ID, &item.CreationDate)
 }
 
+// GetNextSharedFreeTypecode returns the next available typecode for a given scope within a specified range.
+// It returns a sql.NullInt32 and an error.
+// If an error occurs during the database query or while scanning the row, it will return the error.
 func (i ItemModel) GetNextSharedFreeTypecode(scope string, rangeStart int32, rangeEnd int32) (sql.NullInt32, error) {
 	query := `
        SELECT MIN(e.min_typecode + 1)
@@ -52,6 +59,9 @@ func (i ItemModel) GetNextSharedFreeTypecode(scope string, rangeStart int32, ran
 	return nextFreeTypecode, err
 }
 
+// GetNextProjectFreeTypeCode returns the next available typecode for a given project within a specified range.
+// It returns a sql.NullInt32 and an error.
+// If an error occurs during the database query or while scanning the row, it will return the error.
 func (i ItemModel) GetNextProjectFreeTypeCode(projectId int32, rangeStart, rangeEnd int32) (sql.NullInt32, error) {
 	query := `
 		WITH 

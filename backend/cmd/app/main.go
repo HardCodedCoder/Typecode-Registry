@@ -14,17 +14,20 @@ import (
 	"github.com/rs/cors"
 )
 
+// config holds the configuration for the application.
 type config struct {
 	port int
 	dns  string // dated name service => db connection string.
 }
 
+// application holds the application-wide dependencies.
 type application struct {
 	config config
 	logger *log.Logger
 	models data.Models
 }
 
+// parseArgs parses the command-line arguments and returns the configuration.
 func parseArgs() config {
 	var cfg config
 
@@ -34,6 +37,7 @@ func parseArgs() config {
 	return cfg
 }
 
+// main is the entry point of the application.
 func main() {
 	PrintHeader()
 

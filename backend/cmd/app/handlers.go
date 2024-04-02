@@ -8,12 +8,16 @@ import (
 	"strings"
 )
 
+// ItemRequest is the request object for creating a new item.
+// Helper struct to parse the JSON request body.
 type ItemRequest struct {
 	Name        string `json:"name"`
 	TableName   string `json:"tablename"`
 	ExtensionId int64  `json:"extension_id"`
 }
 
+// healthcheck is a simple handler to check if the service is up and running.
+// TODO: Add more checks to ensure the service is healthy.
 func (app *application) healthcheck(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
@@ -27,6 +31,9 @@ func (app *application) healthcheck(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// getCreateItemsHandler handles the /items route and calls the appropriate handler based on the request method.
+// It handles GET and POST requests.
+// Other requests will return a 405 Method Not Allowed.
 func (app *application) getCreateItemsHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -38,6 +45,9 @@ func (app *application) getCreateItemsHandler(w http.ResponseWriter, r *http.Req
 	}
 }
 
+// getUpdateDeleteItemsHandler handles the /items/ route and calls the appropriate handler based on the request method.
+// It handles GET, PUT and DELETE requests.
+// Other requests will return a 405 Method Not Allowed.
 func (app *application) getUpdateDeleteItemsHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -51,15 +61,22 @@ func (app *application) getUpdateDeleteItemsHandler(w http.ResponseWriter, r *ht
 	}
 }
 
+// getProjectsHandler handles the /projects route and calls the appropriate handler based on the request method.
+// It handles GET requests. Other requests will return a 405 Method Not Allowed.
 func (app *application) getProjectsHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		app.getProjects(w, r)
+		app.getProjects(w)
 	default:
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 	}
 }
 
+// getItem handles the GET request for a specific item.
+// It extracts the item ID from the URL and returns the details of the item with that ID.
+// If the ID is not a valid integer, it returns a 400 Bad Request.
+// If the item with the specified ID is not found, it returns a 404 Not Found.
+// TODO: finish implentation of the updateItem handler and update documentation.
 func (app *application) getItem(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/items/"):]
 	idInt, err := strconv.ParseInt(id, 10, 64)
@@ -74,6 +91,10 @@ func (app *application) getItem(w http.ResponseWriter, r *http.Request) {
 	_, _ = fmt.Fprintf(w, "Display the details of item with ID: %d", idInt)
 }
 
+// updateItem handles the PUT request for a specific item.
+// It extracts the item ID from the URL and updates the details of the item with that ID.
+// If the ID is not a valid integer, it returns a 400 Bad Request.
+// TODO: finish implentation of the updateItem handler and update documentation
 func (app *application) updateItem(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/items/"):]
 	idInt, err := strconv.ParseInt(id, 10, 64)
@@ -87,6 +108,10 @@ func (app *application) updateItem(w http.ResponseWriter, r *http.Request) {
 	_, _ = fmt.Fprintf(w, "Update the details of item with ID: %d", idInt)
 }
 
+// deleteItem handles the DELETE request for a specific item.
+// It extracts the item ID from the URL and deletes the item with that ID.
+// If the ID is not a valid integer, it returns a 400 Bad Request.
+// TODO: finish implentation of the updateItem handler.
 func (app *application) deleteItem(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/items/"):]
 	idInt, err := strconv.ParseInt(id, 10, 64)
@@ -100,6 +125,12 @@ func (app *application) deleteItem(w http.ResponseWriter, r *http.Request) {
 	_, _ = fmt.Fprintf(w, "Delete the details of item with ID: %d", idInt)
 }
 
+// createItem handles the POST request to create a new item.
+// It reads the JSON request body, validates the input, and creates a new item in the database.
+//   - If the request body is not a valid JSON object or the input is invalid, it returns a 400 Bad Request.
+//   - If the extension ID in the request does not match any extension record, it returns a 400 Bad Request.
+//   - If the item is successfully created, it returns a 201 Created status with the item details in the response body.
+//   - If there is an error while inserting the item into the database, it returns a 500 Internal Server Error.
 func (app *application) createItem(w http.ResponseWriter, r *http.Request) {
 	var itemReq ItemRequest
 	err := app.readJSON(w, r, &itemReq)
@@ -159,6 +190,8 @@ func (app *application) createItem(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// getExtensionsHandler handles the /extensions route and calls the appropriate handler based on the request method.
+// It handles GET requests. Other requests will return a 405 Method Not Allowed.
 func (app *application) getExtensionsHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -168,6 +201,10 @@ func (app *application) getExtensionsHandler(w http.ResponseWriter, r *http.Requ
 	}
 }
 
+// getExtensions handles the GET request for all extensions with the specified scope.
+// It reads the scope from the URL and returns all extensions with that scope.
+// If the scope is not valid, it returns a 400 Bad Request.
+// If there are no extensions with the specified scope, it returns a 404 Not Found.
 func (app *application) getExtensions(w http.ResponseWriter, r *http.Request) {
 	scope := r.URL.Path[len("/extensions/"):]
 
@@ -191,7 +228,11 @@ func (app *application) getExtensions(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (app *application) getProjects(w http.ResponseWriter, r *http.Request) {
+// getProjects handles the GET request for all projects.
+// It returns all projects stored in the database.
+// If there are no projects in the database, it returns a 404 Not Found.
+// If there is an error while reading the projects from the database, it returns a 500 Internal Server Error.
+func (app *application) getProjects(w http.ResponseWriter) {
 	projects, err := app.models.Projects.ReadAll()
 	if err != nil {
 		app.logger.Printf("Error while trying to read project records from database: %s", err)
