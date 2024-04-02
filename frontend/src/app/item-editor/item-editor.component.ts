@@ -27,7 +27,7 @@ export class ItemEditorComponent {
         new PolymorpheusComponent(AddItemComponent, this.injector),
         {
           dismissible: true,
-          label: 'Heading',
+          label: 'Create Item',
         }
       )
       .pipe(
