@@ -5,6 +5,7 @@ import { AddItemComponent } from '../add-item/add-item.component';
 import { BackendService } from '../services/backend.service';
 import { StoreService } from '../services/store.service';
 import { FormData } from '../services/interfaces/formdata';
+import { catchError, throwError } from 'rxjs';
 
 @Component({
   selector: 'app-item-editor',
@@ -12,8 +13,6 @@ import { FormData } from '../services/interfaces/formdata';
   styleUrl: './item-editor.component.scss',
 })
 export class ItemEditorComponent {
-  private items: any;
-
   constructor(
     @Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
     @Inject(Injector) private readonly injector: Injector,
@@ -22,19 +21,26 @@ export class ItemEditorComponent {
   ) {}
 
   showDialog(): void {
-    const dialog$ = this.dialogs.open<FormData>(
-      new PolymorpheusComponent(AddItemComponent, this.injector),
-      {
-        data: 237,
-        dismissible: true,
-        label: 'Heading',
-      }
-    );
+    console.log('We are here');
+    const dialog$ = this.dialogs
+      .open<FormData>(
+        new PolymorpheusComponent(AddItemComponent, this.injector),
+        {
+          dismissible: true,
+          label: 'Heading',
+        }
+      )
+      .pipe(
+        catchError(err => {
+          console.error('item-editor: Error opening dialog:', err);
+          return throwError(err);
+        })
+      );
 
     dialog$.subscribe({
       next: (data: FormData) => {
         console.log('item-editor: Dialog closed with data:', data);
-        let extension_id: number | undefined = 0;
+        let extension_id: number | undefined;
         if (data.extensionScope === 'Shared') {
           extension_id = this.store.getSharedExtensionId(
             data.extensionComboBox
