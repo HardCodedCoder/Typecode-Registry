@@ -1,51 +1,55 @@
 <div class="sidebar" [ngClass]="{ active: isActive }">
   <div class="top">
     <div class="logo">
-      <i>logo</i>
       <span>Typecode Registry</span>
     </div>
-    <button (click)="toggle()">x</button>
+    <button (click)="toggle()">
+      <tui-svg src="tuiIconMenuLarge"></tui-svg>
+    </button>
   </div>
   <div class="orientation">
     <ul>
       <li>
         <a href="#">
-          <i>icon</i>
+          <i>
+            <tui-svg src="tuiIconGridLarge"></tui-svg>
+          </i>
           <span class="nav-item">Typecodes</span>
         </a>
         <span class="tooltip">Typecodes</span>
       </li>
       <li>
         <a href="#">
-          <i>icon</i>
+          <i>
+            <tui-svg src="tuiIconTransparentLarge"></tui-svg>
+          </i>
           <span class="nav-item">Extensions</span>
         </a>
         <span class="tooltip">Extensions</span>
       </li>
       <li>
         <a href="#">
-          <i>icon</i>
+          <i>
+            <tui-svg src="tuiIconBriefcaseLarge"></tui-svg>
+          </i>
           <span class="nav-item">Projects</span>
         </a>
         <span class="tooltip">Projects</span>
       </li>
       <li>
         <a href="#">
-          <i>icon</i>
-          <span class="nav-item">Account</span>
-        </a>
-        <span class="tooltip">Account</span>
-      </li>
-      <li>
-        <a href="#">
-          <i>icon</i>
+          <i>
+            <tui-svg src="tuiIconSettingsLarge"></tui-svg>
+          </i>
           <span class="nav-item">Settings</span>
         </a>
         <span class="tooltip">Settings</span>
       </li>
       <li>
         <a href="#">
-          <i>icon</i>
+          <i>
+            <tui-svg src="tuiIconLogOutLarge"></tui-svg>
+          </i>
           <span class="nav-item">Logout</span>
         </a>
         <span class="tooltip">Logout</span>
