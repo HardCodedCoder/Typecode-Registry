@@ -7,10 +7,12 @@ import (
 	"time"
 )
 
+// NullInt32 Helper type to handle nullable int32 values.
 type NullInt32 struct {
 	sql.NullInt32
 }
 
+// MarshalJSON returns the JSON encoding of the NullInt32.
 func (v NullInt32) MarshalJSON() ([]byte, error) {
 	if v.Valid {
 		return json.Marshal(v.Int32)
@@ -19,6 +21,7 @@ func (v NullInt32) MarshalJSON() ([]byte, error) {
 	}
 }
 
+// Extension represents an extension in the database.
 type Extension struct {
 	ID           int64     `json:"id"`
 	ProjectID    NullInt32 `json:"project_id,omitempty"`
@@ -28,10 +31,14 @@ type Extension struct {
 	CreationDate time.Time `json:"creation_date"`
 }
 
+// ExtensionModel wraps the database connection pool.
 type ExtensionModel struct {
 	DB *sql.DB
 }
 
+// Read retrieves an extension with the specified ID from the database.
+// It returns a pointer to an Extension struct and an error.
+// If an error occurs during the database query or while scanning the row, it will return the error.
 func (e ExtensionModel) Read(id int64) (*Extension, error) {
 	if id < 1 {
 		return nil, errors.New("record not found")

@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Project represents a project in the database.
 type Project struct {
 	ID           int64     `json:"id"`
 	Name         string    `json:"name"`
@@ -12,10 +13,14 @@ type Project struct {
 	CreationDate time.Time `json:"creation_date"`
 }
 
+// ProjectModel wraps the database connection pool.
 type ProjectModel struct {
 	DB *sql.DB
 }
 
+// ReadAll retrieves all projects from the database.
+// It returns a slice of pointers to Project structs and an error.
+// If an error occurs during the database query or while scanning the rows, it will return the error.
 func (pm ProjectModel) ReadAll() (projects []*Project, err error) {
 	query := `SELECT * FROM project ORDER BY id`
 

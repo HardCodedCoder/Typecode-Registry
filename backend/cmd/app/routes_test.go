@@ -98,6 +98,24 @@ func checkResponseValues(response ResponseItem, expected ExpectedItemValues, t *
 	}
 }
 
+func TestCallingExtensionsRoutePassingInvalidScopeReturnsStatusBadRequest(t *testing.T) {
+	app := application{
+		logger: log.New(os.Stdout, "", log.Ldate|log.Ltime),
+	}
+
+	server := httptest.NewServer(app.route())
+	defer server.Close()
+
+	resp, err := http.Get("http://" + server.Listener.Addr().String() + "/extensions/Invalid-Scope")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if resp.StatusCode != http.StatusBadRequest {
+		t.Errorf("expected status code %d, got %d", http.StatusBadRequest, resp.StatusCode)
+	}
+}
+
 func TestSendingNotExistingExtensionIDReturnsStatusNotFound(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
@@ -108,7 +126,7 @@ func TestSendingNotExistingExtensionIDReturnsStatusNotFound(t *testing.T) {
 
 	args := []driver.Value{itemReq.ExtensionId}
 	returnRows := sqlmock.NewRows([]string{"id", "project_id", "name", "description", "scope", "creation_date"}) // no rows added
-	mockExtensionQuery(mock, args, returnRows)
+	mockReadExtensionByIDQuery(mock, args, returnRows)
 
 	app := application{
 		models: data.NewModels(db),
@@ -184,6 +202,81 @@ func TestSendingRequestWithInvalidRequestBodyReturnsStatusBadRequest(t *testing.
 	}
 }
 
+func TestProjectsRouteReturnsAllProjects(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	projects := []data.Project{
+		{ID: 1, Name: "Test-Project-1", Description: "Test-Description-1", CreationDate: time.Now()},
+		{ID: 2, Name: "Test-Project-2", Description: "Test-Description-2", CreationDate: time.Now()},
+	}
+
+	returnRows := sqlmock.NewRows([]string{"id", "name", "description", "creation_date"}).
+		AddRow(projects[0].ID, projects[0].Name, projects[0].Description, projects[0].CreationDate).
+		AddRow(projects[1].ID, projects[1].Name, projects[1].Description, projects[1].CreationDate)
+	mockReadAllProjectsQuery(mock, returnRows)
+
+	app := application{
+		models: data.NewModels(db),
+		logger: log.New(os.Stdout, "", log.Ldate|log.Ltime),
+	}
+
+	// Mock HTTP Request
+	server := httptest.NewServer(app.route())
+	defer server.Close()
+
+	resp, err := http.Get("http://" + server.Listener.Addr().String() + "/projects")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	checkHTTPResponse(resp, http.StatusOK, t)
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}
+
+func TestExtensionsRouteGetsAllExtensionsByScope(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	extensions := []data.Extension{
+		{ID: 1, Name: "Test-Extension-1", Description: "Test-Description-1", Scope: "Project", CreationDate: time.Now()},
+		{ID: 3, Name: "Test-Extension-3", Description: "Test-Description-3", Scope: "Project", CreationDate: time.Now()},
+	}
+
+	const scope = "Project"
+	returnRows := sqlmock.NewRows([]string{"id", "project_id", "name", "description", "scope", "creation_date"}).
+		AddRow(extensions[0].ID, extensions[0].ProjectID.Int32, extensions[0].Name, extensions[0].Description, extensions[0].Scope, extensions[0].CreationDate).
+		AddRow(extensions[1].ID, extensions[1].ProjectID.Int32, extensions[1].Name, extensions[1].Description, extensions[1].Scope, extensions[1].CreationDate)
+	mockReadAllExtensionsQuery(mock, scope, returnRows)
+
+	app := application{
+		models: data.NewModels(db),
+		logger: log.New(os.Stdout, "", log.Ldate|log.Ltime),
+	}
+
+	// Mock HTTP Request
+	server := httptest.NewServer(app.route())
+	defer server.Close()
+
+	resp, err := http.Get("http://" + server.Listener.Addr().String() + "/extensions" + "/" + scope)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	checkHTTPResponse(resp, http.StatusOK, t)
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}
+
 func TestItemsRouteCreatesItemForProjectExtension(t *testing.T) {
 	// Initialize Mock database.
 	db, mock, err := sqlmock.New()
@@ -209,8 +302,8 @@ func TestItemsRouteCreatesItemForProjectExtension(t *testing.T) {
 	// Mock Extension Query
 	extensionArgs := []driver.Value{1}
 	extensionRows := sqlmock.NewRows([]string{"id", "project_id", "name", "description", "scope", "creation_date"}).
-		AddRow(testExtension.ID, testExtension.ProjectID, testExtension.Name, testExtension.Description, testExtension.Scope, testExtension.CreationDate)
-	mockExtensionQuery(mock, extensionArgs, extensionRows)
+		AddRow(testExtension.ID, testExtension.ProjectID.Int32, testExtension.Name, testExtension.Description, testExtension.Scope, testExtension.CreationDate)
+	mockReadExtensionByIDQuery(mock, extensionArgs, extensionRows)
 
 	// Simulate that the next free typecode is 14000 if there are no existing entries in the range.
 	typecodeArgs := []driver.Value{testExtension.ProjectID.Int32, data.ScopeRanges[data.ScopeProject].Start, data.ScopeRanges[data.ScopeProject].End}
@@ -268,7 +361,7 @@ func TestItemsRouteCreatesItemForSharedExtension(t *testing.T) {
 	extensionArgs := []driver.Value{1}
 	extensionRows := sqlmock.NewRows([]string{"id", "project_id", "name", "description", "scope", "creation_date"}).
 		AddRow(1, sql.NullInt32{}, "Test-Extension", "Test-Description", "Shared", time.Now())
-	mockExtensionQuery(mock, extensionArgs, extensionRows)
+	mockReadExtensionByIDQuery(mock, extensionArgs, extensionRows)
 
 	// Mock Typecode Query
 	typecodeArgs := []driver.Value{20000, int32(^uint32(0) >> 1), "Shared"}

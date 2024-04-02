@@ -1,7 +1,10 @@
 name: Go Backend CI
 
 on:
-  pull_request: {}
+  pull_request:
+    paths:
+      - 'backend/**/*.go'
+  workflow_dispatch:
 
 jobs:
   lint:

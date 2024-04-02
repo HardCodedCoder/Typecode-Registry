@@ -6,12 +6,26 @@ import (
 	"regexp"
 )
 
-func mockExtensionQuery(mock sqlmock.Sqlmock, args []driver.Value, returnRows *sqlmock.Rows) {
+func mockReadExtensionByIDQuery(mock sqlmock.Sqlmock, args []driver.Value, returnRows *sqlmock.Rows) {
 	query := regexp.QuoteMeta(`
 	    SELECT id, project_id, name, description, scope, creation_date
 	    FROM extension
 	    WHERE id = $1`)
 	mock.ExpectQuery(query).WithArgs(args...).WillReturnRows(returnRows)
+}
+
+func mockReadAllExtensionsQuery(mock sqlmock.Sqlmock, scope string, returnRows *sqlmock.Rows) {
+	query := regexp.QuoteMeta(`
+	    SELECT * FROM extension
+		WHERE scope = $1
+		ORDER BY id`)
+
+	mock.ExpectQuery(query).WithArgs(scope).WillReturnRows(returnRows)
+}
+
+func mockReadAllProjectsQuery(mock sqlmock.Sqlmock, rows *sqlmock.Rows) {
+	query := regexp.QuoteMeta(`SELECT * FROM project ORDER BY id`)
+	mock.ExpectQuery(query).WillReturnRows(rows)
 }
 
 func mockTypecodeQuery(mock sqlmock.Sqlmock, args []driver.Value, returnRows *sqlmock.Rows) {
