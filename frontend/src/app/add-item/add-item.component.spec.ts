@@ -230,42 +230,68 @@ describe('AddItemComponent', () => {
     expect(component.form.valid).toBeTruthy();
   });
 
-  /*
   it('should hide extension input and set validators when scope changes from "Shared" to "Project"', () => {
+    // Vorbereitung
     component.lastSelectedScope = 'Shared';
     const event = { extensionScope: 'Project' };
+    const projectComboBoxControl = component.form.get('projectComboBox') as FormControl;
+    const extensionComboBoxControl = component.form.get('extensionComboBox') as FormControl;
+    extensionComboBoxControl.setValue("Extension A1",);
 
-    const projectComboBoxControl = component.form.get(
-      'projectComboBox'
-    ) as FormControl;
-    const extensionComboBoxControl = component.form.get(
-      'extensionComboBox'
-    ) as FormControl;
-
+    // Überwachung der Methodenaufrufe
     spyOn(projectComboBoxControl, 'setValidators');
     spyOn(projectComboBoxControl, 'clearValidators');
     spyOn(extensionComboBoxControl, 'setValue');
     spyOn(extensionComboBoxControl, 'markAsUntouched');
 
+    // Aktion
+    fixture.detectChanges()
     component.scopeChanged(event);
 
+    // Überprüfung
     expect(component.projectScopeSelected).toBeTrue();
     expect(component.showExtensionInput).toBeFalse();
-    expect(component.extensionsToDisplay).toEqual(
-      component.store.projectExtensions
-    );
-    expect(
-      component.form.get('extensionComboBox')?.setValue
-    ).toHaveBeenCalledWith(null, { emitEvent: false });
-    expect(
-      component.form.get('extensionComboBox')?.markAsUntouched
-    ).toHaveBeenCalled();
-    expect(
-      component.form.get('projectComboBox')?.setValidators
-    ).toHaveBeenCalledWith(jasmine.any(Function));
-    expect(
-      component.form.get('projectComboBox')?.clearValidators
-    ).not.toHaveBeenCalled();
+    expect(component.extensionsToDisplay).toEqual(component.store.projectExtensions);
+
+    expect(projectComboBoxControl.setValidators).toHaveBeenCalledWith(jasmine.any(Function));
+    expect(extensionComboBoxControl.setValue).toHaveBeenCalledWith(null, { emitEvent: false });
+    expect(component.form.get('extensionComboBox')?.markAsUntouched).toHaveBeenCalled();
   });
-   */
+
+  it('should filter extensionsToDisplay and set showExtensionInput to true when a project is selected', () => {
+    const projectName = 'Project Alpha';
+
+    // set mock data
+    component.store.projects = mockProjects;
+    component.store.projectExtensions = mockExtensions;
+    component.onProjectSelected(projectName);
+
+    // get expected project and extensions
+    const expectedProject = mockProjects.find(project => project.name === projectName);
+    const expectedExtensions = mockExtensions.filter(extension => extension.project_id === expectedProject?.id);
+
+    expect(component.extensionsToDisplay).toEqual(expectedExtensions, 'extensionsToDisplay does not match expected');
+    expect(component.showExtensionInput).toBeTrue();
+  });
+
+  /*
+  it('should toggle projectScopeSelected and set the correct validators on scope change', () => {
+    const event = { extensionScope: 'Shared' };
+    const projectComboBoxControl = component.form.get('projectComboBox') as FormControl;
+    projectComboBoxControl.setValue("Project A",);
+
+    spyOn(projectComboBoxControl, 'setValue');
+    spyOn(projectComboBoxControl, 'markAsUntouched');
+
+    fixture.detectChanges()
+    component.lastSelectedScope = 'Project';
+    component.scopeChanged(event);
+
+    expect(component.projectScopeSelected).toBeFalse();
+    expect(component.showExtensionInput).toBeTrue();
+    expect(component.extensionsToDisplay).toEqual(component.store.projectExtensions);
+
+    expect(projectComboBoxControl.setValue).toHaveBeenCalledWith(null, { emitEvent: false });
+    expect(component.form.get('projectComboBox')?.markAsUntouched).toHaveBeenCalled();
+  });*/
 });
