@@ -234,9 +234,13 @@ describe('AddItemComponent', () => {
     // Vorbereitung
     component.lastSelectedScope = 'Shared';
     const event = { extensionScope: 'Project' };
-    const projectComboBoxControl = component.form.get('projectComboBox') as FormControl;
-    const extensionComboBoxControl = component.form.get('extensionComboBox') as FormControl;
-    extensionComboBoxControl.setValue("Extension A1",);
+    const projectComboBoxControl = component.form.get(
+      'projectComboBox'
+    ) as FormControl;
+    const extensionComboBoxControl = component.form.get(
+      'extensionComboBox'
+    ) as FormControl;
+    extensionComboBoxControl.setValue('Extension A1');
 
     // Überwachung der Methodenaufrufe
     spyOn(projectComboBoxControl, 'setValidators');
@@ -245,17 +249,25 @@ describe('AddItemComponent', () => {
     spyOn(extensionComboBoxControl, 'markAsUntouched');
 
     // Aktion
-    fixture.detectChanges()
+    fixture.detectChanges();
     component.scopeChanged(event);
 
     // Überprüfung
     expect(component.projectScopeSelected).toBeTrue();
     expect(component.showExtensionInput).toBeFalse();
-    expect(component.extensionsToDisplay).toEqual(component.store.projectExtensions);
+    expect(component.extensionsToDisplay).toEqual(
+      component.store.projectExtensions
+    );
 
-    expect(projectComboBoxControl.setValidators).toHaveBeenCalledWith(jasmine.any(Function));
-    expect(extensionComboBoxControl.setValue).toHaveBeenCalledWith(null, { emitEvent: false });
-    expect(component.form.get('extensionComboBox')?.markAsUntouched).toHaveBeenCalled();
+    expect(projectComboBoxControl.setValidators).toHaveBeenCalledWith(
+      jasmine.any(Function)
+    );
+    expect(extensionComboBoxControl.setValue).toHaveBeenCalledWith(null, {
+      emitEvent: false,
+    });
+    expect(
+      component.form.get('extensionComboBox')?.markAsUntouched
+    ).toHaveBeenCalled();
   });
 
   it('should filter extensionsToDisplay and set showExtensionInput to true when a project is selected', () => {
@@ -267,10 +279,17 @@ describe('AddItemComponent', () => {
     component.onProjectSelected(projectName);
 
     // get expected project and extensions
-    const expectedProject = mockProjects.find(project => project.name === projectName);
-    const expectedExtensions = mockExtensions.filter(extension => extension.project_id === expectedProject?.id);
+    const expectedProject = mockProjects.find(
+      project => project.name === projectName
+    );
+    const expectedExtensions = mockExtensions.filter(
+      extension => extension.project_id === expectedProject?.id
+    );
 
-    expect(component.extensionsToDisplay).toEqual(expectedExtensions, 'extensionsToDisplay does not match expected');
+    expect(component.extensionsToDisplay).toEqual(
+      expectedExtensions,
+      'extensionsToDisplay does not match expected'
+    );
     expect(component.showExtensionInput).toBeTrue();
   });
 

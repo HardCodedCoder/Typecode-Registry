@@ -3,7 +3,7 @@ import { By } from '@angular/platform-browser';
 import { SidebarMenuComponent } from './sidebar-menu/sidebar-menu.component';
 import { AppComponent } from './app.component';
 import { RouterModule } from '@angular/router';
-import { TuiRootModule } from "@taiga-ui/core";
+import { TuiRootModule } from '@taiga-ui/core';
 
 describe('AppComponent', () => {
   let component: AppComponent;
