@@ -8,7 +8,7 @@ import (
 type Item struct {
 	ID           int64     `json:"id"`
 	Name         string    `json:"name"`
-	TableName    string    `json:"tablename"`
+	TableName    string    `json:"table_name"`
 	Typecode     int32     `json:"typecode"`
 	ExtensionID  int64     `json:"extension_id"`
 	CreationDate time.Time `json:"creation_date"`

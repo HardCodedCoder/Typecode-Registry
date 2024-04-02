@@ -1,9 +1,7 @@
 name: Angular Frontend CI
 
 on:
-  pull_request:
-    branches:
-      - main
+  pull_request: {}
 
 jobs:
   lint:

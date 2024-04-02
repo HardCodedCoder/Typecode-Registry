@@ -11,6 +11,7 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
+	"github.com/rs/cors"
 )
 
 type config struct {
@@ -69,9 +70,10 @@ func main() {
 
 	addr := fmt.Sprintf(":%d", app.config.port)
 
+	handler := cors.Default().Handler(app.route())
 	server := &http.Server{
 		Addr:         addr,
-		Handler:      app.route(),
+		Handler:      handler,
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,

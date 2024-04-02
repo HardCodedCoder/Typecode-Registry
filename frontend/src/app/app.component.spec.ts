@@ -31,8 +31,9 @@ describe('AppComponent', () => {
   });
 
   it('should toggle isSidebarActive when SidebarMenuComponent emits toggleSidebar event', () => {
-    const sidebarMenuComponent = fixture.debugElement.query(By.directive(SidebarMenuComponent))
-      .componentInstance as SidebarMenuComponent;
+    const sidebarMenuComponent = fixture.debugElement.query(
+      By.directive(SidebarMenuComponent)
+    ).componentInstance as SidebarMenuComponent;
 
     expect(component.isSidebarActive).toBe(false); // initial value
 

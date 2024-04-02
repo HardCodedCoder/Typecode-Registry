@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { TypecodeEditorComponent } from './typecode-editor/typecode-editor.component';
+import { ItemEditorComponent } from './item-editor/item-editor.component';
 
-const routes: Routes = [{ path: '', component: TypecodeEditorComponent }];
+const routes: Routes = [{ path: '', component: ItemEditorComponent }];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

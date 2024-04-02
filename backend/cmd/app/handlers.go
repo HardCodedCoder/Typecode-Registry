@@ -51,6 +51,15 @@ func (app *application) getUpdateDeleteItemsHandler(w http.ResponseWriter, r *ht
 	}
 }
 
+func (app *application) getProjectsHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		app.getProjects(w, r)
+	default:
+		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+	}
+}
+
 func (app *application) getItem(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/items/"):]
 	idInt, err := strconv.ParseInt(id, 10, 64)
@@ -99,6 +108,7 @@ func (app *application) createItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	app.logger.Printf("Item request: %v received", itemReq)
 	if itemReq.Name == "" || itemReq.TableName == "" || itemReq.ExtensionId < 1 {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		app.logger.Printf("Bad Request: Invalid item create request with data: %v", itemReq)
@@ -145,6 +155,56 @@ func (app *application) createItem(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		app.logger.Println(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (app *application) getExtensionsHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		app.getExtensions(w, r)
+	default:
+		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+	}
+}
+
+func (app *application) getExtensions(w http.ResponseWriter, r *http.Request) {
+	scope := r.URL.Path[len("/extensions/"):]
+
+	if scope != "Project" && scope != "Shared" {
+		http.Error(w, "Invalid scope", http.StatusBadRequest)
+		return
+	}
+
+	extensions, err := app.models.Extensions.ReadAll(scope)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"extensions": extensions}, nil)
+
+	if err != nil {
+		http.Error(w, fmt.Sprintf("error while trying to write extensions to http response. error: %s", err), http.StatusInternalServerError)
+		app.logger.Println(err)
+		return
+	}
+}
+
+func (app *application) getProjects(w http.ResponseWriter, r *http.Request) {
+	projects, err := app.models.Projects.ReadAll()
+	if err != nil {
+		app.logger.Printf("Error while trying to read project records from database: %s", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"projects": projects}, nil)
+
+	if err != nil {
+		msg := fmt.Sprintf("Error while trying to write projects to http response. error: %s", err)
+		app.logger.Printf(msg)
+		http.Error(w, msg, http.StatusInternalServerError)
 		return
 	}
 }

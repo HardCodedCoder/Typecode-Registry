@@ -15,7 +15,7 @@ a span {
   width: 80px;
   height: 100vh;
   background-color: #12171e;
-  padding: 0.4rem 0.8rem;
+  padding: 0.6rem 0.8rem;
   transition: all 0.5s ease;
 }
 
@@ -34,7 +34,7 @@ a span {
   position: absolute;
   background: none;
   color: white;
-  top: 0.4rem;
+  top: 0.6rem;
   left: 50%;
   font-size: 1.2rem;
   line-height: 50px;
@@ -43,12 +43,13 @@ a span {
   border: none;
 }
 
-.sidebar.active #btn {
+.sidebar.active button {
   position: unset;
 }
 
 .sidebar .top {
   display: flex;
+  height: 50px;
 }
 
 .sidebar .top .logo {

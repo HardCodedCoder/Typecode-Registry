@@ -12,7 +12,7 @@ CREATE TABLE "user" (
 
 CREATE TABLE project (
         id SERIAL PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
+        name VARCHAR(255) NOT NULL UNIQUE,
         description TEXT,
         creation_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

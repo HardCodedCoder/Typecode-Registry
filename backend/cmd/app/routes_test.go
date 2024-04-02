@@ -193,7 +193,7 @@ func TestItemsRouteCreatesItemForProjectExtension(t *testing.T) {
 
 	testExtension := data.Extension{
 		ID:           1,
-		ProjectID:    sql.NullInt32{Int32: 1, Valid: true},
+		ProjectID:    data.NullInt32{NullInt32: sql.NullInt32{Int32: 1}},
 		Name:         "Test-Extension",
 		Description:  "Test-Description",
 		Scope:        "Project",
