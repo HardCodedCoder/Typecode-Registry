@@ -5,8 +5,163 @@
 \usepackage{array}
 \usepackage{amssymb}
 \usepackage{graphicx}
-\usepackage{float} % Replacement for the here package, use [H] placement specifier
+\usepackage{float}
 \usepackage{fancyhdr}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[table]{xcolor}
+\usepackage{siunitx}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage[rightcaption]{sidecap}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage{colortbl}
+
+\definecolor{headercolor}{RGB}{220,220,220} % Light gray
+\definecolor{golandblue}{RGB}{0,0,255}
+\definecolor{golandgray}{RGB}{128,128,128}
+\definecolor{golandgreen}{RGB}{0,128,0}
+\definecolor{golanddarkyellow}{RGB}{128,128,0}
+\definecolor{golandorange}{RGB}{255,165,0}
+
+
+
+\lstset{
+    language=Go,
+    basicstyle=\ttfamily,
+    keywordstyle=\color{orange},
+    stringstyle=\color{golandgreen},
+    commentstyle=\color{golandgray},
+    morecomment=[s]{/*}{*/},
+    morecomment=[l]{//},
+    showstringspaces=false
+}
+
+\lstdefinelanguage{json}{
+    morestring=[b]",
+    morestring=[b]',
+    literate=
+    *{0}{{{\color{golanddarkyellow}0}}}{1}
+        {1}{{{\color{golanddarkyellow}1}}}{1}
+        {2}{{{\color{golanddarkyellow}2}}}{1}
+        {3}{{{\color{golanddarkyellow}3}}}{1}
+        {4}{{{\color{golanddarkyellow}4}}}{1}
+        {5}{{{\color{golanddarkyellow}5}}}{1}
+        {6}{{{\color{golanddarkyellow}6}}}{1}
+        {7}{{{\color{golanddarkyellow}7}}}{1}
+        {8}{{{\color{golanddarkyellow}8}}}{1}
+        {9}{{{\color{golanddarkyellow}9}}}{1}
+        {:}{{{\color{golandblue}{:}}}}{1}
+        {,}{{{\color{black}{,}}}}{1}
+        {\{}{{{\color{black}{\{}}}}{1}
+        {\}}{{{\color{black}{\}}}}}{1}
+        {[}{{{\color{black}{[}}}}{1}
+        {]}{{{\color{black}{]}}}}{1},
+}
+
+\lstset{
+    language=json,
+    basicstyle=\ttfamily,
+    keywordstyle=\color{golandblue},
+    stringstyle=\color{golandgreen},
+    numberstyle=\color{golanddarkyellow},
+    showstringspaces=false
+}
+
+%%% DEFINITION OF 3rd LEVEL HEADINGS
+\makeatletter
+\newcommand\headingThree{\@startsection{headingThree}{3}{\z@}%
+{-3.25ex \@plus1ex \@minus.2ex}%
+{1.5ex \@plus.2ex}%
+{\normalfont\normalsize\bfseries}}
+\newcounter{headingThree}
+\renewcommand\theheadingThree{\thesubsection.\@arabic\c@headingThree}
+
+\titleclass{\headingThree}{straight}[\subsection]
+\titleformat{\headingThree}
+{\normalfont\normalsize\bfseries}{\theheadingThree}{1em}{}
+\titlespacing*{\headingThree}{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\newcommand{\toclevel@headingThree}{3}
+\newcommand{\l@headingThree}{\@dottedtocline{3}{6em}{3em}}
+
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\@addtoreset{headingThree}{subsection}
+%%% END DEFINITION OF 3rd LEVEL HEADINGS
+
+%%% DEFINITION OF 4th LEVEL HEADINGS
+\newcommand\headingFour{\@startsection{headingFour}{4}{\z@}%
+{-3.25ex \@plus1ex \@minus.2ex}%
+{1.5ex \@plus.2ex}%
+{\normalfont\normalsize\bfseries}}
+\newcounter{headingFour}
+\renewcommand\theheadingFour{\thesubsubsection.\@arabic\c@headingFour}
+
+\titleclass{\headingFour}{straight}[\subsubsection]
+\titleformat{\headingFour}
+{\normalfont\normalsize\bfseries}{\theheadingFour}{1em}{}
+\titlespacing*{\headingFour}{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\newcommand{\toclevel@headingFour}{4}
+\newcommand{\l@headingFour}{\@dottedtocline{4}{7em}{4em}}
+
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}
+
+\@addtoreset{headingFour}{subsubsection}
+%%% END DEFINITION OF 4th LEVEL HEADINGS
+
+%%% DEFINITION OF 5th LEVEL HEADINGS
+\newcommand\headingFive{\@startsection{headingFive}{5}{\z@}%
+{-3.25ex \@plus1ex \@minus.2ex}%
+{1.5ex \@plus.2ex}%
+{\normalfont\normalsize\bfseries}}
+\newcounter{headingFive}
+\renewcommand\theheadingFive{\theheadingFour.\@arabic\c@headingFive}
+
+\titleclass{\headingFive}{straight}[\headingFour]
+\titleformat{\headingFive}
+{\normalfont\normalsize\bfseries}{\theheadingFive}{1em}{}
+\titlespacing*{\headingFive}{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\newcommand{\toclevel@headingFive}{5}
+\newcommand{\l@headingFive}{\@dottedtocline{5}{8em}{5em}}
+
+\setcounter{secnumdepth}{5}
+\setcounter{tocdepth}{5}
+
+\@addtoreset{headingFive}{headingFour}
+%%% END DEFINITION OF 5th LEVEL HEADINGS
+
+%%% DEFINITION OF 6th LEVEL HEADINGS
+\newcommand\headingSix{\@startsection{headingSix}{6}{\z@}%
+{-3.25ex \@plus1ex \@minus.2ex}%
+{1.5ex \@plus.2ex}%
+{\normalfont\normalsize\bfseries}}
+\newcounter{headingSix}
+\renewcommand\theheadingSix{\theheadingFive.\@arabic\c@headingSix}
+
+\titleclass{\headingSix}{straight}[\headingFive]
+\titleformat{\headingSix}
+{\normalfont\normalsize\bfseries}{\theheadingSix}{1em}{}
+\titlespacing*{\headingSix}{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\newcommand{\toclevel@headingSix}{6}
+\newcommand{\l@headingSix}{\@dottedtocline{6}{9em}{6em}}
+
+\setcounter{secnumdepth}{6}
+\setcounter{tocdepth}{6}
+
+\@addtoreset{headingSix}{headingFive}
+\makeatother
+%%% END DEFINITION OF 6th LEVEL HEADINGS
+
 
 %% BibLaTeX setup remains the same
 \usepackage[backend=biber, style=authoryear, natbib=true]{biblatex}
@@ -22,15 +177,3 @@
 
 \newcommand{\subtitle}{Typecode Registry}
 
-\usepackage[T1]{fontenc}
-\usepackage{lmodern}
-\usepackage[table]{xcolor}
-\usepackage{siunitx}
-\usepackage{tabularx}
-\usepackage{booktabs}
-\usepackage{longtable}
-\usepackage[rightcaption]{sidecap}
-
-\usepackage{hyperref}
-
-\usepackage{caption}

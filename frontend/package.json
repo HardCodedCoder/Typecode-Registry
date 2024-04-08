@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test --no-progress --browsers=ChromeHeadless --watch=false --code-coverage",
     "lint": "ng lint",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "compodoc": "npx compodoc -p tsconfig.doc.json"
   },
   "private": true,
   "dependencies": {

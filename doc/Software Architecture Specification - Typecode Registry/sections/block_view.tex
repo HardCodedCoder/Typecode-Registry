@@ -1,5 +1,444 @@
-\section{Building Block View}
-\subsection{Level 1}
-TODO
-\subsection{Level 2}
-TODO
+\section{Building Block View}\label{sec:building-block-view}
+
+\subsection{Level 1}\label{subsec:level-1}
+
+The high-level architecture provides a comprehensive overview of the main components and their interactions within the system, as depicted in Figure \ref{fig:system_overview}. The architecture comprises a frontend, a backend service, a database, and the Microsoft OAuth 2.0 authentication service.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{./images/high_level_architecture/system_overview}
+    \caption{System Overview of the High-Level Architecture}
+    \label{fig:system_overview}
+\end{figure}
+
+Users interact with the application through a Single Page Application (SPA) built with Angular.
+This SPA frontend communicates with the backend service through a RESTful API that facilitates CRUD operations (Create, Read, Update, Delete) based on user-provided data.
+For every request, an authentication token is utilized, provided by the Microsoft OAuth 2.0 service and validated with the backend service.
+
+The backend component, developed in Golang, manages business logic processing and interacts directly with the PostgreSQL database to persistently store and retrieve the required data.
+
+Both the frontend and the backend are hosted in Docker containers and orchestrated by a Kubernetes cluster, which ensures a scalable and manageable infrastructure.
+This setup promotes efficient resource utilization and simplifies the deployment and management of the application.
+
+The security of the system is bolstered by employing OAuth 2.0 for authentication and secure token transmission with API requests.
+The RESTful API ensures a clear separation between the frontend and backend, enhancing the maintainability and extensibility of the system.
+
+Highlighted Advantages:\\
+
+\begin{itemize}
+    \item \textbf{Scalability:} The use of Kubernetes for container orchestration allows the system to handle increasing loads efficiently, making it well-suited for dynamic scaling.
+    \item \textbf{Security:} OAuth 2.0 integration provides a robust authentication mechanism, ensuring secure access control and token management.
+    \item \textbf{Maintainability:} With a clear separation of concerns facilitated by the RESTful API, the system offers enhanced maintainability, allowing for independent updates and evolution of the frontend and backend.
+    \item \textbf{Resource Optimization:} Containerization with Docker leads to optimized resource usage, as it enables lightweight and consistent deployments across various environments.
+    \item \textbf{Developer Experience:} The adoption of popular frameworks like Angular for the frontend and Golang for the backend offers a productive environment for developers with strong community support and streamlined development workflows.
+\end{itemize}
+
+\subsubsection{Interaction with External Systems}\label{subsubsec:interaction-with-external-systems}
+
+The application's ability to interact with external systems is a pivotal aspect of its design, offering both flexibility and extended functionality. A critical external system interaction is with the Microsoft OAuth 2.0 service, which provides user authentication and authorization capabilities.
+
+\paragraph{Authentication with OAuth 2.0}
+When a user attempts to access the application, the frontend initiates the authentication flow by redirecting the user to the Microsoft OAuth 2.0 service. The user then authenticates using their Microsoft credentials. Upon successful authentication, the service issues an access token and redirects the user back to the application.
+
+The access token represents the user's identity and permissions, which the application can use to ensure that the user can only perform actions they are authorized for. This token is then included in the HTTP Authorization header in each subsequent API request made by the SPA to the backend.
+
+\paragraph{Backend Token Validation}
+Upon receiving an API request, the backend service extracts the token from the Authorization header and performs validation checks. While the token is issued by the OAuth service, the backend service needs to verify its integrity and validity. This is done by:
+
+\begin{itemize}
+    \item Ensuring the token is not expired.
+    \item Verifying the token's signature to confirm that the issuer is the trusted OAuth 2.0 service.
+    \item Checking the token's scopes to determine if the user is authorized to perform the requested action.
+\end{itemize}
+
+The backend service may occasionally need to communicate with the OAuth 2.0 service for tasks such as token introspection or revocation, especially when implementing log out functionality or for enhanced security checks.
+
+\paragraph{Advantages of OAuth 2.0 Integration}
+The integration with the OAuth 2.0 service offers several benefits:
+\begin{itemize}
+    \item \textbf{Delegated Authentication:} The system leverages the robust, secure authentication mechanisms provided by Microsoft, thus delegating the authentication responsibility and reducing the system's attack surface.
+    \item \textbf{Single Sign-On (SSO):} Users benefit from a seamless experience by using a single set of credentials across multiple applications within the Microsoft ecosystem.
+    \item \textbf{Access Control:} The OAuth 2.0 service effectively manages access control, ensuring that users can only access resources for which they have been granted permissions.
+    \item \textbf{Reduced Complexity:} The backend does not need to handle user credentials directly, simplifying the security model and reducing the complexity of the backend service.
+\end{itemize}
+
+This interaction with external systems underscores the application's commitment to secure, efficient, and user-friendly operations, adhering to modern security practices and standards.
+
+\subsection{Level 2}\label{subsec:level-2}
+
+\subsubsection{Detailed View of Backend}
+The backend system serves as the backbone of our application, orchestrating the core logic, data management, and security protocols.
+Developed in Golang, it interfaces seamlessly with the Angular-based frontend by providing a robust RESTful API. This API facilitates CRUD (Create, Read, Update, Delete) operations, essential for managing the application's data effectively.
+Furthermore, the backend is responsible for authenticating users via the Microsoft OAuth 2.0 service, ensuring secure access to the application's features.
+It also interacts directly with the PostgreSQL database, handling data persistence and retrieval, thus maintaining the integrity and consistency of the application state across multiple user sessions.
+
+The backend architecture is visualized in Figure~\ref{fig:backend_architecture} below, providing a schematic overview of the main modules and their interactions.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{images/backend/backend_pkg_level_2}
+    \caption{Schematic overview of the backend architecture}
+    \label{fig:backend_architecture}
+\end{figure}
+
+\headingFour{Packages and Libraries}
+The backend's technology stack is meticulously chosen to leverage the robustness and simplicity offered by Golang, aligning with our objectives for performance, scalability, and maintainability. Key aspects of our technology stack include:
+
+\begin{itemize}
+    \item \textbf{HTTP Routing:} Instead of third-party libraries, we utilize Golang's standard `http` package for routing, taking advantage of its powerful and efficient HTTP server capabilities. This approach allows for direct control over route handling and middleware integration, ensuring optimal performance and compatibility with Go's native paradigms.
+
+    \item \textbf{Database Interaction:} For database connectivity and operations, we rely on the standard `database/sql` package.
+    This choice provides a lightweight, flexible interface to our PostgreSQL database, enabling efficient management of connections and the execution of SQL queries.
+
+    \item \textbf{Entity Management:} Each data entity, such as `Item`, is defined within its package, encapsulating the CRUD operations.
+    This pattern ensures a clear separation of concerns and enhances the maintainability of our data access layer.
+    By implementing entity-specific types and methods, we gain fine-grained control over database interactions, allowing for customized query optimization and error handling strategies.
+
+    \item \textbf{Logging:} For application logging, we employ Golang's standard `log` package.
+    This facilitates a straightforward and effective logging mechanism, essential for debugging, monitoring, and auditing backend operations.
+    The `log` package's simplicity and integration with Go's ecosystem make it an ideal choice for our application's logging needs.
+\end{itemize}
+
+This technology stack, grounded in Golang's standard libraries and best practices, forms the backbone of our backend architecture.
+It enables us to build a system that is not only performant and reliable but also cohesive with Go's design philosophy, ensuring ease of development and future scalability.
+
+\headingFour{Routing and HTTP Handling}
+Our backend leverages the standard `http` package from Golang's standard library for routing and HTTP request handling.
+This approach allows us to directly use the powerful concurrency features of Go without the need for external frameworks, keeping the application lightweight and efficient.
+
+\begin{table}[H]
+    \begin{tabularx}{\textwidth}{|l|l|X|}
+        \hline
+        \rowcolor{headercolor} \textbf{Route} & \textbf{HTTP Methods} & \textbf{Description} \\
+        \hline
+        /healthcheck & GET & This route returns the current state of the API and can be used to retrieve status information. \\
+        \hline
+        /items & GET, POST & This route creates a new item.
+        In the request body, the client needs to send the following data:
+
+        \\ & & - \textbf{name}: A string representing the name of the item to create.
+
+        \\ & & - \textbf{tablename}: A string representing the name of the table holding item entries in SAP\@.
+
+        \\ & & - \textbf{extension\_id}: A number representing the unique identifier of an existing extension.
+        Depending on the id, the backend determines if the item will be created for a global or project scope (depending on the scope of the extension). \\
+        \hline
+        /items/ & GET, PUT, & \multirow{Gets, updates, or deletes an item by its ID.} \\
+        & DELETE & \\
+        \hline
+        /extensions/ & GET & Gets the extensions of a specific scope.
+        Only two values will return extensions:
+
+        \\ & & - \textbf{Shared}: Returns all the shared extensions.
+
+        \\ & & - \textbf{Project}: Returns all Project extensions. \\
+        \hline
+        /projects & GET & Returns all projects created. \\
+        \hline
+    \end{tabularx}\caption{Overview of Backend Routes}\label{tab:table}
+\end{table}
+
+\headingFive{API Examples}\label{subsubsec:api-examples}
+
+In this section, we provide examples of API calls and their corresponding responses.
+These examples illustrate how clients interact with our API.
+
+\headingSix{GET /healthcheck}
+
+This API endpoint is used to check the health of the service.
+
+\begin{lstlisting}[language=json,label={lst:lstlisting6}]
+GET /healthcheck HTTP/1.1
+Host: example.com
+\end{lstlisting}
+
+Response:
+
+\begin{lstlisting}[language=json,label={lst:lstlisting4}]
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "status": "OK"
+}
+\end{lstlisting}
+
+\headingSix{GET /items}
+
+The \texttt{GET /items} endpoint provides clients with the ability to retrieve a list of all items in the system.
+When a client makes a \texttt{GET} request to the \texttt{/items} endpoint, the backend service will return a list of all items.
+If there are no items in the system, the server will respond with a \texttt{200 OK} status code and an empty list.
+
+\begin{lstlisting}[language=json,label={lst:lstlisting3}]
+GET /items HTTP/1.1
+Host: example.com
+\end{lstlisting}
+
+Response:
+
+\begin{lstlisting}[language=json,label={lst:lstlisting}]
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "items": [
+        {
+            "id": 1,
+            "name": "Item 1",
+            "table_name": "table1",
+            "typecode": 100,
+            "extension_id": 1,
+            "creation_date": "2023-01-01T00:00:00Z"
+        },
+        {
+            "id": 2,
+            "name": "Item 2",
+            "table_name": "table2",
+            "typecode": 200,
+            "extension_id": 2,
+            "creation_date": "2023-01-02T00:00:00Z"
+        }
+    ]
+}
+\end{lstlisting}
+
+\headingSix{POST /items}
+
+When a client makes a \texttt{POST} request to the \texttt{/items} endpoint, they must include a JSON object in the request body.
+This object should contain the following fields:
+
+\begin{itemize}
+    \item \texttt{name}: A string representing the name of the item to be created.
+    \item \texttt{table\_name}: A string representing the name of the table which will then hold the newly created item entries in SAP.
+    \item \texttt{extension\_id}: A number representing the unique identifier of an existing extension.
+    Depending on the id, the backend determines if the item will be created for a global or project scope (depending on the scope of the extension).
+\end{itemize}
+
+Upon receiving a valid \texttt{POST} request, the backend service will create a new item with the provided details.
+It will then return a \texttt{201 Created} status code along with a JSON object containing the details of the newly created item.
+
+\begin{lstlisting}[language=json,label={lst:lstlisting7}]
+POST /items HTTP/1.1
+Host: example.com
+Content-Type: application/json
+
+{
+    "name": "New Item",
+    "table_name": "new_table",
+    "extension_id": 1
+}
+\end{lstlisting}
+
+Response:
+
+\begin{lstlisting}[language=json,label={lst:lstlisting8}]
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+    "id": 3,
+    "name": "New Item",
+    "table_name": "new_table",
+    "typecode": 300,
+    "extension_id": 1,
+    "creation_date": "2023-01-03T00:00:00Z"
+}
+\end{lstlisting}
+
+\headingSix{GET /items/{id}}
+
+The \texttt{GET /items/\{id\}} endpoint allows clients to retrieve a specific item by its unique identifier.
+When a client makes a \texttt{GET} request to the \texttt{/items/\{id\}} endpoint, the backend service will return the details of the item with the provided ID. If an item with the given ID does not exist, the server will respond with a \texttt{404 Not Found} status code.
+
+\begin{lstlisting}[language=json,label={lst:lstlisting9}]
+GET /items/1 HTTP/1.1
+Host: example.com
+\end{lstlisting}
+
+Response:
+
+\begin{lstlisting}[language=json,label={lst:lstlisting10}]
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "Item 1",
+    "table_name": "table1",
+    "typecode": 100,
+    "extension_id": 1,
+    "creation_date": "2023-01-01T00:00:00Z"
+}
+\end{lstlisting}
+
+\headingSix{GET /projects}
+
+The \texttt{GET /projects} endpoint allows clients to retrieve all projects in the system.
+When a client makes a \texttt{GET} request to the \texttt{/projects} endpoint, the backend service will return a list of all projects.
+\\Each project in the list includes details such as the project's `id`, `name`, `description`, and `creation\_date`.
+
+\begin{lstlisting}[language=json,label={lst:lstlisting11}]
+GET /projects HTTP/1.1
+Host: example.com
+\end{lstlisting}
+
+Response:
+
+\begin{lstlisting}[language=json,label={lst:lstlisting12}]
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "projects": [
+        {
+            "id": 1,
+            "name": "Project 1",
+            "description": "This is project 1",
+            "creation_date": "2023-01-01T00:00:00Z"
+        },
+        {
+            "id": 2,
+            "name": "Project 2",
+            "description": "This is project 2",
+            "creation_date": "2023-01-02T00:00:00Z"
+        }
+    ]
+}
+\end{lstlisting}
+
+\headingSix{GET /extensions/}
+
+The \texttt{GET /extensions/} endpoint allows clients to retrieve all extensions of a specific scope.
+When a client makes a \texttt{GET} request to the \texttt{/extensions/} endpoint, the backend service will return a list of extensions.
+The returned extensions are filtered based on their scope, which can be either 'Shared' or 'Project'.
+\\The 'Shared' scope returns all the shared extensions, while the 'Project' scope returns all project extensions.
+\\
+\begin{lstlisting}[language=json,label={lst:lstlisting13}]
+GET /extensions/ HTTP/1.1
+Host: example.com
+\end{lstlisting}
+
+Response:
+
+\begin{lstlisting}[language=json,label={lst:lstlisting14}]
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "extensions": [
+        {
+            "id": 1,
+            "project_id": 1,
+            "name": "Extension 1",
+            "description": "This is extension 1",
+            "scope": "Shared",
+            "creation_date": "2023-01-01T00:00:00Z"
+        },
+        {
+            "id": 2,
+            "project_id": 2,
+            "name": "Extension 2",
+            "description": "This is extension 2",
+            "scope": "Project",
+            "creation_date": "2023-01-02T00:00:00Z"
+        }
+    ]
+}
+\end{lstlisting}
+
+\begin{itemize}
+    \item \textbf{Health Check}: A simple endpoint to verify the backend service's health.
+    \item \textbf{CRUD Operations}: Endpoints for managing items, including creating, reading, updating, and deleting entries.
+    These are mapped to specific handler functions that encapsulate the business logic.
+    \item \textbf{Extensions and Projects}: Specific endpoints designed to handle operations related to extensions and projects within the system.
+\end{itemize}
+
+\headingFour{Data Access Layer}
+The core of our data management strategy is the effective use of Go's `database/sql` package, providing a solid foundation for executing SQL queries and interacting with our PostgreSQL database.
+
+\headingFive{Entity Management}
+For each entity in our system, we define a Go struct that mirrors the database schema and implements the CRUD operations.
+This approach offers type safety and clear encapsulation of database logic.
+
+\headingSix{Example: Item Model}
+The `Item` struct represents an item entity, including fields like `ID`, `Name`, `TableName`, and `Typecode`.
+The `ItemModel` struct wraps a database connection pool, offering methods such as `Insert` to add new items to the database.
+This pattern is replicated for other entities, ensuring consistent and organized data access throughout the application.
+
+\begin{lstlisting}[language=Go,label={lst:lstlisting2}]
+type Item struct {
+    ID           int64     `json:"id"`
+    Name         string    `json:"name"`
+    TableName    string    `json:"table_name"`
+    Typecode     int32     `json:"typecode"`
+    ExtensionID  int64     `json:"extension_id"`
+    CreationDate time.Time `json:"creation_date"`
+}
+
+func (i ItemModel) Insert(item *Item) error {
+    // SQL insertion logic here
+}
+\end{lstlisting}
+
+\headingFour{Logging}
+Utilizing Go's standard `log` package, our backend implements a comprehensive logging system.
+It's configured to capture both system-level and application-level events, aiding in debugging and monitoring the application's health.
+
+This module breakdown provides an overview of our backend's architecture, illustrating the cohesive design and the strategic choice of technologies that ensure our application's reliability and performance.
+
+\newpage
+
+\subsubsection{Detailed View of Frontend}
+The frontend component of our application is a Single Page Application (SPA) developed using Angular.
+This modern web framework offers a robust foundation for building interactive and responsive user interfaces, ensuring a seamless user experience.
+The frontend interacts with the backend service through a RESTful API, enabling the application to perform CRUD operations on the data stored in the PostgreSQL database.
+
+Figure~\ref{fig:frontend_architecture} provides a visual representation of the frontend architecture, outlining the main components and their interactions within the Angular application.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/frontend/frontend_overview_component}
+    \caption{Frontend architecture component diagram.}
+    \label{fig:frontend_architecture}
+\end{figure}
+
+The \texttt{AppModule} serves as the root module of the Angular application, which bootstraps the \texttt{AppComponent} — the top-level component container.
+Within \texttt{AppModule}, several feature components are declared, such as \\\texttt{SidebarMenuComponent} and \texttt{ItemEditorComponent}.
+
+The \texttt{ItemEditorComponent} is particularly interactive, featuring a button that, when clicked by the user, triggers the display of the \texttt{AddItemComponent}.
+This component presents a form that users can use to input the details required to create a new item in the system.
+
+Each component is designed to be a self-contained unit, managing its own display and behavior, thus promoting reusability and separation of concerns.
+Services and shared modules are used to handle cross-cutting concerns such as data access and state management, further illustrated by their respective providers and exports within the diagram.
+
+\headingFour{External Libraries and Dependencies}
+
+\headingFive{Taiga UI}
+Taiga UI is a modern Angular component library that provides a set of UI components and utilities to streamline frontend development.
+
+Taiga UI is chosen for several reasons:
+
+\begin{itemize}
+    \item \textbf{Lightweight}: Taiga UI is designed to be lightweight, which can lead to faster load times and improved performance for your application.
+    \item \textbf{Highly Customizable Themes}: Taiga UI provides a high level of theme customization. This allows developers to easily align the application's aesthetics with their company's branding or their specific design requirements.
+    \item \textbf{Advanced Features}: Taiga UI comes with a set of advanced features out of the box, such as a built-in light and dark mode, multi-language support, and a focus management system.
+    \item \textbf{Comprehensive Documentation}: Taiga UI has extensive and clear documentation, making it easier for developers to understand how to use and customize the components.
+    \item \textbf{Active Community}: Taiga UI has an active community of developers. This means that if you encounter issues or need help, you're likely to get a response quickly.
+    \item \textbf{Integration with Other Libraries}: Taiga UI can be easily integrated with other popular libraries such as ngRx, making it a flexible choice for many projects.
+\end{itemize}
+
+\headingFour{Key Components and Features}
+The frontend architecture is structured around key components and features that collectively deliver a rich user experience and seamless interaction with the backend service.
+
+\headingFive{Item Editor Component}
+The \texttt{ItemEditorComponent} is a central component that allows users to view, create, update, and delete items in the system.
+It renders a comprehensive table that lists all items created, providing users with a quick overview and access to the data they need.
+
+\begin{itemize}
+    \item \textbf{Display of Data}: The component utilizes a tabular format to present the item data effectively, allowing for sorting and filtering capabilities to navigate through the items conveniently.
+    \item \textbf{Interaction with Backend}: It interacts with the backend via the RESTful API to fetch and display the latest item data.
+    \item \textbf{Create New Items}: An integral feature of this component is a button that, upon interaction, launches the \texttt{AddItemComponent}.
+    This sub-component is a form that captures user input required to create a new item.
+\end{itemize}
+
+This design ensures that the \texttt{ItemEditorComponent} not only serves as a data presentation layer but also as an interactive interface, facilitating the creation of new items.
