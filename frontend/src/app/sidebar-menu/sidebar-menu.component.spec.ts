@@ -1,7 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SidebarMenuComponent } from './sidebar-menu.component';
 import { TuiSvgModule } from '@taiga-ui/core';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component } from '@angular/core';
+
+@Component({
+  // eslint-disable-next-line @angular-eslint/component-selector
+  selector: 'tui-svg',
+  template: '<div></div>',
+})
+class TuiSvgStubComponent {}
 
 describe('SidebarMenuComponent', () => {
   let component: SidebarMenuComponent;
@@ -9,9 +16,8 @@ describe('SidebarMenuComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SidebarMenuComponent],
+      declarations: [SidebarMenuComponent, TuiSvgStubComponent],
       imports: [TuiSvgModule],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SidebarMenuComponent);
