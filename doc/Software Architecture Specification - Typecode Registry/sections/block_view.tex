@@ -427,7 +427,7 @@ Taiga UI is chosen for several reasons:
     \item \textbf{Integration with Other Libraries}: Taiga UI can be easily integrated with other popular libraries such as ngRx, making it a flexible choice for many projects.
 \end{itemize}
 
-\headingFour{Key Components and Features}
+\headingFour{Key Components and Services}
 The frontend architecture is structured around key components and features that collectively deliver a rich user experience and seamless interaction with the backend service.
 
 \headingFive{Item Editor Component}
@@ -442,3 +442,78 @@ It renders a comprehensive table that lists all items created, providing users w
 \end{itemize}
 
 This design ensures that the \texttt{ItemEditorComponent} not only serves as a data presentation layer but also as an interactive interface, facilitating the creation of new items.
+
+\headingFive{Add Item Component}
+
+This component demonstrates the interactive nature of the application's frontend, providing fields for item details and dynamically adjusting available input options based on user selections.
+It interfaces with services to fetch necessary data for dropdown selections and enforces validation rules to ensure data integrity prior to submission.
+
+Figure~\ref{fig:additem_component} presents a schematic view of the \texttt{AddItemComponent}'s architecture, delineating its form structure, the integration with backend services for data fetching, the logic for dynamic display based on scope selection, and the validation mechanisms that underpin its operation.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{./images/frontend/add-item-component}
+    \caption{The architecture and interaction flow within the AddItemComponent.}
+    \label{fig:additem_component}
+\end{figure}
+
+\headingSix{Form Structure and User Interaction}
+Constructed using Angular's reactive forms, the \texttt{AddItemComponent} orchestrates user interactions through a series of input controls.
+Validators attached to these inputs ensure the user-submitted data adheres to the expected formats and business rules.
+Upon triggering the submission process, the form data is either emitted to parent components or sent directly to the backend, depending on the configured data flow strategy.
+
+\headingSix{Service Integration}
+The component leverages the \texttt{BackendService} to retrieve metadata such as extension types and project scopes.
+This data populates the respective form controls, enabling a cohesive and guided user experience.
+Through the \texttt{StoreService}, the component accesses a centralized state management pattern, ensuring consistency and reactivity to state changes across the application.
+
+\headingSix{User Input Validation and Error Feedback}
+The \texttt{AddItemComponent} is designed with validation functions to ensure that all user inputs meet the necessary criteria before a backend request is initiated to create a new item.
+The following fields constitute the user input form:
+
+\begin{itemize}
+    \item \textbf{Item Name}: A required field for the name of the item to be created.
+    An error message is prompted when the field is not populated upon form submission attempt.
+    \item \textbf{Table Name}: A required field specifying the table name for storing item data in SAP. Similar to the item name, it mandates user input to proceed.
+    \item \textbf{Scope}: The user must specify the scope—either 'global' or 'project-specific'—for the new item.
+    This selection influences the visibility and content of subsequent dropdowns for 'Project' and 'Extension'.
+    \item \textbf{Project}: Contingent upon 'Project' scope selection, this mandatory dropdown field allows for the selection of a project from a list populated via the backend.
+    \item \textbf{Extension}: This field requires the user to choose an extension from a dynamically loaded dropdown list, based on the selected scope and, if applicable, the selected project.
+\end{itemize}
+
+Input validation is enforced by the \texttt{FormGroup}'s built-in validators and custom validator functions such as \texttt{validExtensionValidator} and \\\texttt{validProjectValidator}, which perform checks against the available data retrieved from the \texttt{StoreService}.
+The 'Create' button remains inactive as long as any form control remains invalid or unfilled.
+The component is structured to prevent form submission if any validation errors persist, ensuring data integrity and user adherence to input requirements.
+
+\headingFive{Backend Service}
+The \texttt{BackendService} acts as the intermediary between the frontend and backend, facilitating data exchange and API calls.
+It encapsulates the logic for HTTP requests, error handling, and data transformation, ensuring a seamless communication channel between the Angular application and the Golang backend.
+
+\begin{itemize}
+    \item \textbf{HTTP Communication}: Utilizes Angular's HttpClient to make asynchronous HTTP requests to various endpoints, handling CRUD operations with observables that emit data to subscribers upon request completion or error events.
+    \item \textbf{Error Handling}: Implements robust error handling mechanisms that capture HTTP errors, transforming them into meaningful messages or actions within the application, thereby enhancing user experience and simplifying debugging efforts.
+    \item \textbf{Data Transformation}: Before dispatching the data to calling components, the service processes and transforms the incoming raw data into structured formats defined by TypeScript interfaces, ensuring consistency and type safety across the application.
+    \item \textbf{State Management}: Works in tandem with state management solutions, like NgRx or services like \texttt{StoreService}, to maintain application state that is informed by backend responses, enabling reactive UI updates and centralized state handling.
+\end{itemize}
+
+The \texttt{BackendService}'s design follows best practices for modern web development, ensuring that the frontend remains decoupled from the backend, promoting maintainability, and allowing the backend to evolve independently with minimal impact on the client-side codebase.
+
+\headingFive{State Management with StoreService}
+TODO
+
+\headingFive{Sidebar Menu Component}
+The \texttt{SidebarMenuComponent} is a navigational element that provides users with quick access to different sections of the application.
+It features a collapsible menu structure that expands upon user interaction, revealing links to various pages and functionalities within the application.
+Those links are:
+
+\begin{itemize}
+    \item \textbf{Home}: Navigates users to the landing page of the application.
+    \item \textbf{Items}: Directs users to the \texttt{ItemEditorComponent}, where they can view, create, update, and delete items.
+    \item \textbf{Projects}: Leads users to a page displaying all projects in the system.
+    \item \textbf{Extensions}: Redirects users to a page listing all extensions based on their scope.
+    \item \textbf{Settings}: Provides access to user settings.
+    \item \textbf{Logout}: Logs users out of the application, terminating the current session.
+\end{itemize}
+
+The \texttt{SidebarMenuComponent} is designed to enhance user navigation and streamline access to key features, ensuring a user-friendly and intuitive experience.
+

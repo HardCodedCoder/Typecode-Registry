@@ -1,9 +1,50 @@
-\section{Cross-Cutting Concepts}
-\subsection{Domain Structure and Models}
+\section{Cross-Cutting Concepts}\label{sec:cross-cutting-concepts}
+
+\subsection{Domain Structure and Models}\label{subsec:domain-structure-and-models}
+This subsection outlines the domain models and data structures that form the foundation of the system's data layer.
+These models and structures are used across the system for data representation and transfer between the frontend and backend, ensuring consistency and integrity of the system's data.
+
+\subsection{Data Structure Interfaces}
+\label{subsec:data-structures}
+
+The application defines a set of TypeScript interfaces to structure the data exchanged with the backend.
+These interfaces enforce type safety within the Angular service methods, ensuring that the data conforms to the expected shapes and types throughout the application.
+Below is a summary of the key interfaces:
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{|X|X|p{5cm}|}
+        \hline
+        \textbf{Interface}        & \textbf{Properties}                  & \textbf{Description} \\
+        \hline
+        \texttt{\seqsplit{Extension}}        & \texttt{project\_id, name, scope, description} & Represents details of an extension, including its scope and association with a project. \\
+        \hline
+        \texttt{\seqsplit{ExtensionsAPIResponse}} & \texttt{extensions: \seqsplit{ExtensionResponse[]}} & Wraps an array of \texttt{ExtensionResponse} as a response from the API. \\
+        \hline
+        \texttt{\seqsplit{ExtensionResponse}} & \texttt{id, project\_id, name, scope, description, creation\_date} & Detailed response object for an extension including creation date. \\
+        \hline
+        \texttt{\seqsplit{FormData}}         & \texttt{extensionComboBox, extensionScope, itemName, itemTable, projectComboBox} & Captures the user input from the form fields to be sent to the backend. \\
+        \hline
+        \texttt{\seqsplit{ItemAPIResponse}}  & \texttt{item: ItemResponse}          & Encapsulates the \texttt{ItemResponse} received from the backend. \\
+        \hline
+        \texttt{\seqsplit{ItemResponse}}     & \texttt{id, name, table\_name, extensionId, creation\_date} & Represents the response structure for an item from the backend. \\
+        \hline
+        \texttt{\seqsplit{ProjectsAPIResponse}} & \texttt{projects: ProjectResponse[]} & Contains an array of \texttt{ProjectResponse}, representing multiple projects. \\
+        \hline
+        \texttt{\seqsplit{ProjectResponse}}  & \texttt{id, name, description, creation\_date} & Details of a project including its creation date. \\
+        \hline
+        \texttt{\seqsplit{ItemRequest}}      & \texttt{name, tableName, extension\_id} & Structure of the request sent to the backend when creating a new item. \\
+        \hline
+    \end{tabularx}
+    \caption{Summary of TypeScript interfaces for data exchange}
+    \label{tab:interfaces}
+\end{table}
+
+Each interface is used by the \texttt{BackendService} to communicate data structure expectations to and from the backend, providing a contract that supports the maintainability and scalability of the application.
+
+\subsection{Architecture and Design Patterns}\label{subsec:architecture-and-design-patterns}
 TODO
-\subsection{Architecture and Design Patterns}
+\subsection{Under the Hood}\label{subsec:under-the-hood}
 TODO
-\subsection{Under the Hood}
-TODO
-\subsection{User Experience}
+\subsection{User Experience}\label{subsec:user-experience}
 TODO
