@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Output } from '@angular/core';
+import  { TuiSvgModule } from '@taiga-ui/core';
 
 @Component({
   selector: 'app-sidebar-menu',
