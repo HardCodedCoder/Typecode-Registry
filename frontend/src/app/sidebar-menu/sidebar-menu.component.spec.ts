@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SidebarMenuComponent } from './sidebar-menu.component';
+import { TuiSvgModule } from '@taiga-ui/core';
 
 describe('SidebarMenuComponent', () => {
   let component: SidebarMenuComponent;
@@ -8,6 +9,7 @@ describe('SidebarMenuComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [SidebarMenuComponent],
+      imports: [TuiSvgModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SidebarMenuComponent);
