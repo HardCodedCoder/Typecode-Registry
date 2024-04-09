@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SidebarMenuComponent } from './sidebar-menu.component';
-import { TUI_SANITIZER, TuiSvgModule } from '@taiga-ui/core';
-import { NgDompurifySanitizer } from '@tinkoff/ng-dompurify';
+import { TuiSvgModule } from '@taiga-ui/core';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 describe('SidebarMenuComponent', () => {
   let component: SidebarMenuComponent;
@@ -11,7 +11,7 @@ describe('SidebarMenuComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [SidebarMenuComponent],
       imports: [TuiSvgModule],
-      providers: [{ provide: TUI_SANITIZER, useClass: NgDompurifySanitizer }],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SidebarMenuComponent);
