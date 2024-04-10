@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql/driver"
+	"errors"
 	"github.com/DATA-DOG/go-sqlmock"
 	"regexp"
 )
@@ -54,6 +55,14 @@ func mockInsertItemQuery(mock sqlmock.Sqlmock, args []driver.Value, returnRows *
 		VALUES ($1, $2, $3, $4)
 		RETURNING id, creation_date`)
 	mock.ExpectQuery(query).WithArgs(args...).WillReturnRows(returnRows)
+}
+
+func mockInsertItemQueryToReturnError(mock sqlmock.Sqlmock, args []driver.Value) {
+	query := regexp.QuoteMeta(`
+		INSERT INTO item (name, extension_id, table_name, typecode) 
+		VALUES ($1, $2, $3, $4)
+		RETURNING id, creation_date`)
+	mock.ExpectQuery(query).WithArgs(args...).WillReturnError(errors.New("mock error"))
 }
 
 func mockGetNextProjectFreeTypecodeQuery(mock sqlmock.Sqlmock, args []driver.Value, returnRows *sqlmock.Rows) {

@@ -98,6 +98,135 @@ func checkResponseValues(response ResponseItem, expected ExpectedItemValues, t *
 	}
 }
 
+func TestCreateItemReturnsInternalServerErrorWhenInsertFails(t *testing.T) {
+	// Create a new mock database connection
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	testExtension := data.Extension{
+		ID:           1,
+		ProjectID:    data.NullInt32{NullInt32: sql.NullInt32{Int32: 1}},
+		Name:         "Test-Extension",
+		Description:  "Test-Description",
+		Scope:        "Shared",
+		CreationDate: time.Now(),
+	}
+
+	// Create a new ItemRequest
+	itemReq := ItemRequest{
+		Name:        "Test Item",
+		TableName:   "Test Table",
+		ExtensionId: 1,
+	}
+
+	args := []driver.Value{itemReq.ExtensionId}
+	returnRows := sqlmock.NewRows([]string{"id", "project_id", "name", "description", "scope", "creation_date"}).AddRow(testExtension.ID, testExtension.ProjectID.Int32, testExtension.Name, testExtension.Description, testExtension.Scope, testExtension.CreationDate)
+	mockReadExtensionByIDQuery(mock, args, returnRows)
+
+	// Mock Typecode Query
+	typecodeArgs := []driver.Value{20000, int32(^uint32(0) >> 1), "Shared"}
+	typecodeRows := sqlmock.NewRows([]string{"next_free_typecode"}).AddRow(20000)
+	mockTypecodeQuery(mock, typecodeArgs, typecodeRows)
+
+	insertArgs := []driver.Value{
+		itemReq.Name,
+		itemReq.ExtensionId,
+		itemReq.TableName,
+		20000,
+	}
+
+	mockInsertItemQueryToReturnError(mock, insertArgs)
+
+	// Create a new application with the mock ItemModel
+	app := &application{
+		models: data.NewModels(db),
+		logger: log.New(os.Stdout, "", log.Ldate|log.Ltime),
+	}
+
+	// Mock HTTP Request
+	server := httptest.NewServer(app.route())
+	defer server.Close()
+
+	resp := sendMockHTTPRequest(server.URL, "/items", itemReq, t)
+
+	checkHTTPResponse(resp, http.StatusInternalServerError, t)
+
+	responseItem := getResponseItem(resp, t)
+	expectedResponseItem := ResponseItem{}
+	if responseItem != expectedResponseItem {
+		t.Fatalf("Expected nil response item, got %v", responseItem)
+	}
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	_ = db.Close()
+}
+
+func TestCreateItemRoutesReturnsStatusInternalServerErrorWhenScopeSharedRangeEndIsReached(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	testExtension := data.Extension{
+		ID:           1,
+		ProjectID:    data.NullInt32{NullInt32: sql.NullInt32{Int32: 1}},
+		Name:         "Test-Extension",
+		Description:  "Test-Description",
+		Scope:        "Shared",
+		CreationDate: time.Now(),
+	}
+
+	// Create a new ItemRequest
+	itemReq := ItemRequest{
+		Name:        "Test Item",
+		TableName:   "Test Table",
+		ExtensionId: 1,
+	}
+
+	args := []driver.Value{itemReq.ExtensionId}
+	returnRows := sqlmock.NewRows([]string{"id", "project_id", "name", "description", "scope", "creation_date"}).AddRow(testExtension.ID, testExtension.ProjectID.Int32, testExtension.Name, testExtension.Description, testExtension.Scope, testExtension.CreationDate)
+	mockReadExtensionByIDQuery(mock, args, returnRows)
+
+	// Mock Typecode Query
+	typecodeArgs := []driver.Value{20000, int32(^uint32(0) >> 1), "Shared"}
+	typecodeRows := sqlmock.NewRows([]string{"next_free_typecode"}).AddRow(data.ScopeRanges[data.ScopeShared].End)
+	mockTypecodeQuery(mock, typecodeArgs, typecodeRows)
+
+	// Create a new application with the mock ItemModel
+	app := &application{
+		models: data.NewModels(db),
+		logger: log.New(os.Stdout, "", log.Ldate|log.Ltime),
+	}
+
+	server := httptest.NewServer(app.route())
+	defer server.Close()
+
+	resp := sendMockHTTPRequest(
+		server.URL,
+		"/items",
+		itemReq,
+		t)
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Fatal("The expectations of the database were not met!")
+	}
+
+	_ = db.Close()
+
+	checkHTTPResponse(resp, http.StatusInternalServerError, t)
+
+	responseItem := getResponseItem(resp, t)
+	expectedResponseItem := ResponseItem{}
+	if responseItem != expectedResponseItem {
+		t.Fatalf("Expected nil response item, got %v", responseItem)
+	}
+}
+
 func TestCallingExtensionsRoutePassingInvalidScopeReturnsStatusBadRequest(t *testing.T) {
 	app := application{
 		logger: log.New(os.Stdout, "", log.Ldate|log.Ltime),
@@ -125,7 +254,7 @@ func TestSendingNotExistingExtensionIDReturnsStatusNotFound(t *testing.T) {
 	itemReq := ItemRequest{Name: "Test-Name", TableName: "Test-Table-Name", ExtensionId: 1}
 
 	args := []driver.Value{itemReq.ExtensionId}
-	returnRows := sqlmock.NewRows([]string{"id", "project_id", "name", "description", "scope", "creation_date"}) // no rows added
+	returnRows := sqlmock.NewRows([]string{"id", "project_id", "name", "description", "scope", "creation_date"})
 	mockReadExtensionByIDQuery(mock, args, returnRows)
 
 	app := application{
