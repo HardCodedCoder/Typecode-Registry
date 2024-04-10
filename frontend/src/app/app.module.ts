@@ -61,10 +61,7 @@ import { HttpClientModule } from '@angular/common/http';
     TuiButtonModule,
     TuiSvgModule,
   ],
-  providers: [
-    { provide: TUI_SANITIZER, useClass: NgDompurifySanitizer },
-    { provide: TUI_SANITIZER, useClass: NgDompurifySanitizer },
-  ],
+  providers: [{ provide: TUI_SANITIZER, useClass: NgDompurifySanitizer }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -38,7 +38,7 @@ module.exports = function (config) {
     singleRun: true,
     restartOnFileChange: true,
     proxies: {
-      "/assets/": "/base/src/assets/"
+      '/assets/': '/base/src/assets/',
     },
   });
 };
