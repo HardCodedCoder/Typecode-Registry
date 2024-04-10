@@ -1,5 +1,7 @@
 # Typecode Registry
 
+[![codecov](https://codecov.io/gh/HardCodedCoder/Typecode-Registry/graph/badge.svg?token=99U8FRKVD7)](https://codecov.io/gh/HardCodedCoder/Typecode-Registry)
+
 ## Overview
 The Typecode Registry is a web application developed for NETCONOMY for SAP Commerce projects, ensuring unique Typecode assignments across projects and extensions. It streamlines developers' workflows by providing conflict-free Typecodes, crucial for SAP Commerce's internal type management.
 
