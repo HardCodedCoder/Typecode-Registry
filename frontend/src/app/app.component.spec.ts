@@ -3,7 +3,7 @@ import { By } from '@angular/platform-browser';
 import { SidebarMenuComponent } from './sidebar-menu/sidebar-menu.component';
 import { AppComponent } from './app.component';
 import { RouterModule } from '@angular/router';
-import { TuiRootModule } from '@taiga-ui/core';
+import { TuiRootModule, TuiSvgModule } from '@taiga-ui/core';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -12,7 +12,7 @@ describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [AppComponent, SidebarMenuComponent],
-      imports: [RouterModule.forRoot([]), TuiRootModule],
+      imports: [RouterModule.forRoot([]), TuiRootModule, TuiSvgModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AppComponent);
