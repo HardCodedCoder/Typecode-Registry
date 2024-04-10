@@ -110,7 +110,7 @@ export class AddItemComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Handles changes in the scope of the target extension.
+   * Handles changes when the user changes the scope.
    *
    * This method is triggered when the user changes the scope of the target extension in the form.
    * Depending on the selected scope, it updates the list of extensions to be displayed and resets the

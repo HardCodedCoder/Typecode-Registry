@@ -241,7 +241,6 @@ func (app *application) getProjects(w http.ResponseWriter) {
 	}
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"projects": projects}, nil)
-
 	if err != nil {
 		msg := fmt.Sprintf("Error while trying to write projects to http response. error: %s", err)
 		app.logger.Printf(msg)
