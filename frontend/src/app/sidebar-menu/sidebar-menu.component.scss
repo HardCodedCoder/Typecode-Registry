@@ -1,5 +1,21 @@
+span {
+  font-size: 14px;
+}
+
 a span {
   pointer-events: none;
+}
+
+a i {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+button tui-svg {
+  height: 50px;
+  width: 50px;
+  border-radius: 0.8rem;
 }
 
 .user-img {
@@ -15,7 +31,7 @@ a span {
   width: 80px;
   height: 100vh;
   background-color: #12171e;
-  padding: 0.4rem 0.8rem;
+  padding: 0.6rem 0.8rem;
   transition: all 0.5s ease;
 }
 
@@ -34,7 +50,7 @@ a span {
   position: absolute;
   background: none;
   color: white;
-  top: 0.4rem;
+  top: 0.6rem;
   left: 50%;
   font-size: 1.2rem;
   line-height: 50px;
@@ -43,12 +59,15 @@ a span {
   border: none;
 }
 
-.sidebar.active #btn {
+.sidebar.active button {
   position: unset;
+  transform: unset;
 }
 
 .sidebar .top {
   display: flex;
+  align-items: center;
+  height: 50px;
 }
 
 .sidebar .top .logo {
@@ -116,7 +135,8 @@ a span {
   border-radius: 0.8rem;
 }
 
-.sidebar ul li a:hover {
+.sidebar ul li a:hover,
+.sidebar button tui-svg:hover {
   background-color: #fff;
   color: #12171e;
 }

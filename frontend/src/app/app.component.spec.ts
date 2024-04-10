@@ -3,6 +3,7 @@ import { By } from '@angular/platform-browser';
 import { SidebarMenuComponent } from './sidebar-menu/sidebar-menu.component';
 import { AppComponent } from './app.component';
 import { RouterModule } from '@angular/router';
+import { TuiRootModule, TuiSvgModule } from '@taiga-ui/core';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -11,7 +12,7 @@ describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [AppComponent, SidebarMenuComponent],
-      imports: [RouterModule.forRoot([])],
+      imports: [RouterModule.forRoot([]), TuiRootModule, TuiSvgModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AppComponent);
@@ -31,8 +32,9 @@ describe('AppComponent', () => {
   });
 
   it('should toggle isSidebarActive when SidebarMenuComponent emits toggleSidebar event', () => {
-    const sidebarMenuComponent = fixture.debugElement.query(By.directive(SidebarMenuComponent))
-      .componentInstance as SidebarMenuComponent;
+    const sidebarMenuComponent = fixture.debugElement.query(
+      By.directive(SidebarMenuComponent)
+    ).componentInstance as SidebarMenuComponent;
 
     expect(component.isSidebarActive).toBe(false); // initial value
 

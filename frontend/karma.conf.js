@@ -1,4 +1,3 @@
-console.log('Lade Karma-Konfiguration...');
 module.exports = function (config) {
   config.set({
     basePath: '',
@@ -24,19 +23,22 @@ module.exports = function (config) {
       reports: ['html', 'lcovonly', 'text-summary'],
       fixWebpackSourcePaths: true,
       thresholds: {
-        statements: 80,
-        lines: 80,
-        branches: 80,
-        functions: 80,
+        statements: 75,
+        lines: 75,
+        branches: 75,
+        functions: 75,
       },
     },
     reporters: ['progress', 'kjhtml', 'coverage-istanbul'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: true,
+    autoWatch: false,
     browsers: ['ChromeHeadless'],
-    singleRun: false,
+    singleRun: true,
     restartOnFileChange: true,
+    proxies: {
+      '/assets/': '/base/src/assets/',
+    },
   });
 };

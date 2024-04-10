@@ -1,4 +1,8 @@
-<app-sidebar-menu (toggleSidebar)="onToggleSidebar($event)"></app-sidebar-menu>
-<div class="main-content" [class.active]="isSidebarActive">
-  <router-outlet></router-outlet>
-</div>
+<tui-root>
+  <app-sidebar-menu
+    (toggleSidebar)="onToggleSidebar($event)"
+  ></app-sidebar-menu>
+  <div class="main-content" [class.active]="isSidebarActive">
+    <router-outlet></router-outlet>
+  </div>
+</tui-root>

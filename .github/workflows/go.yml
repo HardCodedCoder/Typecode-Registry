@@ -2,8 +2,9 @@ name: Go Backend CI
 
 on:
   pull_request:
-    branches:
-      - main
+    paths:
+      - 'backend/**/*.go'
+  workflow_dispatch:
 
 jobs:
   lint:
