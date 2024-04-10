@@ -2,7 +2,8 @@
 
 \subsection{Level 1}\label{subsec:level-1}
 
-The high-level architecture provides a comprehensive overview of the main components and their interactions within the system, as depicted in Figure \ref{fig:system_overview}. The architecture comprises a frontend, a backend service, a database, and the Microsoft OAuth 2.0 authentication service.
+The high-level architecture provides a comprehensive overview of the main components and their interactions within the system, as depicted in Figure~\ref{fig:system_overview}.
+The architecture comprises a frontend, a backend service, a database, and the Microsoft OAuth 2.0 authentication service.
 
 \begin{figure}[ht]
     \centering
@@ -65,6 +66,48 @@ The integration with the OAuth 2.0 service offers several benefits:
 This interaction with external systems underscores the application's commitment to secure, efficient, and user-friendly operations, adhering to modern security practices and standards.
 
 \subsection{Level 2}\label{subsec:level-2}
+
+\subsubsection{Detailed View of Database}
+
+The database structure is crucial for understanding the persistence layer of the application.
+The following subsections outline the database schema, defined by SQL tables, and the relationships between them, as represented in the Entity-Relationship (ER) Diagram.
+
+\headingThree{User Table}
+The \texttt{user} table stores information about users, uniquely identified by an internal ID and an OAuth identifier which enables authentication through external services like Microsoft Entra ID. The table ensures the application's flexibility to adapt to different authentication methods without altering the core data model.
+
+\headingThree{Project Table}
+The \texttt{project} table captures details of various projects within the system.
+Each project has a unique name, a description, and a timestamp marking its creation.
+This table is the cornerstone for grouping related items and extensions within the application.
+
+\headingThree{Extension Table}
+Extensions, defined in the \texttt{extension} table, can be optionally associated with a project, indicated by the  \texttt{project\_id} foreign key, allowing for shared or project-specific extensions.
+The table also includes a scope attribute, name, description, and the creation timestamp.
+
+\headingThree{Item Table}
+The \texttt{item} table holds records of items, each associated with an extension and characterized by a unique name, type code, and storage table name.
+This table is essential for tracking and managing individual items.
+
+\headingThree{Role Assignment Table}
+Role assignments are managed in the \texttt{role\_assignment} table, linking users to projects with assigned roles.
+This table is pivotal for implementing access control within the system.
+
+\headingThree{Indexes}
+Indexes are suggested for frequently queried columns to optimize the database's performance.
+These indexes, however, are commented out in the script and can be created as needed based on the application's query patterns.
+
+\headingThree{ER Diagram}
+Figure~\ref{fig:er_diagram} presents the Entity-Relationship (ER) Diagram, visualizing the tables and their relationships, reflecting the described schema.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{./images/database/er_diagram}
+    \caption{Entity-Relationship Diagram of the Database}
+    \label{fig:er_diagram}
+\end{figure}
+
+
+Furthermore, constraints and indexes are crucial aspects of the design and should be enabled based on the database performance requirements and query analysis.
 
 \subsubsection{Detailed View of Backend}
 The backend system serves as the backbone of our application, orchestrating the core logic, data management, and security protocols.
@@ -363,7 +406,12 @@ This approach offers type safety and clear encapsulation of database logic.
 \headingSix{Example: Item Model}
 The `Item` struct represents an item entity, including fields like `ID`, `Name`, `TableName`, and `Typecode`.
 The `ItemModel` struct wraps a database connection pool, offering methods such as `Insert` to add new items to the database.
-This pattern is replicated for other entities, ensuring consistent and organized data access throughout the application.
+
+\begin{lstlisting}[language=Go,label={lst:lstlisting17}]
+type ItemModel struct {
+	DB *sql.DB
+}
+\end{lstlisting}
 
 \begin{lstlisting}[language=Go,label={lst:lstlisting2}]
 type Item struct {
@@ -374,17 +422,23 @@ type Item struct {
     ExtensionID  int64     `json:"extension_id"`
     CreationDate time.Time `json:"creation_date"`
 }
-
-func (i ItemModel) Insert(item *Item) error {
-    // SQL insertion logic here
-}
 \end{lstlisting}
+
+The above struct is a representation of the item entity in the database.
+The following picture illustrates the item in the database and shows the mapping between the struct and the database table.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.4]{./images/database/item_er}
+    \caption{Item Entity in the Database}
+    \label{fig:item_database_model}
+\end{figure}
+
+This pattern is replicated for other entities, ensuring consistent and organized data access throughout the application.
 
 \headingFour{Logging}
 Utilizing Go's standard `log` package, our backend implements a comprehensive logging system.
 It's configured to capture both system-level and application-level events, aiding in debugging and monitoring the application's health.
-
-This module breakdown provides an overview of our backend's architecture, illustrating the cohesive design and the strategic choice of technologies that ensure our application's reliability and performance.
 
 \newpage
 
