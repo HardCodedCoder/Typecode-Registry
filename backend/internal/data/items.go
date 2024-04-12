@@ -15,6 +15,16 @@ type Item struct {
 	CreationDate time.Time `json:"creation_date"`
 }
 
+// ItemDetail a specific dataset which is queried from the database
+type ItemDetail struct {
+	Scope         string
+	Project       string
+	Extension     string
+	ItemName      string
+	ItemTableName string
+	Typecode      int32
+}
+
 // ItemModel wraps the database connection pool.
 type ItemModel struct {
 	DB *sql.DB
@@ -123,4 +133,33 @@ func (i ItemModel) ReadAll() ([]Item, error) {
 	err = rows.Close()
 
 	return items, err
+}
+
+func (i ItemModel) ReadItemDetails() ([]ItemDetail, error) {
+	query := `
+	SELECT extension.scope, project.name, extension.name, item.name, item.table_name, item.typecode 
+	FROM item
+	JOIN extension ON item.extension_id = extension.id
+	JOIN project ON extension.project_id = project.id`
+
+	rows, err := i.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	var itemDetails []ItemDetail
+
+	for rows.Next() {
+		var itemDetail ItemDetail
+		err = rows.Scan(&itemDetail.Scope, &itemDetail.Project, &itemDetail.Extension, &itemDetail.ItemName, &itemDetail.ItemTableName, &itemDetail.Typecode)
+		itemDetails = append(itemDetails, itemDetail)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = rows.Close()
+
+	return itemDetails, err
 }

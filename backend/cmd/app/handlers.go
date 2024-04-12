@@ -72,7 +72,34 @@ func (app *application) getProjectsHandler(w http.ResponseWriter, r *http.Reques
 	case http.MethodGet:
 		app.getProjects(w)
 	default:
+		app.logger.Error().Msg(fmt.Sprintf("%s not allowed on route %s ", r.Method, r.URL.Path))
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+	}
+}
+
+func (app *application) getItemDetailsHandler(w http.ResponseWriter, r *http.Request) {
+	app.logger.Debug().Msg(fmt.Sprintf("Handling %s %s route", r.Method, r.URL.Path))
+	switch r.Method {
+	case http.MethodGet:
+		app.getItemDetails(w)
+	default:
+		app.logger.Error().Msg(fmt.Sprintf("%s not allowed on route %s ", r.Method, r.URL.Path))
+		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+	}
+}
+
+func (app *application) getItemDetails(w http.ResponseWriter) {
+	itemDetails, err := app.models.Items.ReadItemDetails()
+	if err != nil {
+		app.logger.Error().Msg(fmt.Sprintf("Error fetching item details from database: %s", err))
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"details": itemDetails}, nil)
+	if err != nil {
+		app.logger.Err(err)
+		http.Error(w, "error while trying to write item details to http response!", http.StatusInternalServerError)
+		return
 	}
 }
 
