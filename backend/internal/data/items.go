@@ -145,10 +145,15 @@ func (i ItemModel) ReadAll() ([]Item, error) {
 // the query execution or while reading the results, the corresponding error is returned.
 func (i ItemModel) ReadItemDetails() ([]ItemDetail, error) {
 	query := `
-	SELECT extension.scope, project.name, extension.name, item.name, item.table_name, item.typecode 
+	SELECT extension.scope, 
+       COALESCE(project.name, '-') AS project_name,
+       extension.name, 
+       item.name, 
+       item.table_name, 
+       item.typecode 
 	FROM item
 	JOIN extension ON item.extension_id = extension.id
-	JOIN project ON extension.project_id = project.id`
+	LEFT JOIN project ON extension.project_id = project.id`
 
 	rows, err := i.DB.Query(query)
 	if err != nil {

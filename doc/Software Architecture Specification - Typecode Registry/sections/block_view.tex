@@ -149,40 +149,39 @@ It enables us to build a system that is not only performant and reliable but als
 Our backend leverages the standard `http` package from Golang's standard library for routing and HTTP request handling.
 This approach allows us to directly use the powerful concurrency features of Go without the need for external frameworks, keeping the application lightweight and efficient.
 
-\begin{table}[H]
-    \begin{tabularx}{\textwidth}{|l|l|X|}
-        \hline
-        \rowcolor{headercolor} \textbf{Route} & \textbf{HTTP Methods} & \textbf{Description} \\
-        \hline
-        /healthcheck & GET & This route returns the current state of the API and can be used to retrieve status information. \\
-        \hline
-        /items & GET, POST & This route fetches all items or creates a new item.
-        \\ & & In the POST request body, the client needs to send the following data:
+\begin{longtable}{|l|p{3cm}|>{\raggedright\arraybackslash}p{7cm}|}
+    \hline
+    \rowcolor{headercolor} \textbf{Route} & \textbf{Methods} & \textbf{Description} \\
+    \endfirsthead
 
-        \\ & & - \textbf{name}: A string representing the name of the item to create.
+    \hline
+    \rowcolor{headercolor} \textbf{Route} & \textbf{Methods} & \textbf{Description} \\
+    \endhead
 
-        \\ & & - \textbf{tablename}: A string representing the name of the table holding item entries in SAP\@.
 
-        \\ & & - \textbf{extension\_id}: A number representing the unique identifier of an existing extension.
-        Depending on the id, the backend determines if the item will be created for a global or project scope (depending on the scope of the extension). \\
-        \hline
-        /items/ & GET, PUT, & \multirow{Gets, updates, or deletes an item by its ID.} \\
-        & DELETE & \\
-        \hline
-        /items/details & GET & Fetches detailed information about an item including its associated extension and project.
-        This route utilizes joins to gather data from the `item`, `extension`, and `project` tables, returning data such as the item's name, the extension's scope, and the project's name. \\
-        \hline
-        /extensions/ & GET & Gets the extensions of a specific scope.
-        Only two values will return extensions:
-
-        \\ & & - \textbf{Shared}: Returns all the shared extensions.
-
-        \\ & & - \textbf{Project}: Returns all Project extensions. \\
-        \hline
-        /projects & GET & Returns all projects created. \\
-        \hline
-    \end{tabularx}\caption{Overview of Backend Routes}\label{tab:table}
-\end{table}
+    \hline
+    /healthcheck & GET & This route returns the current state of the API and can be used to retrieve status information. \\
+    \hline
+    /items & GET, POST & This route fetches all items or creates a new item.
+    In the POST request body, the client needs to send the following data:
+    \newline\newline  - \textbf{name}: A string representing the name of the item to create.
+    \newline\newline - \textbf{tablename}: A string representing the name of the table holding item entries in SAP.
+    \newline\newline - \textbf{extension\_id}: A number representing the unique identifier of an existing extension. Depending on the id, the backend determines if the item will be created for a global or project scope (depending on the scope of the extension). \\
+    \hline
+    /items/ & GET, PUT, DELETE & Gets, updates, or deletes an item by its ID. \\
+    \hline
+    /items/details & GET & Fetches detailed information about an item including its associated extension and project. This route utilizes joins to gather data from the `item`, `extension`, and `project` tables, returning data such as the item's name, the extension's scope, and the project's name. When the extension's scope is 'Shared', the project name is set to '-'. This distinction helps identify items that are accessible globally and not tied to a specific project. \\
+    \hline
+    /projects & GET & Returns all projects created. \\
+    \hline
+    /extensions/ & GET & Gets the extensions of a specific scope.
+    Only two values will return extensions:
+    \newline\newline - \textbf{Shared}: Returns all the shared extensions.
+    \newline\newline - \textbf{Project}: Returns all Project extensions. \\
+    \hline
+\end{longtable}
+\caption{Overview of Backend Routes}
+\label{tab:table_routes}
 
 \headingFive{API Examples}\label{subsubsec:api-examples}
 
@@ -335,7 +334,7 @@ Content-Type: application/json
 {
     "details": [
         {
-            "scope": "Global",
+            "scope": "Shared",
             "project": "Project Alpha",
             "extension": "Extension 1",
             "itemName": "Item A",
@@ -343,8 +342,8 @@ Content-Type: application/json
             "typecode": 501
         },
         {
-            "scope": "Local",
-            "project": "Project Beta",
+            "scope": "Project",
+            "project": "-",
             "extension": "Extension 2",
             "itemName": "Item B",
             "itemTableName": "tableB",
