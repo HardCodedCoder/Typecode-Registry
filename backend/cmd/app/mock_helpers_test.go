@@ -52,6 +52,15 @@ func mockReadAllProjectsQueryReturnsError(mock sqlmock.Sqlmock) {
 	mock.ExpectQuery(query).WillReturnError(errors.New("mock error"))
 }
 
+func mockReadAllItemsDetailsQuery(mock sqlmock.Sqlmock, returnRows *sqlmock.Rows) {
+	query := regexp.QuoteMeta(`
+			SELECT extension.scope, project.name, extension.name, item.name, item.table_name, item.typecode 
+			FROM item
+			JOIN extension ON item.extension_id = extension.id
+			JOIN project ON extension.project_id = project.id`)
+	mock.ExpectQuery(query).WillReturnRows(returnRows)
+}
+
 func mockTypecodeQuery(mock sqlmock.Sqlmock, args []driver.Value, returnRows *sqlmock.Rows) {
 	query := regexp.QuoteMeta(`
 	    SELECT MIN(e.min_typecode + 1)
@@ -70,6 +79,15 @@ func mockTypecodeQuery(mock sqlmock.Sqlmock, args []driver.Value, returnRows *sq
 	    )
 	    AND e.min_typecode + 1 <= $2`)
 	mock.ExpectQuery(query).WithArgs(args...).WillReturnRows(returnRows)
+}
+
+func mockReadAllItemsDetailsQueryReturnsError(mock sqlmock.Sqlmock) {
+	query := regexp.QuoteMeta(`
+			SELECT extension.scope, project.name, extension.name, item.name, item.table_name, item.typecode 
+			FROM item
+			JOIN extension ON item.extension_id = extension.id
+			JOIN project ON extension.project_id = project.id`)
+	mock.ExpectQuery(query).WillReturnError(errors.New("mock error"))
 }
 
 func mockInsertItemQuery(mock sqlmock.Sqlmock, args []driver.Value, returnRows *sqlmock.Rows) {

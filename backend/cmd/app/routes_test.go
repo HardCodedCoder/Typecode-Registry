@@ -613,6 +613,13 @@ func TestIfInvalidItemsRoutesHTTPMethodsReturnMethodNotAllowed(t *testing.T) {
 		{"/items/1", "CONNECT", http.StatusMethodNotAllowed},
 		{"/items/1", "OPTIONS", http.StatusMethodNotAllowed},
 		{"/items/1", "TRACE", http.StatusMethodNotAllowed},
+		{"/items/details", "PUT", http.StatusMethodNotAllowed},
+		{"/items/details", "PATCH", http.StatusMethodNotAllowed},
+		{"/items/details", "DELETE", http.StatusMethodNotAllowed},
+		{"/items/details", "HEAD", http.StatusMethodNotAllowed},
+		{"/items/details", "CONNECT", http.StatusMethodNotAllowed},
+		{"/items/details", "OPTIONS", http.StatusMethodNotAllowed},
+		{"/items/details", "TRACE", http.StatusMethodNotAllowed},
 	}
 
 	testRouting(t, tests, mux)
@@ -811,6 +818,83 @@ func TestProjectRouteReturnsStatusInternalServerErrorWhenDatabaseReturnsError(t 
 	defer server.Close()
 
 	resp, err := http.Get("http://" + server.Listener.Addr().String() + "/projects")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	checkHTTPResponse(resp, http.StatusInternalServerError, t)
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	_ = db.Close()
+}
+
+func TestItemsDetailsRouteReturnsAllItemsDetails(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	itemsDetails := []data.ItemDetail{
+		{Scope: "Shared", Project: "Test-Project-1", Extension: "Test-Extension-1", ItemName: "Test-Item-1", ItemTableName: "Test-Table-1", Typecode: 1},
+		{Scope: "Shared", Project: "Test-Project-2", Extension: "Test-Extension-2", ItemName: "Test-Item-2", ItemTableName: "Test-Table-2", Typecode: 2},
+	}
+
+	returnRows := sqlmock.NewRows([]string{"scope", "project", "extension", "name", "table_name", "typecode"}).
+		AddRow(itemsDetails[0].Scope, itemsDetails[0].Project, itemsDetails[0].Extension, itemsDetails[0].ItemName, itemsDetails[0].ItemTableName, itemsDetails[0].Typecode).
+		AddRow(itemsDetails[1].Scope, itemsDetails[1].Project, itemsDetails[1].Extension, itemsDetails[1].ItemName, itemsDetails[1].ItemTableName, itemsDetails[1].Typecode)
+
+	mockReadAllItemsDetailsQuery(mock, returnRows)
+
+	logger := zerolog.New(os.Stdout)
+
+	// Create a new application with the mock ItemModel
+	app := &application{
+		models: data.NewModels(db),
+		logger: &logger,
+	}
+
+	// Mock HTTP Request
+	server := httptest.NewServer(app.route())
+	defer server.Close()
+
+	resp, err := http.Get("http://" + server.Listener.Addr().String() + "/items/details")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	checkHTTPResponse(resp, http.StatusOK, t)
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	_ = db.Close()
+}
+
+func TestItemsDetailsRouteReturnsInternalServerErrorWhenDatabaseReturnsError(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	mockReadAllItemsDetailsQueryReturnsError(mock)
+
+	logger := zerolog.New(os.Stdout)
+
+	// Create a new application with the mock ItemModel
+	app := &application{
+		models: data.NewModels(db),
+		logger: &logger,
+	}
+
+	// Mock HTTP Request
+	server := httptest.NewServer(app.route())
+	defer server.Close()
+
+	resp, err := http.Get("http://" + server.Listener.Addr().String() + "/items/details")
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -169,6 +169,9 @@ This approach allows us to directly use the powerful concurrency features of Go 
         /items/ & GET, PUT, & \multirow{Gets, updates, or deletes an item by its ID.} \\
         & DELETE & \\
         \hline
+        /items/details & GET & Fetches detailed information about an item including its associated extension and project.
+        This route utilizes joins to gather data from the `item`, `extension`, and `project` tables, returning data such as the item's name, the extension's scope, and the project's name. \\
+        \hline
         /extensions/ & GET & Gets the extensions of a specific scope.
         Only two values will return extensions:
 
@@ -313,6 +316,46 @@ Content-Type: application/json
     "creation_date": "2023-01-01T00:00:00Z"
 }
 \end{lstlisting}
+
+\headingSix{GET /items/details}
+
+The \texttt{GET /items/details} endpoint is designed to provide clients with detailed information about items, including data about the associated extensions and projects. This route leverages database joins to collect comprehensive information from the `item`, `extension`, and `project` tables, offering a holistic view of the items' details in one response.
+
+\begin{lstlisting}[language=json,label={lst:lstlisting5}]
+GET /items/details HTTP/1.1
+Host: example.com
+\end{lstlisting}
+
+Response:
+
+\begin{lstlisting}[language=json,label={lst:lstlisting18}]
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "details": [
+        {
+            "scope": "Global",
+            "project": "Project Alpha",
+            "extension": "Extension 1",
+            "itemName": "Item A",
+            "itemTableName": "tableA",
+            "typecode": 501
+        },
+        {
+            "scope": "Local",
+            "project": "Project Beta",
+            "extension": "Extension 2",
+            "itemName": "Item B",
+            "itemTableName": "tableB",
+            "typecode": 502
+        }
+    ]
+}
+\end{lstlisting}
+
+This example illustrates how the API responds to a \texttt{GET} request for item details, returning a list of item details structured with both the item and its related project and extension data. This endpoint is especially useful for users who require a comprehensive dataset encompassing multiple relational aspects of items.
+
 
 \headingSix{GET /projects}
 

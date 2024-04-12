@@ -15,14 +15,16 @@ type Item struct {
 	CreationDate time.Time `json:"creation_date"`
 }
 
-// ItemDetail a specific dataset which is queried from the database
+// ItemDetail represents detailed information about an item, including relevant
+// data about its associated extension and project. It is used to structure the
+// data retrieved from the database.
 type ItemDetail struct {
-	Scope         string
-	Project       string
-	Extension     string
-	ItemName      string
-	ItemTableName string
-	Typecode      int32
+	Scope         string `json:"scope"`
+	Project       string `json:"project"`
+	Extension     string `json:"extension"`
+	ItemName      string `json:"item_name"`
+	ItemTableName string `json:"item_table_name"`
+	Typecode      int32  `json:"typecode"`
 }
 
 // ItemModel wraps the database connection pool.
@@ -135,6 +137,12 @@ func (i ItemModel) ReadAll() ([]Item, error) {
 	return items, err
 }
 
+// ReadItemDetails executes a SQL query to retrieve detailed information about items.
+// The information includes the scope of the extension, the name of the project,
+// the name of the extension, the name of the item, the table name of the item, and
+// the type code of the item. The method returns a slice of ItemDetail and an error.
+// On success, the slice contains the queried item details. If an error occurs during
+// the query execution or while reading the results, the corresponding error is returned.
 func (i ItemModel) ReadItemDetails() ([]ItemDetail, error) {
 	query := `
 	SELECT extension.scope, project.name, extension.name, item.name, item.table_name, item.typecode 
