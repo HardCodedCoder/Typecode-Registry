@@ -93,3 +93,34 @@ func (i ItemModel) GetNextProjectFreeTypeCode(projectId int32, rangeStart, range
 	err := i.DB.QueryRow(query, projectId, rangeStart, rangeEnd).Scan(&nextFreeTypecode)
 	return nextFreeTypecode, err
 }
+
+// ReadAll returns all items from the database.
+// It returns a slice of items and an error.
+// If an error occurs during the database query or while scanning the rows, it will return the error.
+func (i ItemModel) ReadAll() ([]Item, error) {
+	query := `
+		SELECT id, name, table_name, typecode, extension_id, creation_date
+		FROM item
+		ORDER BY id`
+
+	rows, err := i.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	var items []Item
+
+	for rows.Next() {
+		var item Item
+		err = rows.Scan(&item.ID, &item.Name, &item.TableName, &item.Typecode, &item.ExtensionID, &item.CreationDate)
+		items = append(items, item)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = rows.Close()
+
+	return items, err
+}
