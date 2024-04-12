@@ -24,9 +24,32 @@ func mockReadAllExtensionsQuery(mock sqlmock.Sqlmock, scope string, returnRows *
 	mock.ExpectQuery(query).WithArgs(scope).WillReturnRows(returnRows)
 }
 
+func mockReadAllItemsQuery(mock sqlmock.Sqlmock, returnRows *sqlmock.Rows) {
+	query := regexp.QuoteMeta(`
+		SELECT id, name, table_name, typecode, extension_id, creation_date
+		FROM item
+		ORDER BY id`)
+
+	mock.ExpectQuery(query).WillReturnRows(returnRows)
+}
+
+func mockReadAllItemsQueryReturnsError(mock sqlmock.Sqlmock) {
+	query := regexp.QuoteMeta(`
+		SELECT id, name, table_name, typecode, extension_id, creation_date
+		FROM item
+		ORDER BY id`)
+
+	mock.ExpectQuery(query).WillReturnError(errors.New("mock error"))
+}
+
 func mockReadAllProjectsQuery(mock sqlmock.Sqlmock, rows *sqlmock.Rows) {
 	query := regexp.QuoteMeta(`SELECT * FROM project ORDER BY id`)
 	mock.ExpectQuery(query).WillReturnRows(rows)
+}
+
+func mockReadAllProjectsQueryReturnsError(mock sqlmock.Sqlmock) {
+	query := regexp.QuoteMeta(`SELECT * FROM project ORDER BY id`)
+	mock.ExpectQuery(query).WillReturnError(errors.New("mock error"))
 }
 
 func mockTypecodeQuery(mock sqlmock.Sqlmock, args []driver.Value, returnRows *sqlmock.Rows) {

@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"database/sql"
 	"fmt"
-	"log"
+	"github.com/rs/zerolog"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -22,7 +22,12 @@ func TestGetFunctionNameToReturnCorrectFunctionName(t *testing.T) {
 }
 
 func TestWriteJSONReturnsErrorWhenEmptyEnvelopePassed(t *testing.T) {
-	app := application{logger: log.New(os.Stdout, "", log.Ldate|log.Ltime)}
+	logger := zerolog.New(os.Stdout)
+
+	app := &application{
+		logger: &logger,
+	}
+
 	headers := make(http.Header)
 	headers.Set("Location", fmt.Sprintf("/items/%d", 1))
 	err := app.writeJSON(httptest.NewRecorder(), http.StatusOK, envelope{"unserializable": func() {}}, make(map[string][]string))

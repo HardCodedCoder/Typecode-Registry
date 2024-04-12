@@ -8,8 +8,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/rs/zerolog"
 	"io"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -25,6 +25,10 @@ type TestRoute struct {
 
 type ResponseItem struct {
 	Item data.Item `json:"item"`
+}
+
+type ResponseItems struct {
+	Items []data.Item `json:"items"`
 }
 
 type ExpectedItemValues struct {
@@ -61,6 +65,19 @@ func getResponseItem(resp *http.Response, t *testing.T) ResponseItem {
 	_ = resp.Body.Close()
 
 	return response
+}
+
+func getResponseItems(resp *http.Response, t *testing.T) ResponseItems {
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var items ResponseItems
+	_ = json.Unmarshal(responseBody, &items)
+	_ = resp.Body.Close()
+
+	return items
 }
 
 func checkHTTPResponse(resp *http.Response, expectedStatusCode int, t *testing.T) {
@@ -139,10 +156,12 @@ func TestCreateItemReturnsInternalServerErrorWhenInsertFails(t *testing.T) {
 
 	mockInsertItemQueryToReturnError(mock, insertArgs)
 
+	logger := zerolog.New(os.Stdout)
+
 	// Create a new application with the mock ItemModel
 	app := &application{
 		models: data.NewModels(db),
-		logger: log.New(os.Stdout, "", log.Ldate|log.Ltime),
+		logger: &logger,
 	}
 
 	// Mock HTTP Request
@@ -197,10 +216,12 @@ func TestCreateItemRoutesReturnsStatusInternalServerErrorWhenScopeSharedRangeEnd
 	typecodeRows := sqlmock.NewRows([]string{"next_free_typecode"}).AddRow(data.ScopeRanges[data.ScopeShared].End)
 	mockTypecodeQuery(mock, typecodeArgs, typecodeRows)
 
+	logger := zerolog.New(os.Stdout)
+
 	// Create a new application with the mock ItemModel
 	app := &application{
 		models: data.NewModels(db),
-		logger: log.New(os.Stdout, "", log.Ldate|log.Ltime),
+		logger: &logger,
 	}
 
 	server := httptest.NewServer(app.route())
@@ -228,8 +249,10 @@ func TestCreateItemRoutesReturnsStatusInternalServerErrorWhenScopeSharedRangeEnd
 }
 
 func TestCallingExtensionsRoutePassingInvalidScopeReturnsStatusBadRequest(t *testing.T) {
-	app := application{
-		logger: log.New(os.Stdout, "", log.Ldate|log.Ltime),
+	logger := zerolog.New(os.Stdout)
+
+	app := &application{
+		logger: &logger,
 	}
 
 	server := httptest.NewServer(app.route())
@@ -257,9 +280,12 @@ func TestSendingNotExistingExtensionIDReturnsStatusNotFound(t *testing.T) {
 	returnRows := sqlmock.NewRows([]string{"id", "project_id", "name", "description", "scope", "creation_date"})
 	mockReadExtensionByIDQuery(mock, args, returnRows)
 
-	app := application{
+	logger := zerolog.New(os.Stdout)
+
+	// Create a new application with the mock ItemModel
+	app := &application{
 		models: data.NewModels(db),
-		logger: log.New(os.Stdout, "", log.Ldate|log.Ltime),
+		logger: &logger,
 	}
 
 	server := httptest.NewServer(app.route())
@@ -288,8 +314,10 @@ func TestSendingNotExistingExtensionIDReturnsStatusNotFound(t *testing.T) {
 }
 
 func TestEmptyRequestBodyFieldsReturnStatusBadRequest(t *testing.T) {
-	app := application{
-		logger: log.New(os.Stdout, "", log.Ldate|log.Ltime),
+	logger := zerolog.New(os.Stdout)
+
+	app := &application{
+		logger: &logger,
 	}
 
 	server := httptest.NewServer(app.route())
@@ -307,8 +335,10 @@ func TestEmptyRequestBodyFieldsReturnStatusBadRequest(t *testing.T) {
 }
 
 func TestSendingRequestWithInvalidRequestBodyReturnsStatusBadRequest(t *testing.T) {
-	app := application{
-		logger: log.New(os.Stdout, "", log.Ldate|log.Ltime),
+	logger := zerolog.New(os.Stdout)
+
+	app := &application{
+		logger: &logger,
 	}
 
 	server := httptest.NewServer(app.route())
@@ -347,9 +377,12 @@ func TestProjectsRouteReturnsAllProjects(t *testing.T) {
 		AddRow(projects[1].ID, projects[1].Name, projects[1].Description, projects[1].CreationDate)
 	mockReadAllProjectsQuery(mock, returnRows)
 
-	app := application{
+	logger := zerolog.New(os.Stdout)
+
+	// Create a new application with the mock ItemModel
+	app := &application{
 		models: data.NewModels(db),
-		logger: log.New(os.Stdout, "", log.Ldate|log.Ltime),
+		logger: &logger,
 	}
 
 	// Mock HTTP Request
@@ -385,9 +418,12 @@ func TestExtensionsRouteGetsAllExtensionsByScope(t *testing.T) {
 		AddRow(extensions[1].ID, extensions[1].ProjectID.Int32, extensions[1].Name, extensions[1].Description, extensions[1].Scope, extensions[1].CreationDate)
 	mockReadAllExtensionsQuery(mock, scope, returnRows)
 
-	app := application{
+	logger := zerolog.New(os.Stdout)
+
+	// Create a new application with the mock ItemModel
+	app := &application{
 		models: data.NewModels(db),
-		logger: log.New(os.Stdout, "", log.Ldate|log.Ltime),
+		logger: &logger,
 	}
 
 	// Mock HTTP Request
@@ -449,9 +485,12 @@ func TestItemsRouteCreatesItemForProjectExtension(t *testing.T) {
 	insertRows := sqlmock.NewRows([]string{"id", "creation_date"}).AddRow(1, time.Now())
 	mockInsertItemQuery(mock, insertArgs, insertRows)
 
-	app := application{
+	logger := zerolog.New(os.Stdout)
+
+	// Create a new application with the mock ItemModel
+	app := &application{
 		models: data.NewModels(db),
-		logger: log.New(os.Stdout, "", log.Ldate|log.Ltime),
+		logger: &logger,
 	}
 
 	// Mock HTTP Request
@@ -502,11 +541,13 @@ func TestItemsRouteCreatesItemForSharedExtension(t *testing.T) {
 	insertRows := sqlmock.NewRows([]string{"id", "creation_date"}).AddRow(1, time.Now())
 	mockInsertItemQuery(mock, insertArgs, insertRows)
 
-	app := application{
-		models: data.NewModels(db),
-		logger: log.New(os.Stdout, "", log.Ldate|log.Ltime),
-	}
+	logger := zerolog.New(os.Stdout)
 
+	// Create a new application with the mock ItemModel
+	app := &application{
+		models: data.NewModels(db),
+		logger: &logger,
+	}
 	// Mock HTTP Request
 	server := httptest.NewServer(app.route())
 	defer server.Close()
@@ -546,7 +587,12 @@ func TestReturnedServeMuxIsNotNil(t *testing.T) {
 }
 
 func TestIfInvalidItemsRoutesHTTPMethodsReturnMethodNotAllowed(t *testing.T) {
-	app := application{}
+	logger := zerolog.New(os.Stdout)
+
+	app := &application{
+		logger: &logger,
+	}
+
 	mux := app.route()
 
 	testServer := httptest.NewServer(mux)
@@ -573,8 +619,10 @@ func TestIfInvalidItemsRoutesHTTPMethodsReturnMethodNotAllowed(t *testing.T) {
 }
 
 func TestIfHealthCheckRouteReturnsStatusCodeOk(t *testing.T) {
-	app := application{
-		logger: log.New(os.Stdout, "", log.Ldate|log.Ltime),
+	logger := zerolog.New(os.Stdout)
+
+	app := &application{
+		logger: &logger,
 	}
 
 	mux := app.route()
@@ -593,7 +641,12 @@ func TestIfHealthCheckRouteReturnsStatusCodeOk(t *testing.T) {
 }
 
 func TestIfHealthCheckRouteCanOnlyBeAccessedWithGetMethod(t *testing.T) {
-	app := application{}
+	logger := zerolog.New(os.Stdout)
+
+	app := &application{
+		logger: &logger,
+	}
+
 	mux := app.route()
 
 	testServer := httptest.NewServer(mux)
@@ -631,8 +684,11 @@ func TestIfRootRouteReturnsNotFound(t *testing.T) {
 }
 
 func TestSpecificItemRouteReturnsStatusBadRequestWhenCalledWithNonIntID(t *testing.T) {
-	app := application{
-		logger: log.New(os.Stdout, "", log.Ldate|log.Ltime),
+	logger := zerolog.New(os.Stdout)
+
+	// Create a new application with the mock ItemModel
+	app := &application{
+		logger: &logger,
 	}
 	mux := app.route()
 
@@ -646,4 +702,124 @@ func TestSpecificItemRouteReturnsStatusBadRequestWhenCalledWithNonIntID(t *testi
 	}
 
 	testRouting(t, test, mux)
+}
+
+func TestItemRouteReturnsAllItems(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	testItems := []data.Item{
+		{ID: 1, Name: "Test-Item-1", TableName: "Test-Table-1", ExtensionID: 10000, Typecode: 1, CreationDate: time.Now()},
+		{ID: 2, Name: "Test-Item-2", TableName: "Test-Table-2", ExtensionID: 10001, Typecode: 1, CreationDate: time.Now()},
+	}
+
+	returnRows := sqlmock.NewRows([]string{"id", "name", "table_name", "typecode", "extension_id", "creation_date"}).
+		AddRow(testItems[0].ID, testItems[0].Name, testItems[0].TableName, testItems[0].Typecode, testItems[0].ExtensionID, testItems[0].CreationDate).
+		AddRow(testItems[1].ID, testItems[1].Name, testItems[1].TableName, testItems[1].Typecode, testItems[1].ExtensionID, testItems[1].CreationDate)
+	mockReadAllItemsQuery(mock, returnRows)
+
+	logger := zerolog.New(os.Stdout)
+
+	// Create a new application with the mock ItemModel
+	app := &application{
+		models: data.NewModels(db),
+		logger: &logger,
+	}
+	// Mock HTTP Request
+	server := httptest.NewServer(app.route())
+	defer server.Close()
+
+	resp, err := http.Get("http://" + server.Listener.Addr().String() + "/items")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	checkHTTPResponse(resp, http.StatusOK, t)
+
+	responseItem := getResponseItems(resp, t)
+	for i, item := range responseItem.Items {
+		if item.ID != testItems[i].ID ||
+			item.Name != testItems[i].Name ||
+			item.TableName != testItems[i].TableName ||
+			item.ExtensionID != testItems[i].ExtensionID ||
+			item.Typecode != testItems[i].Typecode ||
+			!item.CreationDate.Equal(testItems[i].CreationDate) {
+			t.Errorf("Expected item to be %v, got %v", testItems[i], item)
+		}
+	}
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	_ = db.Close()
+}
+
+func TestItemRouteReturnsStatusInternalServerErrorWhenDatabaseReturnsError(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	mockReadAllItemsQueryReturnsError(mock)
+
+	logger := zerolog.New(os.Stdout)
+
+	// Create a new application with the mock ItemModel
+	app := &application{
+		models: data.NewModels(db),
+		logger: &logger,
+	}
+	// Mock HTTP Request
+	server := httptest.NewServer(app.route())
+	defer server.Close()
+
+	resp, err := http.Get("http://" + server.Listener.Addr().String() + "/items")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	checkHTTPResponse(resp, http.StatusInternalServerError, t)
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	_ = db.Close()
+}
+
+func TestProjectRouteReturnsStatusInternalServerErrorWhenDatabaseReturnsError(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	mockReadAllProjectsQueryReturnsError(mock)
+
+	logger := zerolog.New(os.Stdout)
+
+	// Create a new application with the mock ItemModel
+	app := &application{
+		models: data.NewModels(db),
+		logger: &logger,
+	}
+
+	// Mock HTTP Request
+	server := httptest.NewServer(app.route())
+	defer server.Close()
+
+	resp, err := http.Get("http://" + server.Listener.Addr().String() + "/projects")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	checkHTTPResponse(resp, http.StatusInternalServerError, t)
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	_ = db.Close()
 }
