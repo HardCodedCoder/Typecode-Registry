@@ -19,6 +19,7 @@ type ItemRequest struct {
 // healthcheck is a simple handler to check if the service is up and running.
 // TODO: Add more checks to ensure the service is healthy.
 func (app *application) healthcheck(w http.ResponseWriter, r *http.Request) {
+	app.logger.Debug().Msg(fmt.Sprintf("Handling %s %s route", r.Method, r.URL.Path))
 	if r.Method != http.MethodGet {
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return
@@ -27,7 +28,7 @@ func (app *application) healthcheck(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, err := w.Write([]byte("Service is up and running!"))
 	if err != nil {
-		app.logger.Fatal(err)
+		app.logger.Err(err)
 	}
 }
 
@@ -35,9 +36,10 @@ func (app *application) healthcheck(w http.ResponseWriter, r *http.Request) {
 // It handles GET and POST requests.
 // Other requests will return a 405 Method Not Allowed.
 func (app *application) getCreateItemsHandler(w http.ResponseWriter, r *http.Request) {
+	app.logger.Debug().Msg(fmt.Sprintf("Handling %s %s route", r.Method, r.URL.Path))
 	switch r.Method {
 	case http.MethodGet:
-
+		app.getItems(w, r)
 	case http.MethodPost:
 		app.createItem(w, r)
 	default:
@@ -49,6 +51,7 @@ func (app *application) getCreateItemsHandler(w http.ResponseWriter, r *http.Req
 // It handles GET, PUT and DELETE requests.
 // Other requests will return a 405 Method Not Allowed.
 func (app *application) getUpdateDeleteItemsHandler(w http.ResponseWriter, r *http.Request) {
+	app.logger.Debug().Msg(fmt.Sprintf("Handling %s %s route", r.Method, r.URL.Path))
 	switch r.Method {
 	case http.MethodGet:
 		app.getItem(w, r)
@@ -64,6 +67,7 @@ func (app *application) getUpdateDeleteItemsHandler(w http.ResponseWriter, r *ht
 // getProjectsHandler handles the /projects route and calls the appropriate handler based on the request method.
 // It handles GET requests. Other requests will return a 405 Method Not Allowed.
 func (app *application) getProjectsHandler(w http.ResponseWriter, r *http.Request) {
+	app.logger.Debug().Msg(fmt.Sprintf("Handling %s %s route", r.Method, r.URL.Path))
 	switch r.Method {
 	case http.MethodGet:
 		app.getProjects(w)
@@ -81,14 +85,30 @@ func (app *application) getItem(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/items/"):]
 	idInt, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
-		app.logger.Printf("WARNING: Bad Request in %s using id %s",
+		app.logger.Warn().Msg(fmt.Sprintf("Bad Request in %s using id %s",
 			GetFunctionName(),
-			id)
+			id))
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
 
 	_, _ = fmt.Fprintf(w, "Display the details of item with ID: %d", idInt)
+}
+
+func (app *application) getItems(w http.ResponseWriter, r *http.Request) {
+	items, err := app.models.Items.ReadAll()
+	if err != nil {
+		app.logger.Err(err)
+		http.Error(w, "error while trying to read items from database!", http.StatusInternalServerError)
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"items": items}, nil)
+	if err != nil {
+		app.logger.Err(err)
+		http.Error(w, "error while trying to write items to http response!", http.StatusInternalServerError)
+		return
+	}
 }
 
 // updateItem handles the PUT request for a specific item.
@@ -99,9 +119,9 @@ func (app *application) updateItem(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/items/"):]
 	idInt, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
-		app.logger.Printf("WARNING: Bad Request in %s using id %s",
+		app.logger.Warn().Msg(fmt.Sprintf("Bad Request in %s using id %s",
 			GetFunctionName(),
-			id)
+			id))
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 	}
 
@@ -116,9 +136,9 @@ func (app *application) deleteItem(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/items/"):]
 	idInt, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
-		app.logger.Printf("WARNING: Bad Request in %s using id %s",
+		app.logger.Warn().Msg(fmt.Sprintf("Bad Request in %s using id %s",
 			GetFunctionName(),
-			id)
+			id))
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 	}
 
@@ -139,10 +159,10 @@ func (app *application) createItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.logger.Printf("Item request: %v received", itemReq)
+	app.logger.Debug().Msg(fmt.Sprintf("Item request: %v received", itemReq))
 	if itemReq.Name == "" || itemReq.TableName == "" || itemReq.ExtensionId < 1 {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
-		app.logger.Printf("Bad Request: Invalid item create request with data: %v", itemReq)
+		app.logger.Error().Msg(fmt.Sprintf("Bad Request: Invalid item create request with data: %v", itemReq))
 		return
 	}
 
@@ -150,14 +170,14 @@ func (app *application) createItem(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		msg := fmt.Sprintf("could not find extension with id %d in database", itemReq.ExtensionId)
 		http.Error(w, msg, http.StatusNotFound)
-		app.logger.Printf(msg)
+		app.logger.Error().Msg(msg)
 		return
 	}
 
 	typecode, err := calculateTypecode(extension, &app.models.Items)
 	if err != nil {
 		http.Error(w, "Internal Server Error during calculation of typecode", http.StatusInternalServerError)
-		app.logger.Printf(fmt.Sprintf("Error while calculating typecode for scope: %s", extension.Scope))
+		app.logger.Error().Msg(fmt.Sprintf("Error while calculating typecode for scope: %s", extension.Scope))
 		return
 	}
 
@@ -172,8 +192,11 @@ func (app *application) createItem(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		app.logger.Println(err)
 		if strings.Contains(err.Error(), "foreign key constraint") {
-			http.Error(w, "Invalid extension_id: No matching extension record found", http.StatusBadRequest)
+			msg := fmt.Sprintf("Invalid extension_id: %d No matching extension record found", itemReq.ExtensionId)
+			http.Error(w, msg, http.StatusBadRequest)
+			app.logger.Error().Msg(msg)
 		} else {
+			app.logger.Err(err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
@@ -184,8 +207,8 @@ func (app *application) createItem(w http.ResponseWriter, r *http.Request) {
 
 	err = app.writeJSON(w, http.StatusCreated, envelope{"item": item}, headers)
 	if err != nil {
-		app.logger.Println(err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		app.logger.Err(err)
+		http.Error(w, "error while trying to write item to http response.", http.StatusInternalServerError)
 		return
 	}
 }
@@ -193,6 +216,7 @@ func (app *application) createItem(w http.ResponseWriter, r *http.Request) {
 // getExtensionsHandler handles the /extensions route and calls the appropriate handler based on the request method.
 // It handles GET requests. Other requests will return a 405 Method Not Allowed.
 func (app *application) getExtensionsHandler(w http.ResponseWriter, r *http.Request) {
+	app.logger.Debug().Msg(fmt.Sprintf("Handling %s %s route", r.Method, r.URL.Path))
 	switch r.Method {
 	case http.MethodGet:
 		app.getExtensions(w, r)
@@ -209,12 +233,16 @@ func (app *application) getExtensions(w http.ResponseWriter, r *http.Request) {
 	scope := r.URL.Path[len("/extensions/"):]
 
 	if scope != "Project" && scope != "Shared" {
+		app.logger.Warn().Msg(
+			fmt.Sprintf("Invalid scope: %s | responding with %s", scope, http.StatusText(http.StatusBadRequest)),
+		)
 		http.Error(w, "Invalid scope", http.StatusBadRequest)
 		return
 	}
 
 	extensions, err := app.models.Extensions.ReadAll(scope)
 	if err != nil {
+		app.logger.Err(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
@@ -223,7 +251,7 @@ func (app *application) getExtensions(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		http.Error(w, fmt.Sprintf("error while trying to write extensions to http response. error: %s", err), http.StatusInternalServerError)
-		app.logger.Println(err)
+		app.logger.Err(err)
 		return
 	}
 }
@@ -235,7 +263,7 @@ func (app *application) getExtensions(w http.ResponseWriter, r *http.Request) {
 func (app *application) getProjects(w http.ResponseWriter) {
 	projects, err := app.models.Projects.ReadAll()
 	if err != nil {
-		app.logger.Printf("Error while trying to read project records from database: %s", err)
+		app.logger.Error().Msg(fmt.Sprintf("Error while trying to read project records from database: %s", err))
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
@@ -243,7 +271,7 @@ func (app *application) getProjects(w http.ResponseWriter) {
 	err = app.writeJSON(w, http.StatusOK, envelope{"projects": projects}, nil)
 	if err != nil {
 		msg := fmt.Sprintf("Error while trying to write projects to http response. error: %s", err)
-		app.logger.Printf(msg)
+		app.logger.Error().Msg(msg)
 		http.Error(w, msg, http.StatusInternalServerError)
 		return
 	}

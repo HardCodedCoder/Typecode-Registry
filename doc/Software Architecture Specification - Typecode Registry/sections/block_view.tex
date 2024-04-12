@@ -137,9 +137,9 @@ The backend's technology stack is meticulously chosen to leverage the robustness
     This pattern ensures a clear separation of concerns and enhances the maintainability of our data access layer.
     By implementing entity-specific types and methods, we gain fine-grained control over database interactions, allowing for customized query optimization and error handling strategies.
 
-    \item \textbf{Logging:} For application logging, we employ Golang's standard `log` package.
-    This facilitates a straightforward and effective logging mechanism, essential for debugging, monitoring, and auditing backend operations.
-    The `log` package's simplicity and integration with Go's ecosystem make it an ideal choice for our application's logging needs.
+    \item \textbf{Logging:} `zerolog` package is used as a logging framework.
+    It brings structured, level-based logging, which is highly performant and customizable.
+    With `zerolog`, log messages can be defined at various levels, from `trace` to `fatal`, providing clear visibility into the application's behavior and aiding in prompt issue resolution.
 \end{itemize}
 
 This technology stack, grounded in Golang's standard libraries and best practices, forms the backbone of our backend architecture.
@@ -156,8 +156,8 @@ This approach allows us to directly use the powerful concurrency features of Go 
         \hline
         /healthcheck & GET & This route returns the current state of the API and can be used to retrieve status information. \\
         \hline
-        /items & GET, POST & This route creates a new item.
-        In the request body, the client needs to send the following data:
+        /items & GET, POST & This route fetches all items or creates a new item.
+        \\ & & In the POST request body, the client needs to send the following data:
 
         \\ & & - \textbf{name}: A string representing the name of the item to create.
 
@@ -436,9 +436,35 @@ The following picture illustrates the item in the database and shows the mapping
 
 This pattern is replicated for other entities, ensuring consistent and organized data access throughout the application.
 
-\headingFour{Logging}
-Utilizing Go's standard `log` package, our backend implements a comprehensive logging system.
-It's configured to capture both system-level and application-level events, aiding in debugging and monitoring the application's health.
+\headingFour{Logging with Zerolog}
+
+The backend uses the `zerolog` library for its logging system.
+`Zerolog` provides structured, level-based logging that is highly performant and scalable, making it suitable for both development and production environments.
+
+\begin{itemize}
+    \item \textbf{Log Levels:} Multiple log levels are available, enabling the appropriate granularity of log messages.
+    These levels include:
+    \begin{itemize}
+        \item \textit{Trace}: The most verbose level, used for systematic granular events that are useful for debugging.
+        \item \textit{Debug}: Used for less granular but still detailed debugging information about the system's behavior.
+        \item \textit{Info}: Standard log level indicating general operational events that highlight the application's running state.
+        \item \textit{Warn}: Indicates a potential issue or important event that should be noted but is not necessarily an error.
+        \item \textit{Error}: Used when the application encounters an issue that disrupts a process or operation.
+        \item \textit{Fatal}: Signifies a severe problem that has caused or is about to cause the application to terminate.
+    \end{itemize}
+    \item \textbf{Usage Context:} The backend strategically employs these log levels to enhance observability:
+    \begin{itemize}
+        \item \textit{Trace} and \textit{Debug} logs are predominantly used in development environments to trace execution flow and diagnose issues.
+        \item \textit{Info} logs are recorded during routine operations, such as service start-up or shutdown, and when significant transactions occur.
+        \item \textit{Warn} logs alert to conditions that require attention or may lead to an error if left unaddressed.
+        \item \textit{Error} logs capture failures within the system, facilitating rapid diagnosis and resolution of issues.
+        \item \textit{Fatal} logs are used sparingly, only logging critical events that will halt the backend services.
+    \end{itemize}
+\end{itemize}
+
+By utilizing `zerolog`, the backend achieves efficient and structured logging, greatly improving the maintainability and performance of the system's logging capabilities.
+With configurable output (console, JSON) and the ability to integrate with various logging platforms, `zerolog` enriches the operational monitoring and troubleshooting processes.
+
 
 \newpage
 
