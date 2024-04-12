@@ -31,6 +31,10 @@ type ResponseItems struct {
 	Items []data.Item `json:"items"`
 }
 
+type ResponseDetails struct {
+	Details []data.ItemDetail `json:"details"`
+}
+
 type ExpectedItemValues struct {
 	Name        string
 	TableName   string
@@ -78,6 +82,19 @@ func getResponseItems(resp *http.Response, t *testing.T) ResponseItems {
 	_ = resp.Body.Close()
 
 	return items
+}
+
+func getResponseDetails(resp *http.Response, t *testing.T) ResponseDetails {
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var details ResponseDetails
+	_ = json.Unmarshal(responseBody, &details)
+	_ = resp.Body.Close()
+
+	return details
 }
 
 func checkHTTPResponse(resp *http.Response, expectedStatusCode int, t *testing.T) {
@@ -838,8 +855,8 @@ func TestItemsDetailsRouteReturnsAllItemsDetails(t *testing.T) {
 	}
 
 	itemsDetails := []data.ItemDetail{
-		{Scope: "Shared", Project: "Test-Project-1", Extension: "Test-Extension-1", ItemName: "Test-Item-1", ItemTableName: "Test-Table-1", Typecode: 1},
-		{Scope: "Shared", Project: "Test-Project-2", Extension: "Test-Extension-2", ItemName: "Test-Item-2", ItemTableName: "Test-Table-2", Typecode: 2},
+		{Scope: "Shared", Project: "-", Extension: "Test-Extension-1", ItemName: "Test-Item-1", ItemTableName: "Test-Table-1", Typecode: 1},
+		{Scope: "Project", Project: "Test-Project-1", Extension: "Test-Extension-2", ItemName: "Test-Item-2", ItemTableName: "Test-Table-2", Typecode: 2},
 	}
 
 	returnRows := sqlmock.NewRows([]string{"scope", "project", "extension", "name", "table_name", "typecode"}).
@@ -869,6 +886,12 @@ func TestItemsDetailsRouteReturnsAllItemsDetails(t *testing.T) {
 
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	for i, itemDetail := range getResponseDetails(resp, t).Details {
+		if itemDetail != itemsDetails[i] {
+			t.Errorf("Expected item detail to be %v, got %v", itemsDetails[i], itemDetail)
+		}
 	}
 
 	_ = db.Close()

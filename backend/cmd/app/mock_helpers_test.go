@@ -54,10 +54,15 @@ func mockReadAllProjectsQueryReturnsError(mock sqlmock.Sqlmock) {
 
 func mockReadAllItemsDetailsQuery(mock sqlmock.Sqlmock, returnRows *sqlmock.Rows) {
 	query := regexp.QuoteMeta(`
-			SELECT extension.scope, project.name, extension.name, item.name, item.table_name, item.typecode 
-			FROM item
-			JOIN extension ON item.extension_id = extension.id
-			JOIN project ON extension.project_id = project.id`)
+		SELECT extension.scope, 
+		   COALESCE(project.name, '-') AS project_name,
+		   extension.name, 
+		   item.name, 
+		   item.table_name, 
+		   item.typecode 
+		FROM item
+		JOIN extension ON item.extension_id = extension.id
+		LEFT JOIN project ON extension.project_id = project.id`)
 	mock.ExpectQuery(query).WillReturnRows(returnRows)
 }
 
@@ -83,10 +88,15 @@ func mockTypecodeQuery(mock sqlmock.Sqlmock, args []driver.Value, returnRows *sq
 
 func mockReadAllItemsDetailsQueryReturnsError(mock sqlmock.Sqlmock) {
 	query := regexp.QuoteMeta(`
-			SELECT extension.scope, project.name, extension.name, item.name, item.table_name, item.typecode 
-			FROM item
-			JOIN extension ON item.extension_id = extension.id
-			JOIN project ON extension.project_id = project.id`)
+		SELECT extension.scope, 
+		   COALESCE(project.name, '-') AS project_name,
+		   extension.name, 
+		   item.name, 
+		   item.table_name, 
+		   item.typecode 
+		FROM item
+		JOIN extension ON item.extension_id = extension.id
+		LEFT JOIN project ON extension.project_id = project.id`)
 	mock.ExpectQuery(query).WillReturnError(errors.New("mock error"))
 }
 
