@@ -3,8 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, Observable, of, tap } from 'rxjs';
 import { ExtensionsAPIResponse } from './interfaces/extension';
 import { ProjectsAPIResponse } from './interfaces/project';
+import {
+  ItemAPIResponse,
+  ItemsAPIResponse,
+  ItemsDetailsAPIResponse,
+} from './interfaces/items';
 import { ItemRequest } from './interfaces/requests';
-import { ItemAPIResponse } from './interfaces/items';
 
 @Injectable({
   providedIn: 'root',
@@ -42,6 +46,30 @@ export class BackendService {
       );
   }
 
+  getItems(): Observable<ItemsAPIResponse> {
+    return this.http.get<ItemsAPIResponse>(`${this.apiUrl}/items`).pipe(
+      tap(_ => console.log(`fetched items`)),
+      catchError(
+        this.handleError<ItemsAPIResponse>('getItems', {
+          items: [],
+        })
+      )
+    );
+  }
+
+  getItemsDetails(): Observable<ItemsDetailsAPIResponse> {
+    return this.http
+      .get<ItemsDetailsAPIResponse>(`${this.apiUrl}/items/details`)
+      .pipe(
+        tap(_ => console.log(`fetched items`)),
+        catchError(
+          this.handleError<ItemsDetailsAPIResponse>('getItemsDetails', {
+            details: [],
+          })
+        )
+      );
+  }
+
   sendCreateItemRequest(itemRequest: ItemRequest): Observable<ItemAPIResponse> {
     return this.http
       .post<ItemAPIResponse>(`${this.apiUrl}/items`, itemRequest)
@@ -52,6 +80,7 @@ export class BackendService {
             item: {
               id: 0,
               name: '',
+              typecode: 0,
               table_name: '',
               extensionId: 0,
               creation_date: '',

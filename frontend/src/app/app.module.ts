@@ -26,10 +26,12 @@ import {
   TuiFilterByInputPipeModule,
   TuiInputModule,
   TuiRadioBlockModule,
+  TuiTagModule,
 } from '@taiga-ui/kit';
 import { ReactiveFormsModule } from '@angular/forms';
-import { TuiValueChangesModule } from '@taiga-ui/cdk';
+import { TuiLetModule, TuiValueChangesModule } from '@taiga-ui/cdk';
 import { HttpClientModule } from '@angular/common/http';
+import { TuiTableModule } from '@taiga-ui/addon-table';
 
 @NgModule({
   declarations: [
@@ -60,6 +62,9 @@ import { HttpClientModule } from '@angular/common/http';
     TuiFilterByInputPipeModule,
     TuiButtonModule,
     TuiSvgModule,
+    TuiTableModule,
+    TuiLetModule,
+    TuiTagModule,
   ],
   providers: [{ provide: TUI_SANITIZER, useClass: NgDompurifySanitizer }],
   bootstrap: [AppComponent],

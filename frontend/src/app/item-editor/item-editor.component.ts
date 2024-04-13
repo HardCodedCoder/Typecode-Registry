@@ -1,4 +1,4 @@
-import { Component, Inject, Injector } from '@angular/core';
+import { Component, Inject, Injector, OnInit } from '@angular/core';
 import { TuiDialogService } from '@taiga-ui/core';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { AddItemComponent } from '../add-item/add-item.component';
@@ -12,13 +12,55 @@ import { catchError, throwError } from 'rxjs';
   templateUrl: './item-editor.component.html',
   styleUrl: './item-editor.component.scss',
 })
-export class ItemEditorComponent {
+export class ItemEditorComponent implements OnInit {
+  readonly columns: string[] = [
+    'Scope',
+    'Project',
+    'Extension',
+    'TypeName',
+    'TableName',
+    'Typecode',
+    'Action',
+  ];
+
+  /*
+  details: readonly ItemDetailResponse[] = [
+    {
+      scope: 'Project',
+      project: 'Projekt E',
+      extension: 'Extension E1',
+      itemName: 'Item E4',
+      itemTableName: 'Tabelle E4',
+      typecode: 14406,
+    },
+    {
+      scope: 'Project',
+      project: 'Projekt E',
+      extension: 'Extension E1',
+      itemName: 'Item E3',
+      itemTableName: 'Tabelle E3',
+      typecode: 14404,
+    },
+  ]
+   */
   constructor(
     @Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
     @Inject(Injector) private readonly injector: Injector,
     @Inject(BackendService) private readonly backendService: BackendService,
-    @Inject(StoreService) private readonly store: StoreService
+    @Inject(StoreService) public readonly store: StoreService
   ) {}
+
+  ngOnInit(): void {
+    this.backendService.getItemsDetails().subscribe(
+      response => {
+        this.store.details = response.details;
+        console.log(this.store.details);
+      },
+      error => {
+        console.error('Could not fetch items', error);
+      }
+    );
+  }
 
   showDialog(): void {
     console.log('We are here');
