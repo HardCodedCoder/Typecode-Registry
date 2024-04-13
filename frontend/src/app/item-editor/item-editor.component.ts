@@ -6,6 +6,7 @@ import { BackendService } from '../services/backend.service';
 import { StoreService } from '../services/store.service';
 import { FormData } from '../services/interfaces/formdata';
 import { catchError, throwError } from 'rxjs';
+import {ItemDetailResponse} from "../services/interfaces/items";
 
 @Component({
   selector: 'app-item-editor',
@@ -116,5 +117,10 @@ export class ItemEditorComponent implements OnInit {
       .subscribe(response => {
         console.log('item-editor: Item created using id:', response.item.id);
       });
+  }
+
+  remove(detail: ItemDetailResponse) {
+    console.log('TODO: Implement deleting detail');
+    console.log(detail);
   }
 }
