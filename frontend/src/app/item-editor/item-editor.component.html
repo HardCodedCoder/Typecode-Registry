@@ -25,13 +25,13 @@
         <table tuiTable [columns]="columns">
           <thead>
             <tr tuiThGroup>
-              <th *tuiHead="'Scope'" tuiTh>Scope</th>
-              <th *tuiHead="'Project'" tuiTh>Project</th>
-              <th *tuiHead="'Extension'" tuiTh>Extension</th>
-              <th *tuiHead="'TypeName'" tuiTh>Name</th>
-              <th *tuiHead="'TableName'" tuiTh>Table Name</th>
-              <th *tuiHead="'Typecode'" tuiTh>Typecode</th>
-              <th *tuiHead="'Action'" tuiTh [sorter]="null"></th>
+              <th *tuiHead="'Scope'" tuiTh [sticky]="true">Scope</th>
+              <th *tuiHead="'Project'" tuiTh [sticky]="true">Project</th>
+              <th *tuiHead="'Extension'" tuiTh [sticky]="true">Extension</th>
+              <th *tuiHead="'TypeName'" tuiTh [sticky]="true">Name</th>
+              <th *tuiHead="'TableName'" tuiTh [sticky]="true">Table Name</th>
+              <th *tuiHead="'Typecode'" tuiTh [sticky]="true">Typecode</th>
+              <th *tuiHead="'Action'" tuiTh [sorter]="null" [sticky]="true"></th>
             </tr>
           </thead>
 
