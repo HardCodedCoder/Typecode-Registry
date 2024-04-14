@@ -94,7 +94,17 @@ export class ItemEditorComponent implements OnInit {
         extension_id: extension_id,
       })
       .subscribe(response => {
-        // TODO: call backendService to fetch specific item detail.
+        this.backendService.getItemsDetails().subscribe(
+          response => {
+            // TODO: Change to only load the newly created item detail.
+            this.store.details = response.details;
+            console.log(this.store.details);
+          },
+          error => {
+            console.error('Could not fetch items', error);
+          }
+        );
+
         console.log('item-editor: Item created using id:', response.item.id);
       });
   }
