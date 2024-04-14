@@ -31,6 +31,10 @@ type ResponseItems struct {
 	Items []data.Item `json:"items"`
 }
 
+type ResponseItemDetail struct {
+	Detail data.ItemDetail `json:"detail"`
+}
+
 type ResponseDetails struct {
 	Details []data.ItemDetail `json:"details"`
 }
@@ -58,43 +62,18 @@ func testRouting(t *testing.T, routes []TestRoute, mux *http.ServeMux) {
 	}
 }
 
-func getResponseItem(resp *http.Response, t *testing.T) ResponseItem {
+func getResponse(resp *http.Response, result interface{}, t *testing.T) {
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var response ResponseItem
-	_ = json.Unmarshal(responseBody, &response)
-	_ = resp.Body.Close()
+	_ = json.Unmarshal(responseBody, result)
+	err = resp.Body.Close()
 
-	return response
-}
-
-func getResponseItems(resp *http.Response, t *testing.T) ResponseItems {
-	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	var items ResponseItems
-	_ = json.Unmarshal(responseBody, &items)
-	_ = resp.Body.Close()
-
-	return items
-}
-
-func getResponseDetails(resp *http.Response, t *testing.T) ResponseDetails {
-	responseBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	var details ResponseDetails
-	_ = json.Unmarshal(responseBody, &details)
-	_ = resp.Body.Close()
-
-	return details
 }
 
 func checkHTTPResponse(resp *http.Response, expectedStatusCode int, t *testing.T) {
@@ -189,7 +168,8 @@ func TestCreateItemReturnsInternalServerErrorWhenInsertFails(t *testing.T) {
 
 	checkHTTPResponse(resp, http.StatusInternalServerError, t)
 
-	responseItem := getResponseItem(resp, t)
+	var responseItem ResponseItem
+	getResponse(resp, &responseItem, t)
 	expectedResponseItem := ResponseItem{}
 	if responseItem != expectedResponseItem {
 		t.Fatalf("Expected nil response item, got %v", responseItem)
@@ -258,7 +238,8 @@ func TestCreateItemRoutesReturnsStatusInternalServerErrorWhenScopeSharedRangeEnd
 
 	checkHTTPResponse(resp, http.StatusInternalServerError, t)
 
-	responseItem := getResponseItem(resp, t)
+	var responseItem ResponseItem
+	getResponse(resp, &responseItem, t)
 	expectedResponseItem := ResponseItem{}
 	if responseItem != expectedResponseItem {
 		t.Fatalf("Expected nil response item, got %v", responseItem)
@@ -322,7 +303,9 @@ func TestSendingNotExistingExtensionIDReturnsStatusNotFound(t *testing.T) {
 
 	checkHTTPResponse(resp, http.StatusNotFound, t)
 
-	responseItem := getResponseItem(resp, t)
+	var responseItem ResponseItem
+	getResponse(resp, &responseItem, t)
+
 	expectedResponseItem := ResponseItem{}
 	if responseItem != expectedResponseItem {
 		t.Fatalf("Expected nil response item, got %v", responseItem)
@@ -525,7 +508,8 @@ func TestItemsRouteCreatesItemForProjectExtension(t *testing.T) {
 		Typecode:    14000,
 	}
 
-	responseItem := getResponseItem(resp, t)
+	var responseItem ResponseItem
+	getResponse(resp, &responseItem, t)
 	checkResponseValues(responseItem, expectedValues, t)
 
 	if err := mock.ExpectationsWereMet(); err != nil {
@@ -584,7 +568,8 @@ func TestItemsRouteCreatesItemForSharedExtension(t *testing.T) {
 		Typecode:    20001,
 	}
 
-	responseItem := getResponseItem(resp, t)
+	var responseItem ResponseItem
+	getResponse(resp, &responseItem, t)
 	checkResponseValues(responseItem, expectedValues, t)
 
 	if err := mock.ExpectationsWereMet(); err != nil {
@@ -762,8 +747,9 @@ func TestItemRouteReturnsAllItems(t *testing.T) {
 
 	checkHTTPResponse(resp, http.StatusOK, t)
 
-	responseItem := getResponseItems(resp, t)
-	for i, item := range responseItem.Items {
+	var responseItems ResponseItems
+	getResponse(resp, &responseItems, t)
+	for i, item := range responseItems.Items {
 		if item.ID != testItems[i].ID ||
 			item.Name != testItems[i].Name ||
 			item.TableName != testItems[i].TableName ||
@@ -888,7 +874,9 @@ func TestItemsDetailsRouteReturnsAllItemsDetails(t *testing.T) {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
 
-	for i, itemDetail := range getResponseDetails(resp, t).Details {
+	var responseDetails ResponseDetails
+	getResponse(resp, responseDetails, t)
+	for i, itemDetail := range responseDetails.Details {
 		if itemDetail != itemsDetails[i] {
 			t.Errorf("Expected item detail to be %v, got %v", itemsDetails[i], itemDetail)
 		}
@@ -918,6 +906,125 @@ func TestItemsDetailsRouteReturnsInternalServerErrorWhenDatabaseReturnsError(t *
 	defer server.Close()
 
 	resp, err := http.Get("http://" + server.Listener.Addr().String() + "/items/details")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	checkHTTPResponse(resp, http.StatusInternalServerError, t)
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	_ = db.Close()
+}
+
+func TestItemsDetailRouteReturnsSpecificItemDetailById(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	itemDetail := data.ItemDetail{
+		Scope:         "Shared",
+		Project:       "-",
+		Extension:     "Test-Extension-1",
+		ItemName:      "Test-Item-1",
+		ItemTableName: "Test-Table-1",
+		Typecode:      1,
+	}
+
+	returnRow := sqlmock.NewRows([]string{"scope", "project", "extension", "name", "table_name", "typecode"}).AddRow(
+		itemDetail.Scope, itemDetail.Project, itemDetail.Extension, itemDetail.ItemName, itemDetail.ItemTableName, itemDetail.Typecode)
+	mockReadItemDetailByItemIdQuery(mock, 1, returnRow)
+
+	logger := zerolog.New(os.Stdout)
+
+	// Create a new application with the mock ItemModel
+	app := &application{
+		models: data.NewModels(db),
+		logger: &logger,
+	}
+
+	// Mock HTTP Request
+	server := httptest.NewServer(app.route())
+	defer server.Close()
+
+	resp, err := http.Get("http://" + server.Listener.Addr().String() + "/items/details/1")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	checkHTTPResponse(resp, http.StatusOK, t)
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	var responseItemDetail ResponseItemDetail
+	getResponse(resp, &responseItemDetail, t)
+	if responseItemDetail.Detail != itemDetail {
+		t.Errorf("Expected item detail to be %v, got %v", itemDetail, responseItemDetail.Detail)
+	}
+
+	_ = db.Close()
+}
+
+func TestItemsDetailRouteIdReturnsStatusNotFoundWhenItemDetailDoesNotExist(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	mockReadItemDetailByItemIdNoRowsFound(mock, 1)
+
+	logger := zerolog.New(os.Stdout)
+
+	// Create a new application with the mock ItemModel
+	app := &application{
+		models: data.NewModels(db),
+		logger: &logger,
+	}
+
+	// Mock HTTP Request
+	server := httptest.NewServer(app.route())
+	defer server.Close()
+
+	resp, err := http.Get("http://" + server.Listener.Addr().String() + "/items/details/1")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	checkHTTPResponse(resp, http.StatusNotFound, t)
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	_ = db.Close()
+}
+
+func TestItemsDetailRouteIdReturnsStatusInternalServerErrorWhenDatabaseReturnsError(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	mockReadItemDetailByItemIdReturnsError(mock, 1)
+
+	logger := zerolog.New(os.Stdout)
+
+	// Create a new application with the mock ItemModel
+	app := &application{
+		models: data.NewModels(db),
+		logger: &logger,
+	}
+
+	// Mock HTTP Request
+	server := httptest.NewServer(app.route())
+	defer server.Close()
+
+	resp, err := http.Get("http://" + server.Listener.Addr().String() + "/items/details/1")
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"database/sql/driver"
 	"errors"
 	"github.com/DATA-DOG/go-sqlmock"
@@ -114,6 +115,51 @@ func mockInsertItemQueryToReturnError(mock sqlmock.Sqlmock, args []driver.Value)
 		VALUES ($1, $2, $3, $4)
 		RETURNING id, creation_date`)
 	mock.ExpectQuery(query).WithArgs(args...).WillReturnError(errors.New("mock error"))
+}
+
+func mockReadItemDetailByItemIdQuery(mock sqlmock.Sqlmock, id int64, returnRows *sqlmock.Rows) {
+	query := regexp.QuoteMeta(`
+	SELECT extension.scope, 
+	   COALESCE(project.name, '-') AS project_name,
+	   extension.name, 
+	   item.name, 
+	   item.table_name, 
+	   item.typecode 
+	FROM item
+	JOIN extension ON item.extension_id = extension.id
+	LEFT JOIN project ON extension.project_id = project.id
+	WHERE item.id = $1`)
+	mock.ExpectQuery(query).WithArgs(id).WillReturnRows(returnRows)
+}
+
+func mockReadItemDetailByItemIdNoRowsFound(mock sqlmock.Sqlmock, id int64) {
+	query := regexp.QuoteMeta(`
+	SELECT extension.scope, 
+	   COALESCE(project.name, '-') AS project_name,
+	   extension.name, 
+	   item.name, 
+	   item.table_name, 
+	   item.typecode 
+	FROM item
+	JOIN extension ON item.extension_id = extension.id
+	LEFT JOIN project ON extension.project_id = project.id
+	WHERE item.id = $1`)
+	mock.ExpectQuery(query).WithArgs(id).WillReturnError(sql.ErrNoRows)
+}
+
+func mockReadItemDetailByItemIdReturnsError(mock sqlmock.Sqlmock, id int64) {
+	query := regexp.QuoteMeta(`
+	SELECT extension.scope, 
+	   COALESCE(project.name, '-') AS project_name,
+	   extension.name, 
+	   item.name, 
+	   item.table_name, 
+	   item.typecode 
+	FROM item
+	JOIN extension ON item.extension_id = extension.id
+	LEFT JOIN project ON extension.project_id = project.id
+	WHERE item.id = $1`)
+	mock.ExpectQuery(query).WithArgs(id).WillReturnError(errors.New("mock error"))
 }
 
 func mockGetNextProjectFreeTypecodeQuery(mock sqlmock.Sqlmock, args []driver.Value, returnRows *sqlmock.Rows) {

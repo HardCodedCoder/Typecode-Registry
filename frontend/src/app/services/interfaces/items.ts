@@ -9,6 +9,10 @@ export interface ItemsDetailsAPIResponse {
   details: ItemDetailResponse[];
 }
 
+export interface ItemDetailAPIResponse {
+  detail: ItemDetailResponse;
+}
+
 export interface ItemResponse {
   id: number;
   name: string;

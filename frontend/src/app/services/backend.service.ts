@@ -89,6 +89,7 @@ export class BackendService {
         )
       );
   }
+
   /**
    * Fetches all projects from the backend.
    *

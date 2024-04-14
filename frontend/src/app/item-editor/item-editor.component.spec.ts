@@ -65,6 +65,7 @@ describe('ItemEditorComponent', () => {
         item: {
           id: 1,
           name: 'Test Item',
+          typecode: 1,
           table_name: 'Test Table',
           extensionId: 1,
           creation_date: '2022-01-01',
@@ -100,6 +101,7 @@ describe('ItemEditorComponent', () => {
         item: {
           id: 1,
           name: 'Non-Shared Item',
+          typecode: 1,
           table_name: 'Non-Shared Table',
           extensionId: 2,
           creation_date: '2022-01-01',

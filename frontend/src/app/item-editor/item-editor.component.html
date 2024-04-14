@@ -1,133 +1,85 @@
-
 <div>
-    <!-- Items Table Div -->
-    <div>
-        <table
-            tuiTable
-            [columns]="columns"
-        >
-        <thead>
+  <!-- Items Table Div -->
+  <div>
+    <tui-scrollbar>
+      <cdk-virtual-scroll-viewport
+        #viewport
+        tuiScrollable
+        class="viewport tui-zero-scrollbar"
+        [itemSize]="45"
+        [maxBufferPx]="500"
+        [minBufferPx]="400"
+      >
+        <table tuiTable [columns]="columns">
+          <thead>
             <tr tuiThGroup>
-                <th
-                    *tuiHead="'Scope'"
-                    tuiTh
-                >
-                    Scope
-                </th>
-                <th
-                    *tuiHead="'Project'"
-                    tuiTh
-                >
-                    Project
-                </th>
-                <th
-                    *tuiHead="'Extension'"
-                    tuiTh
-                >
-                    Extension
-                </th>
-                <th
-                        *tuiHead="'TypeName'"
-                        tuiTh
-                >
-                    Name
-                </th>
-                <th
-                        *tuiHead="'TableName'"
-                        tuiTh
-                >
-                    Table Name
-                </th>
-                <th
-                        *tuiHead="'Typecode'"
-                        tuiTh
-                >
-                    Typecode
-                </th>
-                <th
-                        *tuiHead="'Action'"
-                        tuiTh
-                        [sorter]="null"
-                >
-                </th>
+              <th *tuiHead="'Scope'" tuiTh>Scope</th>
+              <th *tuiHead="'Project'" tuiTh>Project</th>
+              <th *tuiHead="'Extension'" tuiTh>Extension</th>
+              <th *tuiHead="'TypeName'" tuiTh>Name</th>
+              <th *tuiHead="'TableName'" tuiTh>Table Name</th>
+              <th *tuiHead="'Typecode'" tuiTh>Typecode</th>
+              <th *tuiHead="'Action'" tuiTh [sorter]="null"></th>
             </tr>
-        </thead>
+          </thead>
 
-        <tbody
+          <tbody
             *tuiLet="this.store.details | tuiTableSort as sortedDetails"
             tuiTbody
             [data]="sortedDetails"
-        >
-        <tr
-            *ngFor="let detail of sortedDetails"
-            tuiTr
-        >
-            <td
-                *tuiCell="'Scope'"
-                tuiTd
-            >
-                {{ detail.scope }}
-            </td>
-            <td
-                    *tuiCell="'Project'"
-                    tuiTd
-            >
+          >
+            <tr *ngFor="let detail of sortedDetails" tuiTr>
+              <td *tuiCell="'Scope'" tuiTd>
+                <tui-tag
+                  class="tui-space_right-1"
+                  [autoColor]="true"
+                  [value]="detail.scope"
+                ></tui-tag>
+              </td>
+              <td *tuiCell="'Project'" tuiTd>
                 {{ detail.project }}
-            </td>
-            <td
-                    *tuiCell="'Extension'"
-                    tuiTd
-            >
+              </td>
+              <td *tuiCell="'Extension'" tuiTd>
                 {{ detail.extension }}
-            </td>
-            <td
-                    *tuiCell="'TypeName'"
-                    tuiTd
-            >
+              </td>
+              <td *tuiCell="'TypeName'" tuiTd>
                 {{ detail.item_name }}
-            </td>
-            <td
-                    *tuiCell="'TableName'"
-                    tuiTd
-            >
+              </td>
+              <td *tuiCell="'TableName'" tuiTd>
                 {{ detail.item_table_name }}
-            </td>
-            <td
-                    *tuiCell="'Typecode'"
-                    tuiTd
-            >
+              </td>
+              <td *tuiCell="'Typecode'" tuiTd>
                 {{ detail.typecode }}
-            </td>
-            <td
-                    *tuiCell="'Action'"
-                    tuiTd
-            >
+              </td>
+              <td *tuiCell="'Action'" tuiTd>
                 <button
-                        appearance="flat"
-                        icon="tuiIconTrash"
-                        shape="rounded"
-                        size="s"
-                        title="Remove"
-                        tuiIconButton
-                        type="button"
-                        class="remove"
-                        (click)="remove(detail)"
+                  appearance="flat"
+                  icon="tuiIconTrash"
+                  shape="rounded"
+                  size="s"
+                  title="Remove"
+                  tuiIconButton
+                  type="button"
+                  class="remove"
+                  (click)="remove(detail)"
                 ></button>
-            </td>
-        </tr>
-        </tbody>
+              </td>
+            </tr>
+          </tbody>
         </table>
-    </div>
+      </cdk-virtual-scroll-viewport>
+    </tui-scrollbar>
+  </div>
 
-    <!-- Create Item Button Div -->
-    <div>
-        <button
-                icon="tuiIconPlusLarge"
-                tuiIconButton
-                type="button"
-                class="tui-space_right-3 tui-space_bottom-3"
-                (click)="showDialog()"
-                [attr.aria-hidden]="true"
-        ></button>
-    </div>
+  <!-- Create Item Button Div -->
+  <div>
+    <button
+      icon="tuiIconPlusLarge"
+      tuiIconButton
+      type="button"
+      class="tui-space_right-3 tui-space_bottom-3"
+      (click)="showDialog()"
+      [attr.aria-hidden]="true"
+    ></button>
+  </div>
 </div>

@@ -2,6 +2,8 @@ package main
 
 import (
 	"Typecode-Registry/internal/data"
+	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -39,7 +41,7 @@ func (app *application) getCreateItemsHandler(w http.ResponseWriter, r *http.Req
 	app.logger.Debug().Msg(fmt.Sprintf("Handling %s %s route", r.Method, r.URL.Path))
 	switch r.Method {
 	case http.MethodGet:
-		app.getItems(w, r)
+		app.getItems(w)
 	case http.MethodPost:
 		app.createItem(w, r)
 	default:
@@ -88,6 +90,17 @@ func (app *application) getItemDetailsHandler(w http.ResponseWriter, r *http.Req
 	}
 }
 
+func (app *application) getItemDetailHandler(w http.ResponseWriter, r *http.Request) {
+	app.logger.Debug().Msg(fmt.Sprintf("Handling %s %s route", r.Method, r.URL.Path))
+	switch r.Method {
+	case http.MethodGet:
+		app.getItemDetail(w, r)
+	default:
+		app.logger.Error().Msg(fmt.Sprintf("%s not allowed on route %s ", r.Method, r.URL.Path))
+		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+	}
+}
+
 func (app *application) getItemDetails(w http.ResponseWriter) {
 	itemDetails, err := app.models.Items.ReadItemDetails()
 	if err != nil {
@@ -103,11 +116,45 @@ func (app *application) getItemDetails(w http.ResponseWriter) {
 	}
 }
 
+// getItemDetail handles the GET request for a specific item detail.
+// It extracts the item ID from the URL and returns the details of the item with that ID.
+// If the ID is not a valid integer, it returns a 400 Bad Request.
+// If the item with the specified ID is not found, it returns a 404 Not Found.
+func (app *application) getItemDetail(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Path[len("/items/details/"):]
+	idInt, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		app.logger.Warn().Msg(fmt.Sprintf("Bad Request in %s using id %s",
+			GetFunctionName(),
+			id))
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	itemDetail, err := app.models.Items.ReadItemDetail(idInt)
+	if err != nil {
+		app.logger.Err(err)
+		if errors.Is(err, sql.ErrNoRows) {
+			http.Error(w, fmt.Sprintf("no item detail with id %d found", idInt), http.StatusNotFound)
+		} else {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"detail": itemDetail}, nil)
+	if err != nil {
+		app.logger.Err(err)
+		http.Error(w, "error while trying to write item detail to http response!", http.StatusInternalServerError)
+		return
+	}
+}
+
 // getItem handles the GET request for a specific item.
 // It extracts the item ID from the URL and returns the details of the item with that ID.
 // If the ID is not a valid integer, it returns a 400 Bad Request.
 // If the item with the specified ID is not found, it returns a 404 Not Found.
-// TODO: finish implentation of the updateItem handler and update documentation.
+// TODO: finish implementation of the updateItem handler and update documentation.
 func (app *application) getItem(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/items/"):]
 	idInt, err := strconv.ParseInt(id, 10, 64)
@@ -122,7 +169,7 @@ func (app *application) getItem(w http.ResponseWriter, r *http.Request) {
 	_, _ = fmt.Fprintf(w, "Display the details of item with ID: %d", idInt)
 }
 
-func (app *application) getItems(w http.ResponseWriter, r *http.Request) {
+func (app *application) getItems(w http.ResponseWriter) {
 	items, err := app.models.Items.ReadAll()
 	if err != nil {
 		app.logger.Err(err)
@@ -141,7 +188,7 @@ func (app *application) getItems(w http.ResponseWriter, r *http.Request) {
 // updateItem handles the PUT request for a specific item.
 // It extracts the item ID from the URL and updates the details of the item with that ID.
 // If the ID is not a valid integer, it returns a 400 Bad Request.
-// TODO: finish implentation of the updateItem handler and update documentation
+// TODO: finish implementation of the updateItem handler and update documentation
 func (app *application) updateItem(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/items/"):]
 	idInt, err := strconv.ParseInt(id, 10, 64)
@@ -158,7 +205,7 @@ func (app *application) updateItem(w http.ResponseWriter, r *http.Request) {
 // deleteItem handles the DELETE request for a specific item.
 // It extracts the item ID from the URL and deletes the item with that ID.
 // If the ID is not a valid integer, it returns a 400 Bad Request.
-// TODO: finish implentation of the updateItem handler.
+// TODO: finish implementation of the updateItem handler.
 func (app *application) deleteItem(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/items/"):]
 	idInt, err := strconv.ParseInt(id, 10, 64)

@@ -9,6 +9,7 @@ func (app *application) route() *http.ServeMux {
 	mux.HandleFunc("/items", app.getCreateItemsHandler)
 	mux.HandleFunc("/items/", app.getUpdateDeleteItemsHandler)
 	mux.HandleFunc("/items/details", app.getItemDetailsHandler)
+	mux.HandleFunc("/items/details/", app.getItemDetailHandler)
 	mux.HandleFunc("/extensions/", app.getExtensionsHandler)
 	mux.HandleFunc("/projects", app.getProjectsHandler)
 	return mux

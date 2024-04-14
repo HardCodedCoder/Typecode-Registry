@@ -176,3 +176,21 @@ func (i ItemModel) ReadItemDetails() ([]ItemDetail, error) {
 
 	return itemDetails, err
 }
+
+func (i ItemModel) ReadItemDetail(id int64) (ItemDetail, error) {
+	query := `
+	SELECT extension.scope, 
+	   COALESCE(project.name, '-') AS project_name,
+	   extension.name, 
+	   item.name, 
+	   item.table_name, 
+	   item.typecode 
+	FROM item
+	JOIN extension ON item.extension_id = extension.id
+	LEFT JOIN project ON extension.project_id = project.id
+	WHERE item.id = $1`
+
+	var itemDetail ItemDetail
+	err := i.DB.QueryRow(query, id).Scan(&itemDetail.Scope, &itemDetail.Project, &itemDetail.Extension, &itemDetail.ItemName, &itemDetail.ItemTableName, &itemDetail.Typecode)
+	return itemDetail, err
+}

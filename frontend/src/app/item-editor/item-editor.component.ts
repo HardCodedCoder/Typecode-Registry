@@ -6,7 +6,7 @@ import { BackendService } from '../services/backend.service';
 import { StoreService } from '../services/store.service';
 import { FormData } from '../services/interfaces/formdata';
 import { catchError, throwError } from 'rxjs';
-import {ItemDetailResponse} from "../services/interfaces/items";
+import { ItemDetailResponse } from '../services/interfaces/items';
 
 @Component({
   selector: 'app-item-editor',
@@ -24,26 +24,6 @@ export class ItemEditorComponent implements OnInit {
     'Action',
   ];
 
-  /*
-  details: readonly ItemDetailResponse[] = [
-    {
-      scope: 'Project',
-      project: 'Projekt E',
-      extension: 'Extension E1',
-      itemName: 'Item E4',
-      itemTableName: 'Tabelle E4',
-      typecode: 14406,
-    },
-    {
-      scope: 'Project',
-      project: 'Projekt E',
-      extension: 'Extension E1',
-      itemName: 'Item E3',
-      itemTableName: 'Tabelle E3',
-      typecode: 14404,
-    },
-  ]
-   */
   constructor(
     @Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
     @Inject(Injector) private readonly injector: Injector,
@@ -64,7 +44,6 @@ export class ItemEditorComponent implements OnInit {
   }
 
   showDialog(): void {
-    console.log('We are here');
     const dialog$ = this.dialogs
       .open<FormData>(
         new PolymorpheusComponent(AddItemComponent, this.injector),
@@ -115,6 +94,7 @@ export class ItemEditorComponent implements OnInit {
         extension_id: extension_id,
       })
       .subscribe(response => {
+        // TODO: call backendService to fetch specific item detail.
         console.log('item-editor: Item created using id:', response.item.id);
       });
   }
