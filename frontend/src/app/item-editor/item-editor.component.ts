@@ -1,5 +1,5 @@
 import { Component, Inject, Injector, OnInit } from '@angular/core';
-import { TuiDialogService } from '@taiga-ui/core';
+import { TuiAlertService, TuiDialogService } from '@taiga-ui/core';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { AddItemComponent } from '../add-item/add-item.component';
 import { BackendService } from '../services/backend.service';
@@ -28,7 +28,8 @@ export class ItemEditorComponent implements OnInit {
     @Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
     @Inject(Injector) private readonly injector: Injector,
     @Inject(BackendService) private readonly backendService: BackendService,
-    @Inject(StoreService) public readonly store: StoreService
+    @Inject(StoreService) public readonly store: StoreService,
+    @Inject(TuiAlertService) private readonly alertService: TuiAlertService
   ) {}
 
   ngOnInit(): void {
@@ -105,12 +106,21 @@ export class ItemEditorComponent implements OnInit {
           }
         );
 
-        console.log('item-editor: Item created using id:', response.item.id);
+        this.showNotification(response.item.id);
       });
   }
 
   remove(detail: ItemDetailResponse) {
     console.log('TODO: Implement deleting detail');
     console.log(detail);
+  }
+
+  private showNotification(itemId: number): void {
+    this.alertService
+      .open('Item with id: ' + itemId + ' created!', {
+        label: '🎉 Success 🎉',
+        status: 'success',
+      })
+      .subscribe();
   }
 }
