@@ -2,9 +2,17 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { share } from 'rxjs/operators';
 import { ItemEditorComponent } from './item-editor.component';
-import { TuiDialogService } from '@taiga-ui/core';
+import { TuiDialogService, TuiScrollbarModule } from '@taiga-ui/core';
 import { BackendService } from '../services/backend.service';
 import { StoreService } from '../services/store.service';
+import { TuiTableModule } from '@taiga-ui/addon-table';
+import {
+  CdkFixedSizeVirtualScroll,
+  CdkVirtualScrollViewport,
+  ScrollingModule,
+} from '@angular/cdk/scrolling';
+import { TuiLetModule } from '@taiga-ui/cdk';
+import { TuiTagModule } from '@taiga-ui/kit';
 
 describe('ItemEditorComponent', () => {
   let component: ItemEditorComponent;
@@ -15,25 +23,70 @@ describe('ItemEditorComponent', () => {
 
   beforeEach(async () => {
     mockDialogService = jasmine.createSpyObj('TuiDialogService', ['open']);
+    mockDialogService.open.and.returnValue(of({}).pipe(share()));
     mockBackendService = jasmine.createSpyObj('BackendService', [
       'sendCreateItemRequest',
+      'getItemsDetails',
     ]);
+    mockBackendService.getItemsDetails.and.returnValue(
+      of({
+        details: [
+          {
+            scope: 'Project',
+            project: 'Project A',
+            extension: 'Extension A',
+            item_name: 'Item A',
+            item_table_name: 'Table A',
+            typecode: 1,
+          },
+          {
+            scope: 'Shared',
+            project: '',
+            extension: 'Extension A',
+            item_name: 'Item A',
+            item_table_name: 'Table A',
+            typecode: 1,
+          },
+        ],
+      })
+    );
+    mockBackendService.sendCreateItemRequest.and.returnValue(
+      of({
+        item: {
+          id: 1,
+          name: 'Non-Shared Item',
+          typecode: 1,
+          table_name: 'Non-Shared Table',
+          extensionId: 2,
+          creation_date: '2022-01-01',
+        },
+      })
+    );
     mockStoreService = jasmine.createSpyObj('StoreService', [
       'getSharedExtensionId',
       'getProjectExtensionId',
     ]);
+    mockStoreService.getSharedExtensionId.and.returnValue(1);
+    mockStoreService.getProjectExtensionId.and.returnValue(1);
 
     await TestBed.configureTestingModule({
       declarations: [ItemEditorComponent],
+      imports: [
+        TuiScrollbarModule,
+        TuiTableModule,
+        CdkVirtualScrollViewport,
+        ScrollingModule,
+        TuiLetModule,
+        TuiTagModule,
+        CdkFixedSizeVirtualScroll,
+      ],
       providers: [
         { provide: TuiDialogService, useValue: mockDialogService },
         { provide: BackendService, useValue: mockBackendService },
         { provide: StoreService, useValue: mockStoreService },
       ],
     }).compileComponents();
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(ItemEditorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -44,7 +97,6 @@ describe('ItemEditorComponent', () => {
   });
 
   it('should open dialog on showDialog', () => {
-    mockDialogService.open.and.returnValue(of({}).pipe(share()));
     component.showDialog();
     expect(mockDialogService.open).toHaveBeenCalled();
   });
@@ -70,6 +122,28 @@ describe('ItemEditorComponent', () => {
           extensionId: 1,
           creation_date: '2022-01-01',
         },
+      })
+    );
+    mockBackendService.getItemsDetails.and.returnValue(
+      of({
+        details: [
+          {
+            scope: 'Project',
+            project: 'Project A',
+            extension: 'Extension A',
+            item_name: 'Item A',
+            item_table_name: 'Table A',
+            typecode: 1,
+          },
+          {
+            scope: 'Shared',
+            project: '',
+            extension: 'Extension A',
+            item_name: 'Item A',
+            item_table_name: 'Table A',
+            typecode: 1,
+          },
+        ],
       })
     );
 
@@ -125,5 +199,6 @@ describe('ItemEditorComponent', () => {
     component.showDialog();
 
     expect(subscribeSpy).toHaveBeenCalled();
+    expect(mockDialogService.open).toHaveBeenCalled();
   });
 });

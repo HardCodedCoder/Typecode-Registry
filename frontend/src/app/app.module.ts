@@ -37,6 +37,7 @@ import {
   CdkFixedSizeVirtualScroll,
   CdkVirtualScrollViewport,
 } from '@angular/cdk/scrolling';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -73,6 +74,7 @@ import {
     TuiScrollbarModule,
     CdkVirtualScrollViewport,
     CdkFixedSizeVirtualScroll,
+    RouterModule,
   ],
   providers: [{ provide: TUI_SANITIZER, useClass: NgDompurifySanitizer }],
   bootstrap: [AppComponent],

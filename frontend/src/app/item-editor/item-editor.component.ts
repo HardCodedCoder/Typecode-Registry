@@ -33,15 +33,15 @@ export class ItemEditorComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.backendService.getItemsDetails().subscribe(
-      response => {
+    this.backendService.getItemsDetails().subscribe({
+      next: response => {
         this.store.details = response.details;
         console.log(this.store.details);
       },
-      error => {
+      error: error => {
         console.error('Could not fetch items', error);
-      }
-    );
+      },
+    });
   }
 
   showDialog(): void {
@@ -95,16 +95,16 @@ export class ItemEditorComponent implements OnInit {
         extension_id: extension_id,
       })
       .subscribe(response => {
-        this.backendService.getItemsDetails().subscribe(
-          response => {
+        this.backendService.getItemsDetails().subscribe({
+          next: response => {
             // TODO: Change to only load the newly created item detail.
             this.store.details = response.details;
             console.log(this.store.details);
           },
-          error => {
+          error: error => {
             console.error('Could not fetch items', error);
-          }
-        );
+          },
+        });
 
         this.showNotification(response.item.id);
       });
