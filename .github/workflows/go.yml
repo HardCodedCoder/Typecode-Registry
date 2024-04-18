@@ -32,10 +32,35 @@ jobs:
         run: go vet ./...
         working-directory: backend/cmd/app
 
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.22
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+      - name: Get dependencies
+        run: go mod download
+        working-directory: backend
+      - name: Build
+        run: go build -o server-${{ matrix.os }} ./...
+        working-directory: backend/cmd/app
+      - name: Upload Go build artifact for ${{ matrix.os }}
+        uses: actions/upload-artifact@v2
+        with:
+          name:  go-build-${{ matrix.os }}
+          path: backend/cmd/app/server-${{ matrix.os }}
+
   test:
     name: Test and Upload Coverage to Codecov
     runs-on: ubuntu-latest
-    needs: lint
+    needs: build
     steps:
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -61,26 +86,3 @@ jobs:
           flags: backend
           fail_ci_if_error: true
           verbose: true
-
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up Go 1.x
-        uses: actions/setup-go@v2
-        with:
-          go-version: ^1.22
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v2
-      - name: Get dependencies
-        run: go mod download
-        working-directory: backend
-      - name: Build
-        run: go build -o server ./...
-        working-directory: backend/cmd/app
-      - name: Upload Go build artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: go-build
-          path: backend/cmd/app/server
