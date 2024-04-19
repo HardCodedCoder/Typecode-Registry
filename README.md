@@ -28,38 +28,80 @@ The application is developed by Students of the FH Burgenland `Software Engineer
 - **Angular CLI**: Install Angular CLI via npm with `npm install -g @angular/cli`.
 - **PostgreSQL**: Ensure PostgreSQL is installed and running for your database needs. Installation guides can be found on the [PostgreSQL official website](https://www.postgresql.org/download/).
 
-### Backend Setup (Golang)
+### Database Setup ###
 1. **Clone the Repository**: Clone the project repository to your local machine.
 
  ```bash
- git clone https://github.com/yourproject/typecode-registry.git
+ git clone https://github.com/HardCodedCoder/typecode-registry.git
  cd typecode-registry/backend
 ```
 
-2. **Configure the Environment**: Configure your local environment variables for database connections and any other necessary settings. This typically involves setting up a `.env` file or exporting environment variables directly. For Golang backend development, environment variables like `DB_HOST`, `DB_USER`, `DB_PASSWORD`, and `DB_NAME` are essential for PostgreSQL connections.
+2. **Install the PostgreSQL database**: Install the database locally or via a docker container.
 
-3. **Install Dependencies**: Navigate to the backend directory and install the required Golang modules to ensure all dependencies are up to date.
+If you want to use docker, you could use the following `docker-compose.yml` as a base for your container configuration: 
+
+```yml
+version: '3'
+name: "postgresql_database_and_pgadmin"
+services:
+  db:
+    container_name: PostgreSQL-database
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: <username>
+      POSTGRES_PASSWORD: <password>
+      POSTGRES_DB: <dbname>
+    ports:
+      - "5432:5432"
+    volumes:
+      - ~/postgres-data:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: <pg_admin_username>
+      PGADMIN_DEFAULT_PASSWORD: <pg_admin_password>
+    ports:
+      - "5050:80"
+    volumes:
+      - ~/pgadmin-data:/var/lib/pgadmin
+```
+
+**NOTE**: Please replace placeholders like `<username>` with actual values. 
+
+3. **Setup data model**: In the repository directory, please navigate to:
+
+```bash
+cd ./backend/database/
+```
+
+and execute the script named `001_initial_schema.sql` in a database console to setup the data model. 
+
+### Backend Setup (Golang)
+
+
+1. **Configure the Environment**: Configure your local environment variable for database connection. This involves exporting an environment variable directly. Define a variable called `TYPECODEREGISTRY_DB_DSN` which holds the connection string to the database.
+
+2. **Install Dependencies**: Navigate to the backend directory and install the required Golang modules to ensure all dependencies are up to date.
 
    
  ```bash
  go mod tidy
 ```
 
-4. **Run the Backend**: To start the backend server, run the main application file. First, ensure you're in the backend directory. Then execute the `go run` command with the path to your server's main file. This action initiates the server, making it listen for requests on the configured port.
+3. **Run the Backend**: To start the backend server, run the main application file. First, ensure you're in the backend directory `./backend/cmd/app`. Then execute the `go run .` command. This action initiates the server, making it listen for requests on the default port 8080.
 
- Navigate to your project's backend directory:
- ```bash
- cd path/to/your/backend
-```
-
-5. ***Start the Server***:
-
+The following parameters can be passed as arguments to the application: 
 
 ```bash
-go run main.go
+  -db-dns string
+        PostgreSQL DSN (default os.Getenv("TYPECODEREGISTRY_DB_DSN"))
+  -loglevel string
+        Log level (debug, info, warn, error, fatal, panic) (default "info")
+  -port int
+        API server port (default 8080)
 ```
 
-Watch for console output indicating that the server is running, typically something like "Server listening on port 8080". This confirms that your backend service is up and operational.
+4. **Validation**: Watch for console output indicating that the server is running, printing `API server is up and running`. This confirms that your backend service is up and operational.
 
 ### Frontend Setup (Angular)
 
@@ -71,15 +113,12 @@ Watch for console output indicating that the server is running, typically someth
 
    `npm install`
 
-3. **Environment Configuration**: Set up your Angular application to communicate with the backend by configuring the `environment.ts` file. This file is located under the `src/environments` directory. You will need to specify the backend API URL among other configurations that might be required for your application to run properly.
+3. **Environment Configuration**: Set up your Angular application to communicate with the backend by configuring the `backend.service.ts` file. This file is located under the `src/app/services` directory. You will need to specify the backend API URL.
 
-In `src/environments/environment.ts`, you might have something like:
+In `backend.service.ts`, you might have something like:
 
  ```typescript
- export const environment = {
-   production: false,
-   apiUrl: 'http://localhost:8080/api'
- };
+private apiUrl = 'http://localhost:8080';
 ```
 
 4. **Run the Frontend Development Server**: Fire up your Angular application by starting the Angular development server. The ng serve command compiles the application and launches it in a browser.
