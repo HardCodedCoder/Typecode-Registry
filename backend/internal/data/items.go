@@ -15,6 +15,18 @@ type Item struct {
 	CreationDate time.Time `json:"creation_date"`
 }
 
+// ItemDetail represents detailed information about an item, including relevant
+// data about its associated extension and project. It is used to structure the
+// data retrieved from the database.
+type ItemDetail struct {
+	Scope         string `json:"scope"`
+	Project       string `json:"project"`
+	Extension     string `json:"extension"`
+	ItemName      string `json:"item_name"`
+	ItemTableName string `json:"item_table_name"`
+	Typecode      int32  `json:"typecode"`
+}
+
 // ItemModel wraps the database connection pool.
 type ItemModel struct {
 	DB *sql.DB
@@ -123,4 +135,62 @@ func (i ItemModel) ReadAll() ([]Item, error) {
 	err = rows.Close()
 
 	return items, err
+}
+
+// ReadItemDetails executes a SQL query to retrieve detailed information about items.
+// The information includes the scope of the extension, the name of the project,
+// the name of the extension, the name of the item, the table name of the item, and
+// the type code of the item. The method returns a slice of ItemDetail and an error.
+// On success, the slice contains the queried item details. If an error occurs during
+// the query execution or while reading the results, the corresponding error is returned.
+func (i ItemModel) ReadItemDetails() ([]ItemDetail, error) {
+	query := `
+	SELECT extension.scope, 
+       COALESCE(project.name, '-') AS project_name,
+       extension.name, 
+       item.name, 
+       item.table_name, 
+       item.typecode 
+	FROM item
+	JOIN extension ON item.extension_id = extension.id
+	LEFT JOIN project ON extension.project_id = project.id`
+
+	rows, err := i.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	var itemDetails []ItemDetail
+
+	for rows.Next() {
+		var itemDetail ItemDetail
+		err = rows.Scan(&itemDetail.Scope, &itemDetail.Project, &itemDetail.Extension, &itemDetail.ItemName, &itemDetail.ItemTableName, &itemDetail.Typecode)
+		itemDetails = append(itemDetails, itemDetail)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = rows.Close()
+
+	return itemDetails, err
+}
+
+func (i ItemModel) ReadItemDetail(id int64) (ItemDetail, error) {
+	query := `
+	SELECT extension.scope, 
+	   COALESCE(project.name, '-') AS project_name,
+	   extension.name, 
+	   item.name, 
+	   item.table_name, 
+	   item.typecode 
+	FROM item
+	JOIN extension ON item.extension_id = extension.id
+	LEFT JOIN project ON extension.project_id = project.id
+	WHERE item.id = $1`
+
+	var itemDetail ItemDetail
+	err := i.DB.QueryRow(query, id).Scan(&itemDetail.Scope, &itemDetail.Project, &itemDetail.Extension, &itemDetail.ItemName, &itemDetail.ItemTableName, &itemDetail.Typecode)
+	return itemDetail, err
 }

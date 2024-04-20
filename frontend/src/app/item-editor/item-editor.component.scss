@@ -1,0 +1,55 @@
+@import '@taiga-ui/core/styles/taiga-ui-local.scss';
+
+.add-button {
+  margin-bottom: 5px;
+}
+
+table {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+td,
+th {
+  white-space: nowrap;
+  border-color: transparent;
+  border-right-color: var(--tui-base-04);
+}
+td:last-child,
+th:last-child {
+  border-right-color: transparent;
+}
+tbody {
+  border-color: transparent;
+}
+tr {
+  &:nth-child(even) {
+    td {
+      background: var(--tui-base-02);
+    }
+  }
+}
+
+.remove {
+  opacity: 0;
+}
+tr:hover .remove,
+tr:focus-within .remove {
+  opacity: 1;
+}
+
+thead {
+  tr {
+    th {
+      background: var(--tui-base-03);
+      text-transform: uppercase;
+      border-bottom: 2px solid var(--tui-base-03);
+      padding: 10px 15px;
+    }
+  }
+}
+
+.viewport {
+  height: 700px;
+  border-radius: 10px;
+}

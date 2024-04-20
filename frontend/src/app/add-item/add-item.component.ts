@@ -74,33 +74,33 @@ export class AddItemComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.backend.getExtensions('Shared').subscribe(
-      response => {
+    this.backend.getExtensions('Shared').subscribe({
+      next: response => {
         this.store.sharedExtensions = response.extensions;
         this.extensionsToDisplay = this.store.sharedExtensions;
       },
-      error => {
+      error: error => {
         console.error('Could not fetch shared extensions:', error);
-      }
-    );
+      },
+    });
 
-    this.backend.getExtensions('Project').subscribe(
-      response => {
+    this.backend.getExtensions('Project').subscribe({
+      next: response => {
         this.store.projectExtensions = response.extensions;
       },
-      error => {
+      error: error => {
         console.error('Could not fetch project extensions:', error);
-      }
-    );
+      },
+    });
 
-    this.backend.getProjects().subscribe(
-      response => {
+    this.backend.getProjects().subscribe({
+      next: response => {
         this.store.projects = response.projects;
       },
-      error => {
+      error: error => {
         console.error('Error loading projects:', error);
-      }
-    );
+      },
+    });
 
     this.form.controls['extensionComboBox'].valueChanges
       .pipe(takeUntil(this.destroy$))

@@ -3,8 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, Observable, of, tap } from 'rxjs';
 import { ExtensionsAPIResponse } from './interfaces/extension';
 import { ProjectsAPIResponse } from './interfaces/project';
+import {
+  ItemAPIResponse,
+  ItemDetailAPIResponse,
+  ItemsAPIResponse,
+  ItemsDetailsAPIResponse,
+} from './interfaces/items';
 import { ItemRequest } from './interfaces/requests';
-import { ItemAPIResponse } from './interfaces/items';
 
 @Injectable({
   providedIn: 'root',
@@ -42,6 +47,94 @@ export class BackendService {
       );
   }
 
+  getItems(): Observable<ItemsAPIResponse> {
+    return this.http.get<ItemsAPIResponse>(`${this.apiUrl}/items`).pipe(
+      tap(_ => console.log(`fetched items`)),
+      catchError(
+        this.handleError<ItemsAPIResponse>('getItems', {
+          items: [],
+        })
+      )
+    );
+  }
+
+  /**
+   * Fetches all item details from the backend.
+   *
+   * This method sends an HTTP GET request to the backend to retrieve all item details.
+   * The endpoint it hits is `${this.apiUrl}/items/details`, where `this.apiUrl` is the base URL of the backend.
+   *
+   * If the request is successful, it returns an Observable that emits an `ItemsDetailsAPIResponse`.
+   * The `ItemsDetailsAPIResponse` is an object that contains an array of item details.
+   *
+   * If the request fails, it will trigger the `handleError` method. This method logs the error and returns an Observable that emits a default `ItemsDetailsAPIResponse` object.
+   * The default `ItemsDetailsAPIResponse` object is `{ details: [] }`, which represents an empty list of item details.
+   *
+   * @returns An Observable of `ItemsDetailsAPIResponse`. Subscribe to this Observable to get the data when the request succeeds or fails.
+   */
+  getItemsDetails(): Observable<ItemsDetailsAPIResponse> {
+    return this.http
+      .get<ItemsDetailsAPIResponse>(`${this.apiUrl}/items/details`)
+      .pipe(
+        tap(_ => console.log(`fetched items`)),
+        catchError(
+          this.handleError<ItemsDetailsAPIResponse>('getItemsDetails', {
+            details: [],
+          })
+        )
+      );
+  }
+
+  /**
+   * Fetches the details of a specific item from the backend.
+   *
+   * This method sends an HTTP GET request to the backend to retrieve the details of a specific item.
+   * The endpoint it hits is `${this.apiUrl}/items/${id}`, where `this.apiUrl` is the base URL of the backend and `id` is the ID of the item to fetch.
+   *
+   * If the request is successful, it returns an Observable that emits an `ItemDetailAPIResponse`.
+   * The `ItemDetailAPIResponse` is an object that contains the details of the item.
+   *
+   * If the request fails, it will trigger the `handleError` method. This method logs the error and returns an Observable that emits a default `ItemDetailAPIResponse` object.
+   * The default `ItemDetailAPIResponse` object is an empty item detail object.
+   *
+   * @param id - The ID of the item to fetch.
+   * @returns An Observable of `ItemDetailAPIResponse`. Subscribe to this Observable to get the data when the request succeeds or fails.
+   */
+  getItemDetails(id: number): Observable<ItemDetailAPIResponse> {
+    return this.http
+      .get<ItemDetailAPIResponse>(`${this.apiUrl}/items/details/${id}`)
+      .pipe(
+        tap(_ => console.log(`fetched item with id ${id}`)),
+        catchError(
+          this.handleError<ItemDetailAPIResponse>('getItemDetails', {
+            detail: {
+              scope: '',
+              project: '',
+              extension: '',
+              item_name: '',
+              item_table_name: '',
+              typecode: 0,
+            },
+          })
+        )
+      );
+  }
+
+  /**
+   * Sends a request to the backend to create a new item.
+   *
+   * This method sends an HTTP POST request to the backend to create a new item. The item details are passed in the `itemRequest` parameter.
+   * The endpoint it hits is `${this.apiUrl}/items`, where `this.apiUrl` is the base URL of the backend.
+   *
+   * If the request is successful, it returns an Observable that emits an `ItemAPIResponse`.
+   * The `ItemAPIResponse` is an object that contains the details of the created item.
+   *
+   * If the request fails, it will trigger the `handleError` method. This method logs the error and returns an Observable that emits a default `ItemAPIResponse` object.
+   * The default `ItemAPIResponse` object is an empty item object.
+   *
+   * @param itemRequest - The details of the item to create. This should be an object that conforms to the `ItemRequest` interface.
+   * @returns An Observable of `ItemAPIResponse`. Subscribe to this Observable to get the data when the request succeeds or fails.
+   */
   sendCreateItemRequest(itemRequest: ItemRequest): Observable<ItemAPIResponse> {
     return this.http
       .post<ItemAPIResponse>(`${this.apiUrl}/items`, itemRequest)
@@ -52,6 +145,7 @@ export class BackendService {
             item: {
               id: 0,
               name: '',
+              typecode: 0,
               table_name: '',
               extensionId: 0,
               creation_date: '',
@@ -60,6 +154,7 @@ export class BackendService {
         )
       );
   }
+
   /**
    * Fetches all projects from the backend.
    *

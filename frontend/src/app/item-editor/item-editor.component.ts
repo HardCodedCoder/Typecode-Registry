@@ -1,27 +1,50 @@
-import { Component, Inject, Injector } from '@angular/core';
-import { TuiDialogService } from '@taiga-ui/core';
+import { Component, Inject, Injector, OnInit } from '@angular/core';
+import { TuiAlertService, TuiDialogService } from '@taiga-ui/core';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { AddItemComponent } from '../add-item/add-item.component';
 import { BackendService } from '../services/backend.service';
 import { StoreService } from '../services/store.service';
 import { FormData } from '../services/interfaces/formdata';
 import { catchError, throwError } from 'rxjs';
+import { ItemDetailResponse } from '../services/interfaces/items';
 
 @Component({
   selector: 'app-item-editor',
   templateUrl: './item-editor.component.html',
   styleUrl: './item-editor.component.scss',
 })
-export class ItemEditorComponent {
+export class ItemEditorComponent implements OnInit {
+  readonly columns: string[] = [
+    'Scope',
+    'Project',
+    'Extension',
+    'TypeName',
+    'TableName',
+    'Typecode',
+    'Action',
+  ];
+
   constructor(
     @Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
     @Inject(Injector) private readonly injector: Injector,
     @Inject(BackendService) private readonly backendService: BackendService,
-    @Inject(StoreService) private readonly store: StoreService
+    @Inject(StoreService) public readonly store: StoreService,
+    @Inject(TuiAlertService) private readonly alertService: TuiAlertService
   ) {}
 
+  ngOnInit(): void {
+    this.backendService.getItemsDetails().subscribe({
+      next: response => {
+        this.store.details = response.details;
+        console.log(this.store.details);
+      },
+      error: error => {
+        console.error('Could not fetch items', error);
+      },
+    });
+  }
+
   showDialog(): void {
-    console.log('We are here');
     const dialog$ = this.dialogs
       .open<FormData>(
         new PolymorpheusComponent(AddItemComponent, this.injector),
@@ -72,7 +95,32 @@ export class ItemEditorComponent {
         extension_id: extension_id,
       })
       .subscribe(response => {
-        console.log('item-editor: Item created using id:', response.item.id);
+        this.backendService.getItemsDetails().subscribe({
+          next: response => {
+            // TODO: Change to only load the newly created item detail.
+            this.store.details = response.details;
+            console.log(this.store.details);
+          },
+          error: error => {
+            console.error('Could not fetch items', error);
+          },
+        });
+
+        this.showNotification(response.item.id);
       });
+  }
+
+  remove(detail: ItemDetailResponse) {
+    console.log('TODO: Implement deleting detail');
+    console.log(detail);
+  }
+
+  private showNotification(itemId: number): void {
+    this.alertService
+      .open('Item with id: ' + itemId + ' created!', {
+        label: '🎉 Success 🎉',
+        status: 'success',
+      })
+      .subscribe();
   }
 }
