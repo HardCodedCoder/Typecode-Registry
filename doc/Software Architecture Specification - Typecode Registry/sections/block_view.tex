@@ -137,9 +137,9 @@ The backend's technology stack is meticulously chosen to leverage the robustness
     This pattern ensures a clear separation of concerns and enhances the maintainability of our data access layer.
     By implementing entity-specific types and methods, we gain fine-grained control over database interactions, allowing for customized query optimization and error handling strategies.
 
-    \item \textbf{Logging:} For application logging, we employ Golang's standard `log` package.
-    This facilitates a straightforward and effective logging mechanism, essential for debugging, monitoring, and auditing backend operations.
-    The `log` package's simplicity and integration with Go's ecosystem make it an ideal choice for our application's logging needs.
+    \item \textbf{Logging:} `zerolog` package is used as a logging framework.
+    It brings structured, level-based logging, which is highly performant and customizable.
+    With `zerolog`, log messages can be defined at various levels, from `trace` to `fatal`, providing clear visibility into the application's behavior and aiding in prompt issue resolution.
 \end{itemize}
 
 This technology stack, grounded in Golang's standard libraries and best practices, forms the backbone of our backend architecture.
@@ -149,37 +149,44 @@ It enables us to build a system that is not only performant and reliable but als
 Our backend leverages the standard `http` package from Golang's standard library for routing and HTTP request handling.
 This approach allows us to directly use the powerful concurrency features of Go without the need for external frameworks, keeping the application lightweight and efficient.
 
-\begin{table}[H]
-    \begin{tabularx}{\textwidth}{|l|l|X|}
-        \hline
-        \rowcolor{headercolor} \textbf{Route} & \textbf{HTTP Methods} & \textbf{Description} \\
-        \hline
-        /healthcheck & GET & This route returns the current state of the API and can be used to retrieve status information. \\
-        \hline
-        /items & GET, POST & This route creates a new item.
-        In the request body, the client needs to send the following data:
+\begin{longtable}{|l|p{3cm}|>{\raggedright\arraybackslash}p{7cm}|}
+    \hline
+    \rowcolor{headercolor} \textbf{Route} & \textbf{Methods} & \textbf{Description} \\
+    \endfirsthead
 
-        \\ & & - \textbf{name}: A string representing the name of the item to create.
+    \hline
+    \rowcolor{headercolor} \textbf{Route} & \textbf{Methods} & \textbf{Description} \\
+    \endhead
 
-        \\ & & - \textbf{tablename}: A string representing the name of the table holding item entries in SAP\@.
 
-        \\ & & - \textbf{extension\_id}: A number representing the unique identifier of an existing extension.
-        Depending on the id, the backend determines if the item will be created for a global or project scope (depending on the scope of the extension). \\
-        \hline
-        /items/ & GET, PUT, & \multirow{Gets, updates, or deletes an item by its ID.} \\
-        & DELETE & \\
-        \hline
-        /extensions/ & GET & Gets the extensions of a specific scope.
-        Only two values will return extensions:
-
-        \\ & & - \textbf{Shared}: Returns all the shared extensions.
-
-        \\ & & - \textbf{Project}: Returns all Project extensions. \\
-        \hline
-        /projects & GET & Returns all projects created. \\
-        \hline
-    \end{tabularx}\caption{Overview of Backend Routes}\label{tab:table}
-\end{table}
+    \hline
+    /healthcheck & GET & This route returns the current state of the API and can be used to retrieve status information. \\
+    \hline
+    /items & GET, POST & This route fetches all items or creates a new item.
+    In the POST request body, the client needs to send the following data:
+    \newline\newline  - \textbf{name}: A string representing the name of the item to create.
+    \newline\newline - \textbf{tablename}: A string representing the name of the table holding item entries in SAP.
+    \newline\newline - \textbf{extension\_id}: A number representing the unique identifier of an existing extension. Depending on the id, the backend determines if the item will be created for a global or project scope (depending on the scope of the extension). \\
+    \hline
+    /items/ & GET, PUT, DELETE & Gets, updates, or deletes an item by its ID. \\
+    \hline
+    /items/details & GET & Fetches detailed information about an item including its associated extension and project.
+    This route utilizes joins to gather data from the `item`, `extension`, and `project` tables, returning data such as the item's name, the extension's scope, and the project's name.
+    When the extension's scope is 'Shared', the project name is set to '-'.
+    This distinction helps identify items that are accessible globally and not tied to a specific project. \\
+    \hline
+    /items/details/{id} & GET & Fetches detailed information about an item by its ID. \\
+    \hline
+    /projects & GET & Returns all projects created. \\
+    \hline
+    /extensions/ & GET & Gets the extensions of a specific scope.
+    Only two values will return extensions:
+    \newline\newline - \textbf{Shared}: Returns all the shared extensions.
+    \newline\newline - \textbf{Project}: Returns all Project extensions. \\
+    \hline
+\end{longtable}
+\caption{Overview of Backend Routes}
+\label{tab:table_routes}
 
 \headingFive{API Examples}\label{subsubsec:api-examples}
 
@@ -314,6 +321,76 @@ Content-Type: application/json
 }
 \end{lstlisting}
 
+\headingSix{GET /items/details}
+
+The \texttt{GET /items/details} endpoint is designed to provide clients with detailed information about items, including data about the associated extensions and projects. This route leverages database joins to collect comprehensive information from the `item`, `extension`, and `project` tables, offering a holistic view of the items' details in one response.
+
+\begin{lstlisting}[language=json,label={lst:lstlisting5}]
+GET /items/details HTTP/1.1
+Host: example.com
+\end{lstlisting}
+
+Response:
+
+\begin{lstlisting}[language=json,label={lst:lstlisting18}]
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "details": [
+        {
+            "scope": "Shared",
+            "project": "-",
+            "extension": "Extension 1",
+            "itemName": "Item A",
+            "itemTableName": "tableA",
+            "typecode": 501
+        },
+        {
+            "scope": "Project",
+            "project": "Project Alpha",
+            "extension": "Extension 2",
+            "itemName": "Item B",
+            "itemTableName": "tableB",
+            "typecode": 502
+        }
+    ]
+}
+\end{lstlisting}
+
+This example illustrates how the API responds to a \texttt{GET} request for item details, returning a list of item details structured with both the item and its related project and extension data. This endpoint is especially useful for users who require a comprehensive dataset encompassing multiple relational aspects of items.
+
+\headingSix{GET /items/details}
+
+The \texttt{GET /items/details} endpoint is designed to provide clients with detailed information about items, including data about the associated extensions and projects. This route leverages database joins to collect comprehensive information from the `item`, `extension`, and `project` tables, offering a holistic view of the items' details in one response.
+
+\begin{lstlisting}[language=json,label={lst:lstlisting19}]
+GET /items/details/1 HTTP/1.1
+Host: example.com
+\end{lstlisting}
+
+Response:
+
+\begin{lstlisting}[language=json,label={lst:lstlisting20}]
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "detail": {
+            "scope": "Shared",
+            "project": "-",
+            "extension": "Extension 1",
+            "itemName": "Item A",
+            "itemTableName": "tableA",
+            "typecode": 14000
+        }
+}
+\end{lstlisting}
+
+This example illustrates how the API responds to a \texttt{GET} request for a specific item detail.
+This can be especially useful, when a new item was created and the client needs to retrieve the details of the newly created item,
+without needing to fetch all details again.
+
 \headingSix{GET /projects}
 
 The \texttt{GET /projects} endpoint allows clients to retrieve all projects in the system.
@@ -436,9 +513,35 @@ The following picture illustrates the item in the database and shows the mapping
 
 This pattern is replicated for other entities, ensuring consistent and organized data access throughout the application.
 
-\headingFour{Logging}
-Utilizing Go's standard `log` package, our backend implements a comprehensive logging system.
-It's configured to capture both system-level and application-level events, aiding in debugging and monitoring the application's health.
+\headingFour{Logging with Zerolog}
+
+The backend uses the `zerolog` library for its logging system.
+`Zerolog` provides structured, level-based logging that is highly performant and scalable, making it suitable for both development and production environments.
+
+\begin{itemize}
+    \item \textbf{Log Levels:} Multiple log levels are available, enabling the appropriate granularity of log messages.
+    These levels include:
+    \begin{itemize}
+        \item \textit{Trace}: The most verbose level, used for systematic granular events that are useful for debugging.
+        \item \textit{Debug}: Used for less granular but still detailed debugging information about the system's behavior.
+        \item \textit{Info}: Standard log level indicating general operational events that highlight the application's running state.
+        \item \textit{Warn}: Indicates a potential issue or important event that should be noted but is not necessarily an error.
+        \item \textit{Error}: Used when the application encounters an issue that disrupts a process or operation.
+        \item \textit{Fatal}: Signifies a severe problem that has caused or is about to cause the application to terminate.
+    \end{itemize}
+    \item \textbf{Usage Context:} The backend strategically employs these log levels to enhance observability:
+    \begin{itemize}
+        \item \textit{Trace} and \textit{Debug} logs are predominantly used in development environments to trace execution flow and diagnose issues.
+        \item \textit{Info} logs are recorded during routine operations, such as service start-up or shutdown, and when significant transactions occur.
+        \item \textit{Warn} logs alert to conditions that require attention or may lead to an error if left unaddressed.
+        \item \textit{Error} logs capture failures within the system, facilitating rapid diagnosis and resolution of issues.
+        \item \textit{Fatal} logs are used sparingly, only logging critical events that will halt the backend services.
+    \end{itemize}
+\end{itemize}
+
+By utilizing `zerolog`, the backend achieves efficient and structured logging, greatly improving the maintainability and performance of the system's logging capabilities.
+With configurable output (console, JSON) and the ability to integrate with various logging platforms, `zerolog` enriches the operational monitoring and troubleshooting processes.
+
 
 \newpage
 

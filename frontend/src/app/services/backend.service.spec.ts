@@ -69,6 +69,7 @@ describe('BackendService', () => {
         name: 'item1',
         table_name: 'table1',
         extensionId: 1,
+        typecode: 1,
         creation_date: '2022-01-01',
       },
     };
@@ -93,6 +94,7 @@ describe('BackendService', () => {
         name: '',
         table_name: '',
         extensionId: 0,
+        typecode: 0, // Adjusted the expected typecode to 0
         creation_date: '',
       },
     };

@@ -12,6 +12,7 @@ import {
   TuiDropdownModule,
   TuiButtonModule,
   TuiSvgModule,
+  TuiScrollbarModule,
 } from '@taiga-ui/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
@@ -26,10 +27,17 @@ import {
   TuiFilterByInputPipeModule,
   TuiInputModule,
   TuiRadioBlockModule,
+  TuiTagModule,
 } from '@taiga-ui/kit';
 import { ReactiveFormsModule } from '@angular/forms';
-import { TuiValueChangesModule } from '@taiga-ui/cdk';
+import { TuiLetModule, TuiValueChangesModule } from '@taiga-ui/cdk';
 import { HttpClientModule } from '@angular/common/http';
+import { TuiTableModule } from '@taiga-ui/addon-table';
+import {
+  CdkFixedSizeVirtualScroll,
+  CdkVirtualScrollViewport,
+} from '@angular/cdk/scrolling';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -60,6 +68,13 @@ import { HttpClientModule } from '@angular/common/http';
     TuiFilterByInputPipeModule,
     TuiButtonModule,
     TuiSvgModule,
+    TuiTableModule,
+    TuiLetModule,
+    TuiTagModule,
+    TuiScrollbarModule,
+    CdkVirtualScrollViewport,
+    CdkFixedSizeVirtualScroll,
+    RouterModule,
   ],
   providers: [{ provide: TUI_SANITIZER, useClass: NgDompurifySanitizer }],
   bootstrap: [AppComponent],
