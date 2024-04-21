@@ -2,6 +2,7 @@
 ARG TARGETPLATFORM
 
 # Start with the official Golang image to build the binary.
+# hadolint ignore=DL3029
 FROM --platform=$TARGETPLATFORM golang:1.22 as builder
 
 # Set the Current Working Directory inside the container
