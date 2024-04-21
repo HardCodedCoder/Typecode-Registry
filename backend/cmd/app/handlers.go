@@ -215,7 +215,16 @@ func (app *application) deleteItem(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 	}
 
-	_, _ = fmt.Fprintf(w, "Delete the details of item with ID: %d", idInt)
+	err = app.models.Items.DeleteItem(idInt)
+	if err != nil {
+		app.logger.Err(err)
+		http.Error(w, "error during deleting the requested item, no rows affected.", http.StatusInternalServerError)
+	}
+
+	err = app.writeJSON(w, http.StatusNoContent, nil, nil)
+	if err != nil {
+		app.logger.Err(err)
+	}
 }
 
 // createItem handles the POST request to create a new item.

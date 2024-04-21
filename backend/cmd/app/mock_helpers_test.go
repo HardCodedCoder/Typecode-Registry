@@ -40,6 +40,11 @@ func setupInsertItemMock(mock sqlmock.Sqlmock, name string, extensionID int64, t
 	mockInsertItemQuery(mock, insertArgs, insertRows)
 }
 
+func mockDeleteItemExecution(mock sqlmock.Sqlmock, id int, lastInsertID int64, rowsAffected int64) {
+	query := regexp.QuoteMeta(`DELETE FROM item WHERE id = $1`)
+	mock.ExpectExec(query).WithArgs(id).WillReturnResult(sqlmock.NewResult(lastInsertID, rowsAffected))
+}
+
 func mockReadExtensionByIDQuery(mock sqlmock.Sqlmock, args []driver.Value, returnRows *sqlmock.Rows) {
 	query := regexp.QuoteMeta(`
 	    SELECT id, project_id, name, description, scope, creation_date
