@@ -2,6 +2,7 @@ package data
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 )
 
@@ -193,4 +194,23 @@ func (i ItemModel) ReadItemDetail(id int64) (ItemDetail, error) {
 	var itemDetail ItemDetail
 	err := i.DB.QueryRow(query, id).Scan(&itemDetail.Scope, &itemDetail.Project, &itemDetail.Extension, &itemDetail.ItemName, &itemDetail.ItemTableName, &itemDetail.Typecode)
 	return itemDetail, err
+}
+
+func (i ItemModel) DeleteItem(id int64) error {
+	query := `DELETE FROM item WHERE id = $1`
+	result, err := i.DB.Exec(query, id)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("no record found.")
+	}
+
+	return nil
 }

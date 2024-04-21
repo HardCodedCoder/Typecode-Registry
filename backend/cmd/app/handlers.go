@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
 // ItemRequest is the request object for creating a new item.
@@ -216,7 +215,16 @@ func (app *application) deleteItem(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 	}
 
-	_, _ = fmt.Fprintf(w, "Delete the details of item with ID: %d", idInt)
+	err = app.models.Items.DeleteItem(idInt)
+	if err != nil {
+		app.logger.Err(err)
+		http.Error(w, "error during deleting the requested item, no rows affected.", http.StatusInternalServerError)
+	}
+
+	err = app.writeJSON(w, http.StatusNoContent, nil, nil)
+	if err != nil {
+		app.logger.Err(err)
+	}
 }
 
 // createItem handles the POST request to create a new item.
@@ -264,16 +272,9 @@ func (app *application) createItem(w http.ResponseWriter, r *http.Request) {
 
 	err = app.models.Items.Insert(item)
 	if err != nil {
-		app.logger.Println(err)
-		if strings.Contains(err.Error(), "foreign key constraint") {
-			msg := fmt.Sprintf("Invalid extension_id: %d No matching extension record found", itemReq.ExtensionId)
-			http.Error(w, msg, http.StatusBadRequest)
-			app.logger.Error().Msg(msg)
-		} else {
-			app.logger.Err(err)
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-			return
-		}
+		app.logger.Err(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
 	}
 
 	headers := make(http.Header)
