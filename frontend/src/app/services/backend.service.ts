@@ -10,13 +10,13 @@ import {
   ItemsDetailsAPIResponse,
 } from './interfaces/items';
 import { ItemRequest } from './interfaces/requests';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BackendService {
-  private apiUrl = 'http://localhost:8080';
-
+  private apiUrl = environment.backendUrl;
   constructor(private http: HttpClient) {}
 
   /**
