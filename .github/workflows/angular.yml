@@ -75,9 +75,8 @@ jobs:
           name: angular-build
           path: frontend/dist
       - name: Build Docker Image
-        run: docker build -t ghcr.io/${{ env.LOWERCASE_OWNER }}/my-angular-app:latest frontend
-        working-directory: ${{ github.workspace }}
+        run: docker build -t ghcr.io/${{ env.LOWERCASE_OWNER }}/my-angular-app:latest -f frontend/Dockerfile frontend
       - name: Push Docker Image to GitHub Container Registry
         run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ env.LOWERCASE_OWNER }} --password-stdin
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ env.LOWERCASE_OWNER }} --password-stdin
           docker push ghcr.io/${{ env.LOWERCASE_OWNER }}/my-angular-app:latest
