@@ -160,6 +160,8 @@ func main() {
 		WriteTimeout: 30 * time.Second,
 	}
 
+	app.logger.Info().Msg("API server is up and running")
+
 	err = server.ListenAndServe()
 	app.logger.Err(err)
 }
