@@ -204,7 +204,7 @@ func (app *application) updateItem(w http.ResponseWriter, r *http.Request) {
 // deleteItem handles the DELETE request for a specific item.
 // It extracts the item ID from the URL and deletes the item with that ID.
 // If the ID is not a valid integer, it returns a 400 Bad Request.
-// TODO: finish implementation of the updateItem handler.
+// When the item is successfully deleted, it returns a 204 No Content status.
 func (app *application) deleteItem(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/items/"):]
 	idInt, err := strconv.ParseInt(id, 10, 64)
