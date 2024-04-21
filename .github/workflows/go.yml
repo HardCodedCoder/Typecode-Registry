@@ -42,7 +42,6 @@ jobs:
         uses: hadolint/hadolint-action@v1.5.0
         with:
           dockerfile: backend/Dockerfile
-          config: backend/.hadolint.yaml
 
   build:
     name: Build on ${{ matrix.os }}
