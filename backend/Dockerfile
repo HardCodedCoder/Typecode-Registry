@@ -1,5 +1,8 @@
+# Argument for base platform
+ARG TARGETPLATFORM
+
 # Start with the official Golang image to build the binary.
-FROM golang:1.22 as builder
+FROM --platform=$TARGETPLATFORM golang:1.22 as builder
 
 # Set the Current Working Directory inside the container
 WORKDIR /app
@@ -14,10 +17,10 @@ RUN go mod download
 COPY . .
 
 # Build the Go app
-RUN go build -o myserver cmd/app/*.go
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o myserver cmd/app/*.go
 
 # Start a new stage from scratch
-FROM alpine:3.19
+FROM --platform=$TARGETPLATFORM alpine:3.19
 
 # Install CA certificates for secure communications
 RUN apk --no-cache add ca-certificates=20240226-r0
