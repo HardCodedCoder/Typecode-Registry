@@ -1,7 +1,7 @@
-LABEL org.opencontainers.image.source="https://github.com/HardCodedCoder/Typecode-Registry"
-
 # Use offical node.js image as a base
 FROM node:18 AS builder
+
+LABEL org.opencontainers.image.source="https://github.com/HardCodedCoder/Typecode-Registry"
 
 # Set the working directory
 WORKDIR /app
