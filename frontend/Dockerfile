@@ -1,8 +1,6 @@
 # Use offical node.js image as a base
 FROM node:18 AS builder
 
-LABEL org.opencontainers.image.source="https://github.com/HardCodedCoder/Typecode-Registry"
-
 # Set the working directory
 WORKDIR /app
 
@@ -22,7 +20,8 @@ RUN npm run build -- --configuration production
 FROM nginx:alpine
 
 # Copy the build files to the nginx directory
-COPY --from=builder /app/dist/frontend /usr/share/nginx/html
+COPY --from=builder /app/dist/frontend/browser /usr/share/nginx/html
+
 
 EXPOSE 80
 
