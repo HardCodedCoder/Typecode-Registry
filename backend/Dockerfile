@@ -17,10 +17,10 @@ COPY . .
 RUN go build -o myserver cmd/app/*.go
 
 # Start a new stage from scratch
-FROM alpine:latest
+FROM alpine:3.19
 
 # Install CA certificates for secure communications
-RUN apk --no-cache add ca-certificates
+RUN apk --no-cache add ca-certificates=20240226-r0
 
 WORKDIR /root/
 
