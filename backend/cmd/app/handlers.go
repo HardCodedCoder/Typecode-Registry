@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
 // ItemRequest is the request object for creating a new item.
@@ -264,16 +263,9 @@ func (app *application) createItem(w http.ResponseWriter, r *http.Request) {
 
 	err = app.models.Items.Insert(item)
 	if err != nil {
-		app.logger.Println(err)
-		if strings.Contains(err.Error(), "foreign key constraint") {
-			msg := fmt.Sprintf("Invalid extension_id: %d No matching extension record found", itemReq.ExtensionId)
-			http.Error(w, msg, http.StatusBadRequest)
-			app.logger.Error().Msg(msg)
-		} else {
-			app.logger.Err(err)
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-			return
-		}
+		app.logger.Err(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
 	}
 
 	headers := make(http.Header)

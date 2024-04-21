@@ -489,7 +489,7 @@ func TestReturnedServeMuxIsNotNil(t *testing.T) {
 	}
 }
 
-func TestIfInvalidItemsRoutesHTTPMethodsReturnMethodNotAllowed(t *testing.T) {
+func TestIfInvalidRoutesHTTPMethodsReturnMethodNotAllowed(t *testing.T) {
 	_, _, app := setupMockAndApp(t)
 	mux := app.route()
 
@@ -518,6 +518,31 @@ func TestIfInvalidItemsRoutesHTTPMethodsReturnMethodNotAllowed(t *testing.T) {
 		{"/items/details", "CONNECT", http.StatusMethodNotAllowed},
 		{"/items/details", "OPTIONS", http.StatusMethodNotAllowed},
 		{"/items/details", "TRACE", http.StatusMethodNotAllowed},
+		{"/healthcheck", "HEAD", http.StatusMethodNotAllowed},
+		{"/healthcheck", "POST", http.StatusMethodNotAllowed},
+		{"/healthcheck", "PUT", http.StatusMethodNotAllowed},
+		{"/healthcheck", "DELETE", http.StatusMethodNotAllowed},
+		{"/healthcheck", "CONNECT", http.StatusMethodNotAllowed},
+		{"/healthcheck", "HEAD", http.StatusMethodNotAllowed},
+		{"/healthcheck", "OPTIONS", http.StatusMethodNotAllowed},
+		{"/healthcheck", "TRACE", http.StatusMethodNotAllowed},
+		{"/healthcheck", "PATCH", http.StatusMethodNotAllowed},
+		{"/projects", "HEAD", http.StatusMethodNotAllowed},
+		{"/projects", "POST", http.StatusMethodNotAllowed},
+		{"/projects", "PUT", http.StatusMethodNotAllowed},
+		{"/projects", "DELETE", http.StatusMethodNotAllowed},
+		{"/projects", "CONNECT", http.StatusMethodNotAllowed},
+		{"/projects", "HEAD", http.StatusMethodNotAllowed},
+		{"/projects", "OPTIONS", http.StatusMethodNotAllowed},
+		{"/projects", "TRACE", http.StatusMethodNotAllowed},
+		{"/projects", "PATCH", http.StatusMethodNotAllowed},
+		{"/items/details/1", "PUT", http.StatusMethodNotAllowed},
+		{"/items/details/1", "PATCH", http.StatusMethodNotAllowed},
+		{"/items/details/1", "DELETE", http.StatusMethodNotAllowed},
+		{"/items/details/1", "HEAD", http.StatusMethodNotAllowed},
+		{"/items/details/1", "CONNECT", http.StatusMethodNotAllowed},
+		{"/items/details/1", "OPTIONS", http.StatusMethodNotAllowed},
+		{"/items/details/1", "TRACE", http.StatusMethodNotAllowed},
 	}
 
 	testRouting(t, tests, mux)
@@ -538,28 +563,6 @@ func TestIfHealthCheckRouteReturnsStatusCodeOk(t *testing.T) {
 	if resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected status %d for route /healthcheck, got %d", http.StatusOK, resp.StatusCode)
 	}
-}
-
-func TestIfHealthCheckRouteCanOnlyBeAccessedWithGetMethod(t *testing.T) {
-	_, _, app := setupMockAndApp(t)
-
-	mux := app.route()
-
-	testServer := httptest.NewServer(mux)
-	defer testServer.Close()
-
-	routes := []TestRoute{
-		{"/healthcheck", "HEAD", http.StatusMethodNotAllowed},
-		{"/healthcheck", "POST", http.StatusMethodNotAllowed},
-		{"/healthcheck", "PUT", http.StatusMethodNotAllowed},
-		{"/healthcheck", "DELETE", http.StatusMethodNotAllowed},
-		{"/healthcheck", "CONNECT", http.StatusMethodNotAllowed}, {"/healthcheck", "HEAD", http.StatusMethodNotAllowed},
-		{"/healthcheck", "OPTIONS", http.StatusMethodNotAllowed},
-		{"/healthcheck", "TRACE", http.StatusMethodNotAllowed},
-		{"/healthcheck", "PATCH", http.StatusMethodNotAllowed},
-	}
-
-	testRouting(t, routes, mux)
 }
 
 func TestIfRootRouteReturnsNotFound(t *testing.T) {
@@ -590,6 +593,7 @@ func TestSpecificItemRouteReturnsStatusBadRequestWhenCalledWithNonIntID(t *testi
 		{"/items/abc", "GET", http.StatusBadRequest},
 		{"/items/abc", "PUT", http.StatusBadRequest},
 		{"/items/abc", "DELETE", http.StatusBadRequest},
+		{"/items/details/abc", "GET", http.StatusBadRequest},
 	}
 
 	testRouting(t, test, mux)
