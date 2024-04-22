@@ -82,7 +82,12 @@ button tui-svg {
 }
 
 .no-line-break {
+  display: none;
   white-space: nowrap;
+}
+
+.sidebar.active .no-line-break {
+  display: block;
 }
 
 .sidebar.active .top .logo {
@@ -96,14 +101,19 @@ button tui-svg {
 
 .user {
   display: flex;
+  justify-content: center;
   align-items: center;
   margin: 1rem 0 0;
+}
+
+.sidebar.active .user {
+  justify-content: unset;
 }
 
 .user p {
   color: #fff;
   opacity: 1;
-  margin-left: 1rem;
+  margin: 0 0 0 1rem;
 }
 
 .bold {

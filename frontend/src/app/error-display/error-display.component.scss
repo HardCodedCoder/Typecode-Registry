@@ -1,0 +1,89 @@
+@mixin float-animation {
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0) rotate(-3deg);
+    }
+
+    50% {
+      transform: translateY(20px) rotate(3deg);
+    }
+  }
+
+  animation: float 6s ease-in-out infinite;
+}
+
+@mixin bubble($size, $start-left, $animation-duration) {
+  width: $size;
+  height: $size;
+  left: $start-left;
+  animation: rise $animation-duration infinite;
+}
+
+@keyframes rise {
+  0% {
+    bottom: -10%;
+    opacity: 0.5;
+  }
+
+  100% {
+    bottom: 110%;
+    opacity: 0;
+  }
+}
+
+.page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #5ab6c0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  overflow: hidden;
+
+  .error-message {
+    z-index: 10;
+    text-align: center;
+
+    h1 {
+      font-size: 5rem;
+      color: #fff;
+    }
+
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    p {
+      font-size: 1.5rem;
+      color: lighten(#fff, 20%);
+    }
+  }
+
+  .diver {
+    @include float-animation;
+    position: absolute;
+    top: 70%;
+    width: 150px;
+    transform: translate(-50%, -50%);
+  }
+
+  .bubble {
+    position: absolute;
+    bottom: -10%;
+    border-radius: 50%;
+    background-color: #fff;
+
+    @for $i from 1 through 5 {
+      &:nth-child(#{$i}) {
+        @include bubble(10px * $i, 10% * $i, 5s + $i);
+      }
+    }
+  }
+}

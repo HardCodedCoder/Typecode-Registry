@@ -38,6 +38,7 @@ import {
   CdkVirtualScrollViewport,
 } from '@angular/cdk/scrolling';
 import { RouterModule } from '@angular/router';
+import { ErrorDisplayComponent } from './error-display/error-display.component';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { RouterModule } from '@angular/router';
     SidebarMenuComponent,
     ItemEditorComponent,
     AddItemComponent,
+    ErrorDisplayComponent,
   ],
   imports: [
     BrowserAnimationsModule,
