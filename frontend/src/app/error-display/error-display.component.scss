@@ -1,3 +1,18 @@
+h1 {
+  font-size: 4rem;
+  color: #fff;
+}
+
+h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+p {
+  font-size: 1.5rem;
+  color: lighten(#fff, 20%);
+}
+
 @mixin float-animation {
   @keyframes float {
 
@@ -49,29 +64,13 @@
   .error-message {
     z-index: 10;
     text-align: center;
-
-    h1 {
-      font-size: 5rem;
-      color: #fff;
-    }
-
-    h2 {
-      font-size: 2rem;
-      margin-bottom: 2rem;
-    }
-
-    p {
-      font-size: 1.5rem;
-      color: lighten(#fff, 20%);
-    }
   }
 
   .diver {
     @include float-animation;
-    position: absolute;
-    top: 70%;
     width: 150px;
     transform: translate(-50%, -50%);
+    margin: 2.5rem 0;
   }
 
   .bubble {
@@ -85,5 +84,11 @@
         @include bubble(10px * $i, 10% * $i, 5s + $i);
       }
     }
+  }
+
+  li {
+    font-size: 1.5rem;
+    color: lighten(#fff, 20%);
+    margin-bottom: 1rem;
   }
 }
