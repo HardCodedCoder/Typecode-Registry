@@ -1,8 +1,8 @@
 <div class="page">
   <div class="error-message">
-    <h1>{{ errorCode }}</h1>
+    <h1>Error {{ errorCode }}</h1>
     <h2>{{ errorDetails.errorText }}</h2>
-    <p>{{ errorDetails.playfulMessage }}</p>
+    <p><i>{{ errorDetails.playfulMessage }}</i></p>
     <p>{{ errorDetails.description }}</p>
     <button size="l" tuiButton type="button" routerLink="/typecodes" [attr.aria-hidden]="true">
       Return to Typecodes
@@ -11,9 +11,9 @@
   <img src="./assets/img/diver.png" alt="Diver" class="diver">
   <div class="error-message">
     <h2>This might help:</h2>
-    <ul>
+    <ol>
       <li *ngFor="let guidanceItem of errorDetails.guidance"> {{ guidanceItem }} </li>
-    </ul>
+    </ol>
   </div>
   <div class="bubble"></div>
   <div class="bubble"></div>

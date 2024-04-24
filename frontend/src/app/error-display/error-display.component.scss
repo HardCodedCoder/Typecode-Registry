@@ -1,10 +1,10 @@
 h1 {
-  font-size: 4rem;
+  font-size: 3.5rem;
   color: #fff;
 }
 
 h2 {
-  font-size: 2rem;
+  font-size: 1.75rem;
   margin-bottom: 2rem;
 }
 
@@ -54,7 +54,8 @@ p {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #5ab6c0;
+  //background-color: #5ab6c0;
+  background-image: linear-gradient(45deg, #709FB0, #bcbfee) !important;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -86,9 +87,14 @@ p {
     }
   }
 
-  li {
-    font-size: 1.5rem;
-    color: lighten(#fff, 20%);
-    margin-bottom: 1rem;
+  ol {
+    list-style-type: decimal;
+
+    li {
+      width: fit-content;
+      font-size: 1.5rem;
+      color: lighten(#fff, 20%);
+      margin-bottom: 1rem;
+    }
   }
 }

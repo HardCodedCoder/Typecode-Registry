@@ -15,33 +15,60 @@ export interface HttpStatusDetails {
 
 export const httpStatusCodes: Record<HttpStatusCode, HttpStatusDetails> = {
   '0': {
-    errorText: '0ERROR',
-    playfulMessage: `0PLAYFULMESSAGE`,
-    description: `0DESCRIPTION`,
-    guidance: ['0GUIDANCE', '1GUIDANCE', '2GUIDANCE'],
+    // no connection to the server
+    errorText: 'Sails without Wind',
+    playfulMessage: `The ship is pristine, the crew is ready, but with no connection, there's no wind to carry us forward.`,
+    description: `The server is not responding. This is a common error when the server is down, or the connection to the server is lost.`,
+    guidance: [
+      'Check your internet connection to ensure you have an active and stable connection.',
+      'Try refreshing your browser or restarting your app to see if the connection can be re-established.',
+      "Inspect your firewall and proxy settings to ensure they aren't blocking the connection to the server.",
+      'Use network debugging tools like Wireshark or Fiddler to diagnose the connection issue.',
+    ],
   },
   '204': {
-    errorText: '204ERROR',
-    playfulMessage: `204PLAYFULMESSAGE`,
-    description: `204DESCRIPTION`,
-    guidance: ['204GUIDANCE', '1GUIDANCE', '2GUIDANCE'],
+    // no data found in the database
+    errorText: 'Treasure Chest Empty',
+    playfulMessage: `The map led to the spot, the chest was unearthed, but inside, a hollow echo — no content found.`,
+    description: `The server has successfully processed the request, but is not returning any content. This status is typically used for successful requests 
+    where the response is intentionally left with no content, like after a DELETE operation, or when the requested resource is empty.`,
+    guidance: [
+      'Confirm the API endpoint is designed to return content under the current conditions.',
+      'Review the server logs to ensure that the request is being processed correctly and no data should be returned.',
+      'Adjust the query or request parameters to test different responses from the server.',
+    ],
   },
   '404': {
-    errorText: '404ERROR',
-    playfulMessage: `404PLAYFULMESSAGE`,
-    description: `404DESCRIPTION`,
-    guidance: ['404GUIDANCE', '1GUIDANCE', '2GUIDANCE'],
+    // resource not found
+    errorText: 'Ocean Not Found',
+    playfulMessage: `It looks like you've drifted too far from the reef.`,
+    description: `The server can't find the requested resource. This is a common error when the URL is misspelled, or the resource has been moved or deleted.`,
+    guidance: [
+      'Ensure the URL and endpoints are correctly specified in your API calls.',
+      'Verify that the server routes and resource identifiers are configured correctly.',
+      "Check server or API documentation to ensure the endpoint still exists and hasn't been deprecated or moved.",
+    ],
   },
   '500': {
-    errorText: '500ERROR',
-    playfulMessage: `500PLAYFULMESSAGE`,
-    description: `500DESCRIPTION`,
-    guidance: ['500GUIDANCE', '1GUIDANCE', '2GUIDANCE'],
+    // server unexpectedly cannot respond to the sent request
+    errorText: 'Cabin Fever Confusion',
+    playfulMessage: `The server's inner workings are in a state of cabin fever, leading to a tumultuous internal error.`,
+    description: `An unexpected issue occurred within the server while processing the request.`,
+    guidance: [
+      'Check the server logs for any unhandled exceptions or errors that could give insight into the issue.',
+      'Ensure all server dependencies are correctly installed and configured.',
+      `Use debugging tools to trace the server's execution flow and identify what might be causing the internal error.`,
+    ],
   },
   '520': {
-    errorText: 'UNKNOWNERROR',
-    playfulMessage: `UNKNOWNPLAYFULMESSAGE`,
-    description: `UNKNOWNDESCRIPTION`,
-    guidance: ['UNKNOWNGUIDANCE', '1GUIDANCE', '2GUIDANCE'],
+    // default error message
+    errorText: 'Crew Caught Off Guard',
+    playfulMessage: `Uhm, the crew didn't prepare for this.`,
+    description: `This error signifies an unforeseen complication during the request processing, without specific details provided. This is a generic error message.`,
+    guidance: [
+      'Review the full error response and server logs for any clues about what went wrong.',
+      'Validate your request payload and headers to ensure they conform to the expected formats.',
+      'If using third-party services, check their status pages for any ongoing issues that could affect your requests.',
+    ],
   },
 };
