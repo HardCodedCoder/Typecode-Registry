@@ -10,6 +10,8 @@ import {
   ItemsDetailsAPIResponse,
 } from './interfaces/items';
 import { ItemRequest } from './interfaces/requests';
+import { Router } from '@angular/router';
+import { HttpStatusCode } from './interfaces/http-status-codes';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +19,10 @@ import { ItemRequest } from './interfaces/requests';
 export class BackendService {
   private apiUrl = 'http://localhost:8080';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {}
 
   /**
    * Fetches all extensions of a given scope from the backend.
@@ -180,18 +185,26 @@ export class BackendService {
   }
 
   /**
-   * Handle Http Operation that failed.
-   * Let the app continue.
+   * Handles an HTTP operation that failed and lets the app continue.
+   * Logs the error to the console and redirects to a corresponding error route.
    *
-   * See: https://angular.io/tutorial/tour-of-heroes/toh-pt6 for more information.
+   * @see https://angular.io/tutorial/tour-of-heroes/toh-pt6 for more information.
    *
-   * @param operation - name of the operation that failed.
-   * @param result - optional value to return as the observable result.
+   * @param operation - Name of the operation that failed.
+   * @param result - Optional value to return as the Observable result.
+   * @returns An Observable of the result type T, which defaults to the provided result or an empty value of type T.
    */
   private handleError<T>(operation: string = 'operation', result?: T) {
     return (error: any): Observable<T> => {
       console.error(error);
       console.log(`${operation} failed: ${error.message}`);
+
+      if (Object.values(HttpStatusCode).includes(error.status.toString())) {
+        this.router.navigate([`/error/${error.status}`]);
+      } else {
+        this.router.navigate([`/error/520`]);
+      }
+
       return of(result as T);
     };
   }

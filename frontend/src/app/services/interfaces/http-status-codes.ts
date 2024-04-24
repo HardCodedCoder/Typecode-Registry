@@ -1,4 +1,10 @@
-export type HttpStatusCode = '0' | '204' | '404' | '500' | 'unknownError';
+export enum HttpStatusCode {
+  NoStatus = '0',
+  NoContent = '204',
+  NotFound = '404',
+  InternalServerError = '500',
+  UnknownError = '520',
+}
 
 export interface HttpStatusDetails {
   errorText: string;
@@ -32,7 +38,7 @@ export const httpStatusCodes: Record<HttpStatusCode, HttpStatusDetails> = {
     description: `500DESCRIPTION`,
     guidance: ['500GUIDANCE', '1GUIDANCE', '2GUIDANCE'],
   },
-  unknownError: {
+  '520': {
     errorText: 'UNKNOWNERROR',
     playfulMessage: `UNKNOWNPLAYFULMESSAGE`,
     description: `UNKNOWNDESCRIPTION`,

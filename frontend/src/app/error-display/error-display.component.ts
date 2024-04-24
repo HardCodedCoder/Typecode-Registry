@@ -4,7 +4,7 @@ import {
   HttpStatusCode,
   HttpStatusDetails,
   httpStatusCodes,
-} from './http-status-codes.types';
+} from '../services/interfaces/http-status-codes';
 
 @Component({
   selector: 'app-error-display',
@@ -12,20 +12,19 @@ import {
   styleUrl: './error-display.component.scss',
 })
 export class ErrorDisplayComponent implements OnInit {
-  errorCode: HttpStatusCode = 'unknownError';
-  errorDetails: HttpStatusDetails = httpStatusCodes['unknownError'];
+  errorCode: HttpStatusCode = HttpStatusCode.UnknownError;
+  errorDetails: HttpStatusDetails = httpStatusCodes['520'];
 
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      const code = params['code'] as HttpStatusCode;
-      this.setErrorDetails(code);
+      this.errorCode = params['code'] as HttpStatusCode;
+      this.setErrorDetails(this.errorCode);
     });
   }
 
-  setErrorDetails(code: HttpStatusCode) {
-    this.errorDetails =
-      httpStatusCodes[code] || httpStatusCodes['unknownError'];
+  setErrorDetails(errorCode: HttpStatusCode) {
+    this.errorDetails = httpStatusCodes[errorCode] || httpStatusCodes['520'];
   }
 }
