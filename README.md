@@ -152,7 +152,7 @@ and execute the script named `001_initial_schema.sql` in a database console to s
 2. **Install Dependencies**: Navigate to the backend directory and install the required Golang modules to ensure all dependencies are up to date.
 
    
- ```bash
+```bash
  go mod tidy
 ```
 
