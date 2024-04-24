@@ -1,9 +1,9 @@
 <div class="page">
   <div class="error-message">
     <h1>{{ errorCode }}</h1>
-    <h2>{{ errorText }}</h2>
-    <p>{{ playfulMessage }}</p>
-    <p>{{ description }}</p>
+    <h2>{{ errorDetails.errorText }}</h2>
+    <p>{{ errorDetails.playfulMessage }}</p>
+    <p>{{ errorDetails.description }}</p>
     <button size="l" tuiButton type="button" routerLink="/typecodes" [attr.aria-hidden]="true">
       Return to Typecodes
     </button>
@@ -12,7 +12,7 @@
   <div class="error-message">
     <h2>This might help:</h2>
     <ul>
-      <li *ngFor="let guidanceItem of guidance"> {{ guidanceItem }} </li>
+      <li *ngFor="let guidanceItem of errorDetails.guidance"> {{ guidanceItem }} </li>
     </ul>
   </div>
   <div class="bubble"></div>
