@@ -1,4 +1,5 @@
 name: Build LaTeX Documentation
+
 on:
   pull_request:
     paths:
@@ -13,19 +14,31 @@ jobs:
     steps:
       - name: Set up Git repository
         uses: actions/checkout@v2
+      
       - name: Compile LaTeX document
         uses: xu-cheng/latex-action@v2
         with:
-          root_file: ./doc/SAS-Typecode_Registry/main.tex
+          root_file: main.tex
+          working_directory: ./doc/SAS-Typecode_Registry
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Tagging
+        id: tagging
+        uses: anothrNick/github-tag-action@1.26.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
+          WITH_V: true
 
       - name: Create Release
-        id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ steps.tagging.outputs.new_tag }}
+          release_name: Release ${{ steps.tagging.outputs.new_tag }}
           draft: false
           prerelease: false
 
