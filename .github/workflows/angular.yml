@@ -48,10 +48,14 @@ jobs:
           verbose: true
 
   build:
-    name: Build
+    name: Build Angular Frontend
     runs-on: ubuntu-latest
+    env:
+      LOWERCASE_OWNER: ${{ github.repository_owner }}
     steps:
       - uses: actions/checkout@v2
+      - name: Set lower case repo owner
+        run: echo "LOWERCASE_OWNER=${LOWERCASE_OWNER,,}" >> $GITHUB_ENV
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
@@ -70,3 +74,9 @@ jobs:
         with:
           name: angular-build
           path: frontend/dist
+      - name: Build Docker Image
+        run: docker build -t ghcr.io/${{ env.LOWERCASE_OWNER }}/typecode-registry:latest -f frontend/Dockerfile frontend
+      - name: Push Docker Image to GitHub Container Registry
+        run: |
+          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ env.LOWERCASE_OWNER }} --password-stdin
+          docker push ghcr.io/${{ env.LOWERCASE_OWNER }}/typecode-registry:latest
