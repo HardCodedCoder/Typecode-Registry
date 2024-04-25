@@ -29,7 +29,7 @@ export class ItemEditorComponent implements OnInit {
     @Inject(Injector) private readonly injector: Injector,
     @Inject(BackendService) private readonly backendService: BackendService,
     @Inject(StoreService) public readonly store: StoreService,
-    @Inject(TuiAlertService) private readonly alertService: TuiAlertService
+    @Inject(TuiAlertService) private readonly alertService: TuiAlertService,
   ) {}
 
   ngOnInit(): void {
@@ -37,6 +37,15 @@ export class ItemEditorComponent implements OnInit {
       next: response => {
         this.store.details = response.details;
         console.log(this.store.details);
+
+        // if (this.store.details.length === 0 && !this.store.hasShown204Error) {
+        //   this.router.navigate(['/error/204'], {
+        //     state: {
+        //       errorOrigin: '/items/details',
+        //     },
+        //   });
+        //   this.store.hasShown204Error = true;
+        // }
       },
       error: error => {
         console.error('Could not fetch items', error);

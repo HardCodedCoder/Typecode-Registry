@@ -9,7 +9,8 @@ h2 {
 }
 
 p {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
+  line-height: 1.2;
   color: lighten(#fff, 20%);
 }
 
@@ -60,6 +61,7 @@ p {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  padding: 1rem 12rem;
   overflow: hidden;
 
   .error-message {
@@ -89,12 +91,30 @@ p {
 
   ol {
     list-style-type: decimal;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background-color: #6d91af;
+    line-height: 1.2;
+    border-radius: 0.75rem;
+    padding: 1rem;
 
     li {
-      width: fit-content;
-      font-size: 1.5rem;
+      text-align: start;
+      font-size: 1.3rem;
       color: lighten(#fff, 20%);
+      margin-left: 1.5rem;
       margin-bottom: 1rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
+  }
+}
+
+@media (max-width: 1650px) {
+  .page {
+    padding: 1rem 6rem;
   }
 }

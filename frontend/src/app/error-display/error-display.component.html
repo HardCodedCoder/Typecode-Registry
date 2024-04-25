@@ -1,6 +1,6 @@
 <div class="page">
   <div class="error-message">
-    <h1>Error {{ errorCode }}</h1>
+    <h1>Error {{ errorCode }} {{ errorOrigin }}</h1>
     <h2>{{ errorDetails.errorText }}</h2>
     <p><i>{{ errorDetails.playfulMessage }}</i></p>
     <p>{{ errorDetails.description }}</p>
@@ -8,7 +8,7 @@
       Return to Typecodes
     </button>
   </div>
-  <img src="./assets/img/diver.png" alt="Diver" class="diver">
+  <img src="./assets/img/diver.svg" alt="Diver" class="diver">
   <div class="error-message">
     <h2>This might help:</h2>
     <ol>
