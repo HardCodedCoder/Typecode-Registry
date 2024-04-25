@@ -11,6 +11,7 @@ export interface HttpStatusDetails {
   playfulMessage: string;
   description: string;
   guidance: string[];
+  imgName: string;
 }
 
 export const httpStatusCodes: Record<HttpStatusCode, HttpStatusDetails> = {
@@ -25,6 +26,7 @@ export const httpStatusCodes: Record<HttpStatusCode, HttpStatusDetails> = {
       "Inspect your firewall and proxy settings to ensure they aren't blocking the connection to the server.",
       'Use network debugging tools like Wireshark or Fiddler to diagnose the connection issue.',
     ],
+    imgName: 'ship_wind.svg',
   },
   '204': {
     // no data found in the database
@@ -37,6 +39,7 @@ export const httpStatusCodes: Record<HttpStatusCode, HttpStatusDetails> = {
       'Review the server logs to ensure that the request is being processed correctly and no data should be returned.',
       'Adjust the query or request parameters to test different responses from the server.',
     ],
+    imgName: 'treasure_chest.png',
   },
   '404': {
     // resource not found
@@ -48,6 +51,7 @@ export const httpStatusCodes: Record<HttpStatusCode, HttpStatusDetails> = {
       'Verify that the server routes and resource identifiers are configured correctly.',
       "Check server or API documentation to ensure the endpoint still exists and hasn't been deprecated or moved.",
     ],
+    imgName: 'diver.svg',
   },
   '500': {
     // server unexpectedly cannot respond to the sent request
@@ -59,6 +63,7 @@ export const httpStatusCodes: Record<HttpStatusCode, HttpStatusDetails> = {
       'Ensure all server dependencies are correctly installed and configured.',
       `Use debugging tools to trace the server's execution flow and identify what might be causing the internal error.`,
     ],
+    imgName: 'ship_engine.png',
   },
   '520': {
     // default error message
@@ -70,5 +75,6 @@ export const httpStatusCodes: Record<HttpStatusCode, HttpStatusDetails> = {
       'Validate your request payload and headers to ensure they conform to the expected formats.',
       'If using third-party services, check their status pages for any ongoing issues that could affect your requests.',
     ],
+    imgName: 'crew.png',
   },
 };

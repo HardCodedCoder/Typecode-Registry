@@ -69,9 +69,9 @@ p {
     text-align: center;
   }
 
-  .diver {
+  img {
     @include float-animation;
-    width: 150px;
+    width: 200px;
     transform: translate(-50%, -50%);
     margin: 2.5rem 0;
   }
