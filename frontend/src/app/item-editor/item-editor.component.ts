@@ -7,6 +7,7 @@ import { StoreService } from '../services/store.service';
 import { FormData } from '../services/interfaces/formdata';
 import { catchError, throwError } from 'rxjs';
 import { ItemDetailResponse } from '../services/interfaces/items';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-item-editor',
@@ -30,6 +31,7 @@ export class ItemEditorComponent implements OnInit {
     @Inject(BackendService) private readonly backendService: BackendService,
     @Inject(StoreService) public readonly store: StoreService,
     @Inject(TuiAlertService) private readonly alertService: TuiAlertService,
+    @Inject(Router) private readonly router: Router
   ) {}
 
   ngOnInit(): void {
@@ -38,14 +40,18 @@ export class ItemEditorComponent implements OnInit {
         this.store.details = response.details;
         console.log(this.store.details);
 
-        // if (this.store.details.length === 0 && !this.store.hasShown204Error) {
-        //   this.router.navigate(['/error/204'], {
-        //     state: {
-        //       errorOrigin: '/items/details',
-        //     },
-        //   });
-        //   this.store.hasShown204Error = true;
-        // }
+        if (response.details === null) {
+          console.warn('NULL response: /items/details');
+          this.showInformationNotification();
+          if (!this.store.hasShown204Error) {
+            this.router.navigate(['/error/204'], {
+              state: {
+                errorOrigin: 'requesting /items/details',
+              },
+            });
+            this.store.hasShown204Error = true;
+          }
+        }
       },
       error: error => {
         console.error('Could not fetch items', error);
@@ -115,7 +121,7 @@ export class ItemEditorComponent implements OnInit {
           },
         });
 
-        this.showNotification(response.item.id);
+        this.showSuccessNotification(response.item.id);
       });
   }
 
@@ -124,11 +130,20 @@ export class ItemEditorComponent implements OnInit {
     console.log(detail);
   }
 
-  private showNotification(itemId: number): void {
+  private showSuccessNotification(itemId: number): void {
     this.alertService
-      .open('Item with id: ' + itemId + ' created!', {
+      .open('Item with ID: ' + itemId + ' created.', {
         label: '🎉 Success 🎉',
         status: 'success',
+      })
+      .subscribe();
+  }
+
+  private showInformationNotification(): void {
+    this.alertService
+      .open('Please populate the database.', {
+        label: '💡 Information 💡',
+        status: 'info',
       })
       .subscribe();
   }

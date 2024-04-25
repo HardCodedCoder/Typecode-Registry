@@ -14,7 +14,7 @@ export class StoreService {
   public projects: ProjectResponse[] = [];
   public items: ItemResponse[] = [];
   public details: ItemDetailResponse[] = [];
-  // public hasShown204Error: boolean = false;
+  public hasShown204Error: boolean = false;
 
   getSharedExtensionId(name: string): number | undefined {
     return this.sharedExtensions.find(extension => extension.name === name)?.id;

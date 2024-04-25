@@ -52,8 +52,8 @@ export const httpStatusCodes: Record<HttpStatusCode, HttpStatusDetails> = {
   '500': {
     // server unexpectedly cannot respond to the sent request
     errorText: 'Cabin Fever Confusion',
-    playfulMessage: `The server's inner workings are in a state of cabin fever, leading to a tumultuous internal error.`,
-    description: `An unexpected issue occurred within the server while processing the request.`,
+    playfulMessage: `The ship's inner workings are in a state of cabin fever, leading to a tumultuous internal error.`,
+    description: `An unexpected issue occurred within the server while processing the request. This may also occur when there is no connection to the database.`,
     guidance: [
       'Check the server logs for any unhandled exceptions or errors that could give insight into the issue.',
       'Ensure all server dependencies are correctly installed and configured.',
