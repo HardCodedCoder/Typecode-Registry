@@ -51,7 +51,7 @@ export const httpStatusCodes: Record<HttpStatusCode, HttpStatusDetails> = {
       'Verify that the server routes and resource identifiers are configured correctly.',
       "Check server or API documentation to ensure the endpoint still exists and hasn't been deprecated or moved.",
     ],
-    imgName: 'diver.svg',
+    imgName: 'diver.png',
   },
   '500': {
     // server unexpectedly cannot respond to the sent request
