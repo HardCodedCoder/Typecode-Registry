@@ -30,7 +30,7 @@ jobs:
           git push origin $TAG_NAME
           echo "::set-output name=tag_name::$TAG_NAME"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         id: create_tag
 
       - name: Upload PDF to Release
@@ -41,4 +41,4 @@ jobs:
           draft: false
           prerelease: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
