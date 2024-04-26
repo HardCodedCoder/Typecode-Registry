@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'doc/**'
+      - '.github/workflows/documentation.yml'
   workflow_dispatch:
 
 jobs:
@@ -18,3 +19,10 @@ jobs:
         with:
           root_file: main.tex
           working_directory: doc/SAS-Typecode_Registry
+
+      - name: Upload PDF to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./doc/main.pdf
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
