@@ -22,6 +22,9 @@ jobs:
           root_file: main.tex
           working_directory: doc/SAS-Typecode_Registry
 
+      - name: Rename PDF
+        run: mv ./doc/SAS-Typecode_Registry/main.pdf ./doc/SAS-Typecode_Registry/Software_Architecture_Specification.pdf
+
       - name: Create and Push Tag
         run: |
           TAG_NAME="release-$(date +'%Y%m%d%H%M%S')"
@@ -38,7 +41,7 @@ jobs:
       - name: Upload PDF to Release
         uses: softprops/action-gh-release@v1
         with:
-          files: ./doc/SAS-Typecode_Registry/main.pdf
+          files: ./doc/SAS-Typecode_Registry/Software_Architecture_Specification.pdf
           tag_name: ${{ steps.create_tag.outputs.tag_name }}
           draft: false
           prerelease: false
