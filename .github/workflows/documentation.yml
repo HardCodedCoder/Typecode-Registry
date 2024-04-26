@@ -13,12 +13,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up LaTeX
+      - name: Compile Software Architecture Specification
         uses: xu-cheng/latex-action@v2
         with:
           root_file: main.tex
           working_directory: doc/SAS-Typecode_Registry
-
-      - name: Compile LaTeX document
-        run: pdflatex -interaction=nonstopmode main.tex
-        working-directory: doc/SAS-Typecode_Registry
