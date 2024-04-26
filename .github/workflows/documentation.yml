@@ -1,7 +1,7 @@
 name: Build and Release LaTeX Documentation
 
 on:
-  pull_request:
+  push:
     paths:
       - 'doc/**'
       - '.github/workflows/documentation.yml'
@@ -26,6 +26,7 @@ jobs:
         run: mv ./doc/SAS-Typecode_Registry/main.pdf ./doc/SAS-Typecode_Registry/Software_Architecture_Specification.pdf
 
       - name: Create and Push Tag
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/main')
         run: |
           TAG_NAME="release-$(date +'%Y%m%d%H%M%S')"
           echo "Creating tag $TAG_NAME"
@@ -39,6 +40,7 @@ jobs:
         id: create_tag
 
       - name: Upload PDF to Release
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/main')
         uses: softprops/action-gh-release@v1
         with:
           files: ./doc/SAS-Typecode_Registry/Software_Architecture_Specification.pdf
