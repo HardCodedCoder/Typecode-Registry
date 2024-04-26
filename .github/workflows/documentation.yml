@@ -20,9 +20,25 @@ jobs:
           root_file: main.tex
           working_directory: doc/SAS-Typecode_Registry
 
+      - name: Create and Push Tag
+        run: |
+          TAG_NAME="release-$(date +'%Y%m%d%H%M%S')"
+          echo "Creating tag $TAG_NAME"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -a $TAG_NAME -m "Generated tag from GitHub Actions build"
+          git push origin $TAG_NAME
+          echo "::set-output name=tag_name::$TAG_NAME"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        id: create_tag
+
       - name: Upload PDF to Release
         uses: softprops/action-gh-release@v1
         with:
-          files: ./doc/main.pdf
+          files: ./doc/SAS-Typecode_Registry/main.pdf
+          tag_name: ${{ steps.create_tag.outputs.tag_name }}
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
