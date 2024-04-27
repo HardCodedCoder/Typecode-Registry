@@ -13,7 +13,7 @@ export class StoreService {
   public sharedExtensions: ExtensionResponse[] = [];
   public projects: ProjectResponse[] = [];
   public items: ItemResponse[] = [];
-  public details: ItemDetailResponse[] = [];
+  public details: ItemDetailResponse[] | null = [];
   public hasShown204Error: boolean = false;
 
   getSharedExtensionId(name: string): number | undefined {

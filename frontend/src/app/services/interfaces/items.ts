@@ -6,11 +6,11 @@ export interface ItemsAPIResponse {
 }
 
 export interface ItemsDetailsAPIResponse {
-  details: ItemDetailResponse[];
+  details: ItemDetailResponse[] | null;
 }
 
 export interface ItemDetailAPIResponse {
-  detail: ItemDetailResponse;
+  detail: ItemDetailResponse | null;
 }
 
 export interface ItemResponse {

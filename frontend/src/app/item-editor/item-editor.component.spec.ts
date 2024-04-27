@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { share } from 'rxjs/operators';
 import { ItemEditorComponent } from './item-editor.component';
 import { TuiDialogService, TuiScrollbarModule } from '@taiga-ui/core';
@@ -200,5 +200,53 @@ describe('ItemEditorComponent', () => {
 
     expect(subscribeSpy).toHaveBeenCalled();
     expect(mockDialogService.open).toHaveBeenCalled();
+  });
+
+  it('should log an error when backend service fails', () => {
+    const error = new Error('Backend error');
+    mockBackendService.getItemsDetails.and.returnValue(throwError(() => error));
+    spyOn(console, 'error');
+
+    component.ngOnInit();
+
+    expect(console.error).toHaveBeenCalledWith('Could not fetch items', error);
+  });
+
+  it('should log a warning and navigate to error page when response.details is null and has not shown 204 error', () => {
+    mockBackendService.getItemsDetails.and.returnValue(of({ details: null }));
+    const navigateSpy = spyOn((component as any).router, 'navigate');
+    const consoleWarnSpy = spyOn(console, 'warn');
+
+    component.ngOnInit();
+
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      'NULL response: /items/details'
+    );
+    expect(navigateSpy).toHaveBeenCalledWith(['/error/204'], {
+      state: { errorOrigin: '/items/details' },
+    });
+    expect(mockStoreService.hasShown204Error).toBe(true);
+  });
+
+  it('should show information notification when response.details is null and has already shown 204 error', () => {
+    mockBackendService.getItemsDetails.and.returnValue(of({ details: null }));
+    mockStoreService.hasShown204Error = true;
+    const showInformationNotificationSpy = spyOn(
+      component,
+      'showInformationNotification' as any
+    );
+
+    component.ngOnInit();
+
+    expect(showInformationNotificationSpy).toHaveBeenCalled();
+  });
+
+  it('should display "No items available" when there are no item details', () => {
+    component.store.details = null;
+    fixture.detectChanges();
+
+    const noDataContent =
+      fixture.debugElement.nativeElement.querySelector('h2');
+    expect(noDataContent.textContent).toContain('No items available.');
   });
 });

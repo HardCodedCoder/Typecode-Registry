@@ -42,11 +42,15 @@ export class ItemEditorComponent implements OnInit {
 
         if (response.details === null) {
           console.warn('NULL response: /items/details');
-          this.showInformationNotification();
+
+          if (this.store.hasShown204Error) {
+            this.showInformationNotification();
+          }
+
           if (!this.store.hasShown204Error) {
             this.router.navigate(['/error/204'], {
               state: {
-                errorOrigin: 'requesting /items/details',
+                errorOrigin: '/items/details',
               },
             });
             this.store.hasShown204Error = true;
@@ -59,6 +63,9 @@ export class ItemEditorComponent implements OnInit {
     });
   }
 
+  /**
+   * Opens the dialog for adding a new item to the database.
+   */
   showDialog(): void {
     const dialog$ = this.dialogs
       .open<FormData>(
@@ -102,6 +109,12 @@ export class ItemEditorComponent implements OnInit {
     });
   }
 
+  /**
+   * Sends a request to the backend to create a new item.
+   *
+   * @param data - The form data containing the details of the item to create.
+   * @param extension_id - The ID of the extension to associate the item with.
+   */
   private sendCreateItemRequest(data: FormData, extension_id: number): void {
     this.backendService
       .sendCreateItemRequest({
@@ -125,11 +138,21 @@ export class ItemEditorComponent implements OnInit {
       });
   }
 
+  /**
+   * Removes an item detail from the database.
+
+   * @param detail - The item detail to remove.
+   */
   remove(detail: ItemDetailResponse) {
     console.log('TODO: Implement deleting detail');
     console.log(detail);
   }
 
+  /**
+   * Shows a success notification for the creation of an item.
+   *
+   * @param itemId - The ID of the created item.
+   */
   private showSuccessNotification(itemId: number): void {
     this.alertService
       .open('Item with ID: ' + itemId + ' created.', {
@@ -139,6 +162,9 @@ export class ItemEditorComponent implements OnInit {
       .subscribe();
   }
 
+  /**
+   * Shows an information notification.
+   */
   private showInformationNotification(): void {
     this.alertService
       .open('Please populate the database.', {
