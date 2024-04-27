@@ -10,15 +10,15 @@ import {
   ItemsDetailsAPIResponse,
 } from './interfaces/items';
 import { ItemRequest } from './interfaces/requests';
-import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 import { HttpStatusCode } from './interfaces/http-status-codes';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BackendService {
-  private apiUrl = 'http://localhost:8080';
-
+  private apiUrl = environment.backendUrl;
   constructor(
     private http: HttpClient,
     private router: Router

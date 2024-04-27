@@ -6,7 +6,39 @@ import (
 	"errors"
 	"github.com/DATA-DOG/go-sqlmock"
 	"regexp"
+	"time"
 )
+
+func setupExtensionMock(mock sqlmock.Sqlmock, id int64, projectId sql.NullInt32, scope, name, description string, returnRow bool) {
+	extensionArgs := []driver.Value{id}
+	var extensionRows *sqlmock.Rows
+	if returnRow {
+		extensionRows = sqlmock.NewRows([]string{"id", "project_id", "name", "description", "scope", "creation_date"}).
+			AddRow(id, projectId, name, description, scope, time.Now())
+	} else {
+		extensionRows = sqlmock.NewRows([]string{"id", "project_id", "name", "description", "scope", "creation_date"})
+	}
+
+	mockReadExtensionByIDQuery(mock, extensionArgs, extensionRows)
+}
+
+func setupTypecodeMock(mock sqlmock.Sqlmock, scope string, lastTypecode, nextTypecode int32) {
+	typecodeArgs := []driver.Value{lastTypecode, int32(^uint32(0) >> 1), scope}
+	typecodeRows := sqlmock.NewRows([]string{"next_free_typecode"}).AddRow(nextTypecode)
+	mockTypecodeQuery(mock, typecodeArgs, typecodeRows)
+}
+
+func setupNextFreeTypecodeMock(mock sqlmock.Sqlmock, projectId int32, scopeLowRange, scopeHighRange int32, nextTypecode int32) {
+	typecodeArgs := []driver.Value{projectId, scopeLowRange, scopeHighRange}
+	typecodeRows := sqlmock.NewRows([]string{"next_free_typecode"}).AddRow(nextTypecode)
+	mockGetNextProjectFreeTypecodeQuery(mock, typecodeArgs, typecodeRows)
+}
+
+func setupInsertItemMock(mock sqlmock.Sqlmock, name string, extensionID int64, tableName string, typecode int32) {
+	insertArgs := []driver.Value{name, extensionID, tableName, typecode}
+	insertRows := sqlmock.NewRows([]string{"id", "creation_date"}).AddRow(1, time.Now())
+	mockInsertItemQuery(mock, insertArgs, insertRows)
+}
 
 func mockReadExtensionByIDQuery(mock sqlmock.Sqlmock, args []driver.Value, returnRows *sqlmock.Rows) {
 	query := regexp.QuoteMeta(`

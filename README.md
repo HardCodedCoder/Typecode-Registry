@@ -22,27 +22,95 @@ The application is developed by Students of the FH Burgenland `Software Engineer
 
 ## Getting Started
 
-### Prerequisites
+Regardless if you want to setup a developer environment build on Docker or locally, you will need to clone the repository first.
+
+ ```bash
+ git clone https://github.com/HardCodedCoder/typecode-registry.git
+```
+
+Please execute this step as a first step before you continue.
+
+### DOCKER COMPOSE SETUP ###
+
+For a fully containerized environment, you can use Docker to manage both the backend and frontend along with PostgreSQL.
+
+Here's how you can set it up:
+
+```yml
+services:
+   postgres:
+      container_name: PostgreSQL_database
+      image: postgres:latest
+      environment:
+         POSTGRES_DB: backend
+         POSTGRES_PASSWORD: mysecretpassword
+         POSTGRES_HOST_AUTH_METHOD: trust
+         PGDATA: /var/lib/postgresql/data/pgdata
+      ports:
+         - "5432:5432"
+      volumes:
+         - ./postgres-data:/var/lib/postgresql/data
+         - ./backend/database/001_initial_schema.sql:/docker-entrypoint-initdb.d/001_initial_schema.sql
+         - ./backend/database/testscripts/001_initial_test_data.sql:/docker-entrypoint-initdb.d/001_initial_test_data.sql
+
+   backend:
+      container_name: tcr_backend
+      build:
+         context: ./backend
+         dockerfile: Dockerfile
+      environment:
+         TYPECODEREGISTRY_DB_DSN: "postgresql://postgres:mysecretpassword@postgres:5432/backend?sslmode=disable"
+      ports:
+         - 8080:8080
+      volumes:
+         - ./backend:/app
+
+   frontend:
+      container_name: tcr_frontend
+      build:
+         context: ./frontend
+         dockerfile: Dockerfile
+      ports:
+         - "4200:80"
+      volumes:
+         - ./frontend:/app
+         - /app/node_modules
+      depends_on:
+         - backend
+```
+
+The file can be found in the root directory of the project as `docker-compose.yml`.
+
+Simply run the following command to start the services:
+
+```bash
+docker-compose up --build
+```
+
+This will start all services, and you can access the frontend application on `http://localhost:4200`.
+
+
+### LOCAL DEVELOPMENT SETUP ###
+
+#### Prerequisites
 - **Golang**: Ensure you have Golang installed for backend development. Visit [Golang's official site](https://golang.org/dl/) for download and installation instructions.
 - **Node.js and npm**: Required for Angular frontend development. Download and install from [Node.js official website](https://nodejs.org/).
 - **Angular CLI**: Install Angular CLI via npm with `npm install -g @angular/cli`.
 - **PostgreSQL**: Ensure PostgreSQL is installed and running for your database needs. Installation guides can be found on the [PostgreSQL official website](https://www.postgresql.org/download/).
 
-### Database Setup ###
-1. **Clone the Repository**: Clone the project repository to your local machine.
+#### Database Setup ####
 
- ```bash
- git clone https://github.com/HardCodedCoder/typecode-registry.git
- cd typecode-registry/backend
+1. **Change into backend Directory**: Navigate to the backend directory to access the database scripts.
+
+```bash
+cd ./backend/database/
 ```
-
 2. **Install the PostgreSQL database**: Install the database locally or via a docker container.
 
-If you want to use docker, you could use the following `docker-compose.yml` as a base for your container configuration: 
+If you want to use docker for the database standlone, you could use the following `docker-compose.yml` as a base for your container configuration: 
 
 ```yml
 version: '3'
-name: "postgresql_database_and_pgadmin"
 services:
   db:
     container_name: PostgreSQL-database
@@ -76,7 +144,7 @@ cd ./backend/database/
 
 and execute the script named `001_initial_schema.sql` in a database console to setup the data model. 
 
-### Backend Setup (Golang)
+#### Backend Setup (Golang)
 
 
 1. **Configure the Environment**: Configure your local environment variable for database connection. This involves exporting an environment variable directly. Define a variable called `TYPECODEREGISTRY_DB_DSN` which holds the connection string to the database.
@@ -84,7 +152,7 @@ and execute the script named `001_initial_schema.sql` in a database console to s
 2. **Install Dependencies**: Navigate to the backend directory and install the required Golang modules to ensure all dependencies are up to date.
 
    
- ```bash
+```bash
  go mod tidy
 ```
 
@@ -103,7 +171,7 @@ The following parameters can be passed as arguments to the application:
 
 4. **Validation**: Watch for console output indicating that the server is running, printing `API server is up and running`. This confirms that your backend service is up and operational.
 
-### Frontend Setup (Angular)
+#### Frontend Setup (Angular)
 
 1. **Navigate to the Frontend Directory**: Change to the directory where your Angular project is located. This is where you will run commands related to Angular CLI and manage your frontend application.
 
@@ -117,7 +185,7 @@ The following parameters can be passed as arguments to the application:
 
 In `backend.service.ts`, you might have something like:
 
- ```typescript
+```typescript
 private apiUrl = 'http://localhost:8080';
 ```
 
