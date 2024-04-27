@@ -9,6 +9,9 @@ export class SidebarMenuComponent {
   @Output() toggleSidebar = new EventEmitter<boolean>();
   isActive: boolean = false;
 
+  /**
+   * Toggles the sidebar menu by emitting an event.
+   */
   toggle() {
     this.isActive = !this.isActive;
     this.toggleSidebar.emit(this.isActive);

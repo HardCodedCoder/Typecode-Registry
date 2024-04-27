@@ -1,11 +1,11 @@
 <div class="page">
   <div class="error-message">
-    <h1>Error {{ errorCode }} {{ errorOrigin }}</h1>
+    <h1>{{ errorCode }}</h1>
     <h2>{{ errorDetails.errorText }}</h2>
     <p><i>{{ errorDetails.playfulMessage }}</i></p>
     <p>{{ errorDetails.description }}</p>
     <button size="l" tuiButton type="button" routerLink="/typecodes" [attr.aria-hidden]="true">
-      Return to Typecodes
+      {{ errorDetails.buttonText }}
     </button>
   </div>
   <img src="./assets/img/{{ errorDetails.imgName }}" alt="Demonstration">
