@@ -1,3 +1,7 @@
+/**
+ * @see https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml for more status codes.
+ */
+
 export enum HttpStatusCode {
   NoStatus = '0',
   NoContent = '204',
