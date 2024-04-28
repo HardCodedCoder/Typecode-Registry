@@ -259,4 +259,46 @@ describe('ItemEditorComponent', () => {
     expect(subscribeSpy).toHaveBeenCalled();
     expect(mockDialogService.open).toHaveBeenCalled();
   });
+
+  it('should return the correct extension name for project extensions', () => {
+    const extensionId = 1;
+    const extensionName = 'Extension 1';
+    mockStoreService.projectExtensions = [
+      {
+        id: extensionId,
+        name: extensionName,
+        project_id: 0,
+        scope: 'Shared',
+        description: 'Test extension',
+        creation_date: new Date(),
+      },
+    ];
+    const result = component.getExtensionName(extensionId);
+    expect(result).toEqual(extensionName);
+  });
+
+  it('should return the correct extension name for shared extensions', () => {
+    const extensionId = 2;
+    const extensionName = 'Extension 2';
+    mockStoreService.sharedExtensions = [
+      {
+        id: extensionId,
+        name: extensionName,
+        project_id: 0,
+        scope: 'Shared',
+        description: 'Test extension',
+        creation_date: new Date(),
+      },
+    ];
+    const result = component.getExtensionName(extensionId);
+    expect(result).toEqual(extensionName);
+  });
+
+  it('should return undefined if the extension is not found', () => {
+    const extensionId = 3;
+    mockStoreService.projectExtensions = [];
+    mockStoreService.sharedExtensions = [];
+    const result = component.getExtensionName(extensionId);
+    expect(result).toBeUndefined();
+  });
 });
