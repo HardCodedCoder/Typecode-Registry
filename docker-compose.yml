@@ -1,0 +1,42 @@
+services:
+  postgres:
+    container_name: PostgreSQL_database
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: backend
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_HOST_AUTH_METHOD: trust
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+      - ./backend/database/001_initial_schema.sql:/docker-entrypoint-initdb.d/001_initial_schema.sql
+      - ./backend/database/testscripts/001_initial_test_data.sql:/docker-entrypoint-initdb.d/001_initial_test_data.sql
+
+  backend:
+    container_name: tcr_backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      TYPECODEREGISTRY_DB_DSN: "postgresql://postgres:mysecretpassword@localhost:5432/backend?sslmode=disable"
+    ports:
+      - 8080:8080
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - postgres
+
+  frontend:
+    container_name: tcr_frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend

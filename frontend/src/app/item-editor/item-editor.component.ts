@@ -6,7 +6,7 @@ import { BackendService } from '../services/backend.service';
 import { StoreService } from '../services/store.service';
 import { FormData } from '../services/interfaces/formdata';
 import { catchError, throwError } from 'rxjs';
-import { ItemDetailResponse } from '../services/interfaces/items';
+import { ItemResponse } from '../services/interfaces/items';
 import { TUI_PROMPT, TuiPromptData } from '@taiga-ui/kit';
 
 @Component({
@@ -34,13 +34,31 @@ export class ItemEditorComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.backendService.getItemsDetails().subscribe({
+    this.backendService.getItems().subscribe({
       next: response => {
-        this.store.details = response.details;
-        console.log(this.store.details);
+        this.store.items = response.items;
+        console.log(this.store.items);
       },
       error: error => {
         console.error('Could not fetch items', error);
+      },
+    });
+
+    this.backendService.getExtensions('Shared').subscribe({
+      next: response => {
+        this.store.sharedExtensions = response.extensions;
+      },
+      error: error => {
+        console.error('Could not fetch shared extensions:', error);
+      },
+    });
+
+    this.backendService.getExtensions('Project').subscribe({
+      next: response => {
+        this.store.projectExtensions = response.extensions;
+      },
+      error: error => {
+        console.error('Could not fetch project extensions:', error);
       },
     });
   }
@@ -93,6 +111,18 @@ export class ItemEditorComponent implements OnInit {
     });
   }
 
+  getExtensionName(extension_id: number): string | undefined {
+    let extension = this.store.projectExtensions.find(
+      ext => ext.id === extension_id
+    );
+    if (!extension) {
+      extension = this.store.sharedExtensions.find(
+        ext => ext.id === extension_id
+      );
+    }
+    return extension ? extension.name : undefined;
+  }
+
   /**
    * Sends a request to create a new item to the backend.
    * Updates the item details in the store upon successful creation and displays a notification.
@@ -108,11 +138,11 @@ export class ItemEditorComponent implements OnInit {
         extension_id: extension_id,
       })
       .subscribe(response => {
-        this.backendService.getItemsDetails().subscribe({
+        this.backendService.getItems().subscribe({
           next: response => {
             // TODO: Change to only load the newly created item detail.
-            this.store.details = response.details;
-            console.log(this.store.details);
+            this.store.items = response.items;
+            console.log(this.store.items);
           },
           error: error => {
             console.error('Could not fetch items', error);
@@ -129,11 +159,11 @@ export class ItemEditorComponent implements OnInit {
    * @param {ItemResponse} item - The item to be deleted.
    * @returns {void}
    */
-  remove(item: ItemDetailResponse) {
+  remove(item: ItemResponse) {
     //const itemId = item.id;
 
     const data: TuiPromptData = {
-      content: `Item ${item.item_name} in table ${item.item_table_name} with typecode ${item.typecode}.`,
+      content: `Item ${item.name} in table ${item.table_name} with typecode ${item.typecode}.`,
       yes: 'REMOVE',
       no: 'Cancel',
     };

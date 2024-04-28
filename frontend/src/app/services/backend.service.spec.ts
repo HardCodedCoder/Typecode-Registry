@@ -66,11 +66,13 @@ describe('BackendService', () => {
     const mockItemResponse: ItemAPIResponse = {
       item: {
         id: 1,
+        scope: 'Shared',
+        project: 'project1',
         name: 'item1',
         table_name: 'table1',
-        extensionId: 1,
+        extension_id: 1,
         typecode: 1,
-        creation_date: '2022-01-01',
+        creation_date: new Date(),
       },
     };
     service.sendCreateItemRequest(mockItemRequest).subscribe(response => {
@@ -91,11 +93,13 @@ describe('BackendService', () => {
     const expectedResponse: ItemAPIResponse = {
       item: {
         id: 0,
+        scope: '',
+        project: '',
         name: '',
         table_name: '',
-        extensionId: 0,
+        extension_id: 0,
         typecode: 0, // Adjusted the expected typecode to 0
-        creation_date: '',
+        creation_date: new Date(),
       },
     };
     service.sendCreateItemRequest(mockItemRequest).subscribe(response => {

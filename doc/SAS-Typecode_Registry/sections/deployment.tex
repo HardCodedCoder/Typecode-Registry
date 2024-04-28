@@ -1,0 +1,30 @@
+\section{Deployment}\label{sec:deployment}
+
+\subsection{Overview}\label{subsec:overview}
+The application is containerized using Docker, which simplifies deployment and ensures consistency across different environments.
+This section outlines the Docker-related files and configurations used.
+
+\subsection{Dockerfiles}\label{subsec:dockerfiles}
+The architecture utilizes Dockerfiles for both the frontend and backend components:
+
+\begin{itemize}
+    \item \textbf{Backend Dockerfile:}
+    The Dockerfile starts with a base image of golang:1.22, copies the application code, and compiles it.
+    The binary is then packaged into a minimal Alpine image.
+    This two-stage build process ensures the final image is lightweight and secure.
+
+    \item \textbf{Frontend Dockerfile:}
+    The frontend is built using the Angular framework.
+    The Dockerfile uses node:18 as a base to install dependencies and build the static files.
+    These files are then served using nginx in a subsequent stage, similar to the backend, to keep the image minimal.
+\end{itemize}
+
+\subsection{Deployment Strategy}\label{subsec:deployment-strategy}
+The deployment utilizes GitHub Actions for CI/CD, automatically building Docker images and pushing them to GitHub Container Registry.
+From there, the images can be pulled directly and executed on any environment with Docker installed.
+The images can be found at the following location:
+
+\begin{itemize}
+    \item \url{https://github.com/HardCodedCoder/Typecode-Registry/pkgs/container/typecode-registry}
+    \item \url{https://github.com/HardCodedCoder/Typecode-Registry/pkgs/container/typecode-registry-backend}
+\end{itemize}

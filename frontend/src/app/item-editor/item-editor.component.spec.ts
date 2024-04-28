@@ -12,8 +12,7 @@ import {
   ScrollingModule,
 } from '@angular/cdk/scrolling';
 import { TuiLetModule } from '@taiga-ui/cdk';
-import { TUI_PROMPT, TuiTagModule } from '@taiga-ui/kit';
-import { TuiAlertService } from '@taiga-ui/core';
+import { TuiTagModule } from '@taiga-ui/kit';
 
 describe('ItemEditorComponent', () => {
   let component: ItemEditorComponent;
@@ -21,33 +20,38 @@ describe('ItemEditorComponent', () => {
   let mockDialogService: jasmine.SpyObj<TuiDialogService>;
   let mockBackendService: jasmine.SpyObj<BackendService>;
   let mockStoreService: jasmine.SpyObj<StoreService>;
-  let mockAlertService: jasmine.SpyObj<TuiAlertService>;
+  //let mockAlertService: jasmine.SpyObj<TuiAlertService>;
 
   beforeEach(async () => {
     mockDialogService = jasmine.createSpyObj('TuiDialogService', ['open']);
     mockDialogService.open.and.returnValue(of({}).pipe(share()));
     mockBackendService = jasmine.createSpyObj('BackendService', [
       'sendCreateItemRequest',
-      'getItemsDetails',
+      'getItems',
+      'getExtensions',
     ]);
-    mockBackendService.getItemsDetails.and.returnValue(
+    mockBackendService.getItems.and.returnValue(
       of({
-        details: [
+        items: [
           {
+            id: 1,
             scope: 'Project',
             project: 'Project A',
-            extension: 'Extension A',
-            item_name: 'Item A',
-            item_table_name: 'Table A',
+            name: 'Item A',
+            table_name: 'Table A',
+            extension_id: 1,
             typecode: 1,
+            creation_date: new Date(),
           },
           {
+            id: 2,
             scope: 'Shared',
             project: '',
-            extension: 'Extension A',
-            item_name: 'Item A',
-            item_table_name: 'Table A',
+            name: 'Item A',
+            table_name: 'Table A',
+            extension_id: 2,
             typecode: 1,
+            creation_date: new Date(),
           },
         ],
       })
@@ -56,12 +60,58 @@ describe('ItemEditorComponent', () => {
       of({
         item: {
           id: 1,
+          scope: 'Project',
+          project: 'Project A',
           name: 'Non-Shared Item',
-          typecode: 1,
           table_name: 'Non-Shared Table',
-          extensionId: 2,
-          creation_date: '2022-01-01',
+          extension_id: 2,
+          typecode: 1,
+          creation_date: new Date(),
         },
+      })
+    );
+    mockBackendService.getExtensions.withArgs('Shared').and.returnValue(
+      of({
+        extensions: [
+          {
+            id: 1,
+            name: 'Extension 1',
+            project_id: 0,
+            scope: 'Shared',
+            description: 'Test extension',
+            creation_date: new Date(''),
+          },
+          {
+            id: 2,
+            name: 'Extension 2',
+            project_id: 0,
+            scope: 'Shared',
+            description: 'Test extension',
+            creation_date: new Date(),
+          },
+        ],
+      })
+    );
+    mockBackendService.getExtensions.withArgs('Project').and.returnValue(
+      of({
+        extensions: [
+          {
+            id: 1,
+            name: 'Extension 1',
+            project_id: 1,
+            scope: 'Project',
+            description: 'Test extension',
+            creation_date: new Date(''),
+          },
+          {
+            id: 2,
+            name: 'Extension 2',
+            project_id: 2,
+            scope: 'Project',
+            description: 'Test extension',
+            creation_date: new Date(),
+          },
+        ],
       })
     );
     mockStoreService = jasmine.createSpyObj('StoreService', [
@@ -71,7 +121,7 @@ describe('ItemEditorComponent', () => {
     mockStoreService.getSharedExtensionId.and.returnValue(1);
     mockStoreService.getProjectExtensionId.and.returnValue(1);
 
-    mockAlertService = jasmine.createSpyObj('AlertService', ['open']);
+    //mockAlertService = jasmine.createSpyObj('AlertService', ['open']);
 
     await TestBed.configureTestingModule({
       declarations: [ItemEditorComponent],
@@ -120,32 +170,38 @@ describe('ItemEditorComponent', () => {
       of({
         item: {
           id: 1,
-          name: 'Test Item',
+          scope: 'Project',
+          project: 'Project A',
+          name: 'Non-Shared Item',
+          table_name: 'Non-Shared Table',
+          extension_id: 2,
           typecode: 1,
-          table_name: 'Test Table',
-          extensionId: 1,
-          creation_date: '2022-01-01',
+          creation_date: new Date(),
         },
       })
     );
-    mockBackendService.getItemsDetails.and.returnValue(
+    mockBackendService.getItems.and.returnValue(
       of({
-        details: [
+        items: [
           {
+            id: 1,
             scope: 'Project',
             project: 'Project A',
-            extension: 'Extension A',
-            item_name: 'Item A',
-            item_table_name: 'Table A',
+            name: 'Item A',
+            table_name: 'Table A',
+            extension_id: 1,
             typecode: 1,
+            creation_date: new Date(),
           },
           {
+            id: 2,
             scope: 'Shared',
             project: '',
-            extension: 'Extension A',
-            item_name: 'Item A',
-            item_table_name: 'Table A',
+            name: 'Item A',
+            table_name: 'Table A',
+            extension_id: 2,
             typecode: 1,
+            creation_date: new Date(),
           },
         ],
       })
@@ -178,11 +234,13 @@ describe('ItemEditorComponent', () => {
       of({
         item: {
           id: 1,
+          scope: 'Project',
+          project: 'Project A',
           name: 'Non-Shared Item',
-          typecode: 1,
           table_name: 'Non-Shared Table',
-          extensionId: 2,
-          creation_date: '2022-01-01',
+          extension_id: 2,
+          typecode: 1,
+          creation_date: new Date(),
         },
       })
     );
@@ -204,6 +262,48 @@ describe('ItemEditorComponent', () => {
 
     expect(subscribeSpy).toHaveBeenCalled();
     expect(mockDialogService.open).toHaveBeenCalled();
+  });
+
+  it('should return the correct extension name for project extensions', () => {
+    const extensionId = 1;
+    const extensionName = 'Extension 1';
+    mockStoreService.projectExtensions = [
+      {
+        id: extensionId,
+        name: extensionName,
+        project_id: 0,
+        scope: 'Shared',
+        description: 'Test extension',
+        creation_date: new Date(),
+      },
+    ];
+    const result = component.getExtensionName(extensionId);
+    expect(result).toEqual(extensionName);
+  });
+
+  it('should return the correct extension name for shared extensions', () => {
+    const extensionId = 2;
+    const extensionName = 'Extension 2';
+    mockStoreService.sharedExtensions = [
+      {
+        id: extensionId,
+        name: extensionName,
+        project_id: 0,
+        scope: 'Shared',
+        description: 'Test extension',
+        creation_date: new Date(),
+      },
+    ];
+    const result = component.getExtensionName(extensionId);
+    expect(result).toEqual(extensionName);
+  });
+
+  it('should return undefined if the extension is not found', () => {
+    const extensionId = 3;
+    mockStoreService.projectExtensions = [];
+    mockStoreService.sharedExtensions = [];
+    const result = component.getExtensionName(extensionId);
+    expect(result).toBeUndefined();
   });
 
   /*

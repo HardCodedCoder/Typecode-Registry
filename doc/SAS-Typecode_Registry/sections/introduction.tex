@@ -71,37 +71,34 @@ The following goals have been established for the system:
 
         \hline
         %%% Row  Name
-        \rowcolor{gray!50}\textbf{Name} & \rowcolor{gray!50}\textbf{Jira Ticket Number} \\
-        UC-1 Create Items
-        &
+        \rowcolor{gray!50}\textbf{Name} & \textbf{Jira Ticket Number} \\
+        UC-1 Create Items &
         \href{https://fh-burgenland.atlassian.net/browse/TRN-4}{TRN-4: Create Items} \\ \hline
 
         %% Row  User Role
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{User Role}} \\
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{User Role}} \\
         \multicolumn{2}{|l|}{Developer} \\ \hline
 
-        %% Row Purpse
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Purpose}} \\
+        %% Row Purpose
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Purpose}} \\
         \multicolumn{2}{|l|}{Generation of an item containing a unique typecode for a project or an extension.} \\ \hline
 
-        %% Row Preconditon & Postcondition
-        \rowcolor{gray!50}\textbf{Precondition} & \rowcolor{gray!50}\textbf{Postcondition} \\
-        The developer successfully logged using his Microsoft Account.
-         &
+        %% Row Precondition & Postcondition
+        \rowcolor{gray!50}\textbf{Precondition} & \textbf{Postcondition} \\
+        The developer successfully logged using his Microsoft Account. &
         The XML Snippet of the successfully created typecode is displayed on the screen. \\ \hline
 
-        \rowcolor{gray!50}\textbf{User Intention} & \rowcolor{gray!50}\textbf{System Response} \\
-        A developer working on a project wants to create a new item needed for the project he is working on without
-        the need to worry about uniqueness of the item's typecode.
-         &
-        The system shows a success message and the XML snippet of the created item.
-        The system persisted the newly generated item in the database.
-        \\ \hline
+        %% Row User Intention & System Response
+        \rowcolor{gray!50}\textbf{User Intention} & \textbf{System Response} \\
+        A developer working on a project wants to create a new item needed for the project he is working on without the need to worry about uniqueness of the item's typecode. &
+        The system shows a success message and the XML snippet of the created item. The system persisted the newly generated item in the database. \\ \hline
 
-         & \\ \hline
+        %% Empty Row (Add content or remove this row if it's not needed)
+        \multicolumn{2}{|c|}{} \\ \hline
 
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Remarks}} \\
-        \multicolumn{2}{|p{1\textwidth}|}{Depending on the purpose of the specific item (project related/global) the typecode (value of the item) is generated in a specific range.} \\ \hline
+        %% Row Remarks
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Remarks}} \\
+        \multicolumn{2}{|p{\textwidth}|}{Depending on the purpose of the specific item (project related/global) the typecode (value of the item) is generated in a specific range.} \\ \hline
     \end{tabular}
     \caption{UC-1: Create items}
     \label{tab:uc-1_create-items}
@@ -114,39 +111,35 @@ The following goals have been established for the system:
     \begin{tabular}{|p{0.5\textwidth}|p{0.5\textwidth}|}
 
         \hline
-        %%% Row  Name
-        \rowcolor{gray!50}\textbf{Name} & \rowcolor{gray!50}\textbf{Jira Ticket Number} \\
-        UC-2 - Update Items
-        &
+        \rowcolor{gray!50}\textbf{Name} & \textbf{Jira Ticket Number} \\
+        UC-2 - Update Items &
         \href{https://fh-burgenland.atlassian.net/browse/TRN-33}{TRN-33: Update items} \\ \hline
 
-        %% Row  User Role
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{User Role}} \\
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{User Role}} \\
         \multicolumn{2}{|l|}{Developer} \\ \hline
 
-        %% Row Purpose
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Purpose}} \\
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Purpose}} \\
         \multicolumn{2}{|l|}{Modify an already existing item to fit new needs.} \\ \hline
 
-        %% Row Preconditon & Postcondition
-        \rowcolor{gray!50}\textbf{Precondition} & \rowcolor{gray!50}\textbf{Postcondition} \\
+        \rowcolor{gray!50}\textbf{Precondition} & \textbf{Postcondition} \\
         The developer successfully logged using his Microsoft Account and found the specific item he wants to modify.
         &
         The item was successfully modified and shows the edited values in the table of typecodes. \\ \hline
 
-        \rowcolor{gray!50}\textbf{User Intention} & \rowcolor{gray!50}\textbf{System Response} \\
+        \rowcolor{gray!50}\textbf{User Intention} & \textbf{System Response} \\
         A developer needs to modify an already existing item to fit new needs.
         Those could be that the item itself needs to be renamed or the table name needs to be changed.
         &
         The changes to the item are persisted in the database and the table of typecodes is updated. \\ \hline
 
-        & \\ \hline
+        %% Empty Row (Add content or remove this row if it's not needed)
+        \multicolumn{2}{|c|}{} \\ \hline
 
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Remarks}} \\
-        \multicolumn{2}{|p{1\textwidth}|}{Only the name and table name of the item can be modified. When the scope, project or extension needs to be adapted, the item must be deleted and newly created } \\ \hline
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Remarks}} \\
+        \multicolumn{2}{|p{\textwidth}|}{Only the name and table name of the item can be modified. When the scope, project or extension needs to be adapted, the item must be deleted and newly created.} \\ \hline
     \end{tabular}
     \caption{UC-2: update items}
-    \label{tab:uc-2_update items}
+    \label{tab:uc-2_update_items}
 \end{table}
 
 \subsubsection{Use Case UC-3: Delete items}\label{subsubsec:use-case-uc-3:-delete-items}
@@ -157,37 +150,36 @@ The following goals have been established for the system:
 
         \hline
         %%% Row  Name
-        \rowcolor{gray!50}\textbf{Name} & \rowcolor{gray!50}\textbf{Jira Ticket Number} \\
-        UC-3 - Delete items
-        &
+        \rowcolor{gray!50}\textbf{Name} & \textbf{Jira Ticket Number} \\
+        UC-3 - Delete items &
         \href{https://fh-burgenland.atlassian.net/browse/TRN-34}{TRN-34: Delete Items} \\ \hline
 
         %% Row  User Role
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{User Role}} \\
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{User Role}} \\
         \multicolumn{2}{|l|}{Administrator} \\ \hline
 
         %% Row Purpose
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Purpose}} \\
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Purpose}} \\
         \multicolumn{2}{|l|}{Delete an already existing item.} \\ \hline
 
-        %% Row Preconditon & Postcondition
-        \rowcolor{gray!50}\textbf{Precondition} & \rowcolor{gray!50}\textbf{Postcondition} \\
-        The developer successfully logged using his Microsoft Account and has administrator rights.
-        &
+        %% Row Precondition & Postcondition
+        \rowcolor{gray!50}\textbf{Precondition} & \textbf{Postcondition} \\
+        The developer successfully logged using his Microsoft Account and has administrator rights. &
         A message saying that the deletion of the item was successful is shown on the display. \\ \hline
 
-        \rowcolor{gray!50}\textbf{User Intention} & \rowcolor{gray!50}\textbf{System Response} \\
-        An administrator needs to delete an already existing item due to a conflict or other reasons.
-        &
+        \rowcolor{gray!50}\textbf{User Intention} & \textbf{System Response} \\
+        An administrator needs to delete an already existing item due to a conflict or other reasons. &
         The persisted item is the deleted from the database. \\ \hline
 
-        & \\ \hline
+        %% Empty Row (Add content or remove this row if it's not needed)
+        \multicolumn{2}{|c|}{} \\ \hline
 
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Remarks}} \\
-        \multicolumn{2}{|p{1\textwidth}|}{The deletion of an item is a rare case and should be only exercised with caution.} \\ \hline
+        %% Row Remarks
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Remarks}} \\
+        \multicolumn{2}{|p{\textwidth}|}{The deletion of an item is a rare case and should be only exercised with caution.} \\ \hline
     \end{tabular}
     \caption{UC-3: Delete an item}
-    \label{tab:uc-delete-an-item}
+    \label{tab:uc-3_delete_item}
 \end{table}
 
 \subsubsection{Use Case UC-4: Read items}\label{subsubsec:use-case-uc-4:-read-items}
@@ -198,37 +190,36 @@ The following goals have been established for the system:
 
         \hline
         %%% Row  Name
-        \rowcolor{gray!50}\textbf{Name} & \rowcolor{gray!50}\textbf{Jira Ticket Number} \\
-        UC-4 - Read items
-        &
-        \href{https://fh-burgenland.atlassian.net/browse/TRN-35}{TRN-34: Read Items} \\ \hline
+        \rowcolor{gray!50}\textbf{Name} & \textbf{Jira Ticket Number} \\
+        UC-4 - Read items &
+        \href{https://fh-burgenland.atlassian.net/browse/TRN-35}{TRN-35: Read Items} \\ \hline
 
         %% Row  User Role
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{User Role}} \\
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{User Role}} \\
         \multicolumn{2}{|l|}{Developer} \\ \hline
 
         %% Row Purpose
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Purpose}} \\
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Purpose}} \\
         \multicolumn{2}{|l|}{Read existing items from the database and display the items in a table.} \\ \hline
 
-        %% Row Preconditon & Postcondition
-        \rowcolor{gray!50}\textbf{Precondition} & \rowcolor{gray!50}\textbf{Postcondition} \\
-        The developer successfully logged in using his Microsoft Account.
-        &
-        Existing items are listed in a table.  \\ \hline
+        %% Row Precondition & Postcondition
+        \rowcolor{gray!50}\textbf{Precondition} & \textbf{Postcondition} \\
+        The developer successfully logged in using his Microsoft Account. &
+        Existing items are listed in a table. \\ \hline
 
-        \rowcolor{gray!50}\textbf{User Intention} & \rowcolor{gray!50}\textbf{System Response} \\
-        A developer wants to see all existing items in the system.
-        &
+        \rowcolor{gray!50}\textbf{User Intention} & \textbf{System Response} \\
+        A developer wants to see all existing items in the system. &
         The items are fetched from the database and sent to the user interface displaying the items. \\ \hline
 
-        & \\ \hline
+        %% Empty Row (Add content or remove this row if it's not needed)
+        \multicolumn{2}{|c|}{} \\ \hline
 
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Remarks}} \\
-        \multicolumn{2}{|p{1\textwidth}|}{None.} \\ \hline
+        %% Row Remarks
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Remarks}} \\
+        \multicolumn{2}{|p{\textwidth}|}{None.} \\ \hline
     \end{tabular}
     \caption{UC-4: Read items}
-    \label{tab:uc-read-items}
+    \label{tab:uc-4_read_items}
 \end{table}
 
 \subsubsection{Use Case UC-5: Display item's XML snippet.}\label{subsubsec:use-case-uc-5:-display-item's-xml-snippet}
@@ -238,41 +229,43 @@ The following goals have been established for the system:
     \begin{tabular}{|p{0.5\textwidth}|p{0.5\textwidth}|}
 
         \hline
-        %%% Row  Name
-        \rowcolor{gray!50}\textbf{Name} & \rowcolor{gray!50}\textbf{Jira Ticket Number} \\
+        %%% Row Name
+        \rowcolor{gray!50}\textbf{Name} & \textbf{Jira Ticket Number} \\
         UC-5 - Display item's XML snippet.
         &
         \href{https://fh-burgenland.atlassian.net/browse/TRN-112}{TRN-112: Display item's XML snippet} \\ \hline
 
-
-        %% Row  User Role
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{User Role}} \\
+        %% Row User Role
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{User Role}} \\
         \multicolumn{2}{|l|}{Developer} \\ \hline
 
         %% Row Purpose
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Purpose}} \\
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Purpose}} \\
         \multicolumn{2}{|l|}{Display Item's XML snippet to the developer.} \\ \hline
 
-        %% Row Preconditon & Postcondition
-        \rowcolor{gray!50}\textbf{Precondition} & \rowcolor{gray!50}\textbf{Postcondition} \\
+        %% Row Precondition & Postcondition
+        \rowcolor{gray!50}\textbf{Precondition} & \textbf{Postcondition} \\
         The developer successfully logged in using his Microsoft Account.
         &
-        The item's XML snippet is displayed on the screen.
-        The developer can use a ``Copy to clipboard`` button to copy the entire snippet to the clipboard.\\ \hline
+        The item's XML snippet is displayed on the screen. The developer can use a ``Copy to clipboard`` button to copy the entire snippet to the clipboard.\\ \hline
 
-        \rowcolor{gray!50}\textbf{User Intention} & \rowcolor{gray!50}\textbf{System Response} \\
-        A developer wants to retrieve the XML snippet of a specific item to insert it to a specific project's items.xml file.
+        %% Row User Intention & System Response
+        \rowcolor{gray!50}\textbf{User Intention} & \textbf{System Response} \\
+        A developer wants to retrieve the XML snippet of a specific item to insert it into a specific project's items.xml file.
         &
         The system shows the XML snippet to the developer. \\ \hline
 
-        & \\ \hline
+        %% Empty Row (Add content or remove this row if it's not needed)
+        \multicolumn{2}{|c|}{} \\ \hline
 
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Remarks}} \\
-        \multicolumn{2}{|p{1\textwidth}|}{None.} \\ \hline
+        %% Row Remarks
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Remarks}} \\
+        \multicolumn{2}{|p{\textwidth}|}{None.} \\ \hline
     \end{tabular}
     \caption{UC-5: Display item's XML snippet.}
-    \label{tab:uc-xml-snippet}
+    \label{tab:uc-5_xml_snippet}
 \end{table}
+
 
 \subsubsection{Use Case UC-6: Filter for items.}\label{subsubsec:use-case-uc-5:-filter-for-items}
 
@@ -281,38 +274,41 @@ The following goals have been established for the system:
     \begin{tabular}{|p{0.5\textwidth}|p{0.5\textwidth}|}
 
         \hline
-        %%% Row  Name
-        \rowcolor{gray!50}\textbf{Name} & \rowcolor{gray!50}\textbf{Jira Ticket Number} \\
+        %%% Row Name
+        \rowcolor{gray!50}\textbf{Name} & \textbf{Jira Ticket Number} \\
         UC-6 - Filter for items.
         &
         \href{https://fh-burgenland.atlassian.net/browse/TRN-56}{TRN-56: Filter for items} \\ \hline
 
-        %% Row  User Role
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{User Role}} \\
+        %% Row User Role
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{User Role}} \\
         \multicolumn{2}{|l|}{Developer} \\ \hline
 
         %% Row Purpose
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Purpose}} \\
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Purpose}} \\
         \multicolumn{2}{|l|}{Displayed items can be filtered by name, typecode, table-name, extension and scope.} \\ \hline
 
-        %% Row Preconditon & Postcondition
-        \rowcolor{gray!50}\textbf{Precondition} & \rowcolor{gray!50}\textbf{Postcondition} \\
+        %% Row Precondition & Postcondition
+        \rowcolor{gray!50}\textbf{Precondition} & \textbf{Postcondition} \\
         The developer successfully logged in using his Microsoft Account and added the filter criteria to the filter fields.
         &
-        The items table is filtered by the entered filter criteria.\\ \hline
+        The items table is filtered by the entered filter criteria. \\ \hline
 
-        \rowcolor{gray!50}\textbf{User Intention} & \rowcolor{gray!50}\textbf{System Response} \\
-        A developer needs to filter the viewed table by a specific filter criteria  to find a subset of items.
+        %% Row User Intention & System Response
+        \rowcolor{gray!50}\textbf{User Intention} & \textbf{System Response} \\
+        A developer needs to filter the viewed table by a specific filter criteria to find a subset of items.
         &
         The table shows matching items to the filter criteria. \\ \hline
 
-        & \\ \hline
+        %% Empty Row (Add content or remove this row if it's not needed)
+        \multicolumn{2}{|c|}{} \\ \hline
 
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Remarks}} \\
-        \multicolumn{2}{|p{1\textwidth}|}{None.} \\ \hline
+        %% Row Remarks
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Remarks}} \\
+        \multicolumn{2}{|p{\textwidth}|}{None.} \\ \hline
     \end{tabular}
     \caption{UC-6: Filter for items.}
-    \label{tab:uc-filter-for-items}
+    \label{tab:uc-6_filter_items}
 \end{table}
 
 %Login & Users should be able to login by using their Microsoft Account
@@ -324,39 +320,42 @@ The following goals have been established for the system:
     \begin{tabular}{|p{0.5\textwidth}|p{0.5\textwidth}|}
 
         \hline
-        %%% Row  Name
-        \rowcolor{gray!50}\textbf{Name} & \rowcolor{gray!50}\textbf{Jira Ticket Number} \\
-        UC-7 - Sort items
-        &
+        %%% Row Name
+        \rowcolor{gray!50}\textbf{Name} & \textbf{Jira Ticket Number} \\
+        UC-7 - Sort items &
         \href{https://fh-burgenland.atlassian.net/browse/TRN-5}{TRN-5: Sort items} \\ \hline
 
-        %% Row  User Role
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{User Role}} \\
+        %% Row User Role
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{User Role}} \\
         \multicolumn{2}{|l|}{Developer} \\ \hline
 
         %% Row Purpose
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Purpose}} \\
-        \multicolumn{2}{|p{1\textwidth}|}{Displayed items can be sorted by name, typecode, table-name, extension and scope.} \\ \hline
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Purpose}} \\
+        \multicolumn{2}{|l|}{Displayed items can be sorted by name, typecode, table-name, extension and scope.} \\ \hline
 
-        %% Row Preconditon & Postcondition
-        \rowcolor{gray!50}\textbf{Precondition} & \rowcolor{gray!50}\textbf{Postcondition} \\
-        The developer successfully logged in using his Microsoft Account and clicked on the specific column he wants the item to be sorted by to sort the items.
+        %% Row Precondition & Postcondition
+        \rowcolor{gray!50}\textbf{Precondition} & \textbf{Postcondition} \\
+        The developer successfully logged in using his Microsoft Account and clicked on the specific column he wants the items to be sorted by.
         &
         The table displaying the items is sorted according to the specific column. \\ \hline
 
-        \rowcolor{gray!50}\textbf{User Intention} & \rowcolor{gray!50}\textbf{System Response} \\
+        %% Row User Intention & System Response
+        \rowcolor{gray!50}\textbf{User Intention} & \textbf{System Response} \\
         A developer wants to sort the table by a specific column to order items by that context.
         &
         The table is sorted by the chosen column. \\ \hline
 
-        & \\ \hline
+        %% Empty Row (Add content or remove this row if it's not needed)
+        \multicolumn{2}{|c|}{} \\ \hline
 
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Remarks}} \\
-        \multicolumn{2}{|p{1\textwidth}|}{None.} \\ \hline
+        %% Row Remarks
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Remarks}} \\
+        \multicolumn{2}{|l|}{None.} \\ \hline
     \end{tabular}
     \caption{UC-7: Sort items.}
-    \label{tab:uc-sort-items}
+    \label{tab:uc-7_sort_items}
 \end{table}
+
 
 \subsubsection{Use Case UC-8: Create a Project}\label{subsubsec:use-case-uc-8:-create a project}
 
@@ -365,38 +364,40 @@ The following goals have been established for the system:
     \begin{tabular}{|p{0.5\textwidth}|p{0.5\textwidth}|}
 
         \hline
-        %%% Row  Name
-        \rowcolor{gray!50}\textbf{Name} & \rowcolor{gray!50}\textbf{Jira Ticket Number} \\
-        UC-8 - Create projects
-        &
+        %%% Row Name
+        \rowcolor{gray!50}\textbf{Name} & \textbf{Jira Ticket Number} \\
+        UC-8 - Create projects &
         \href{https://fh-burgenland.atlassian.net/browse/TRN-89}{TRN-89: Create projects} \\ \hline
 
-        %% Row  User Role
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{User Role}} \\
+        %% Row User Role
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{User Role}} \\
         \multicolumn{2}{|l|}{Developer} \\ \hline
 
         %% Row Purpose
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Purpose}} \\
-        \multicolumn{2}{|p{1\textwidth}|}{Create a new project by passing the name and an optional description for the project.} \\ \hline
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Purpose}} \\
+        \multicolumn{2}{|l|}{Create a new project by passing the name and an optional description for the project.} \\ \hline
 
-        %% Row Preconditon & Postcondition
-        \rowcolor{gray!50}\textbf{Precondition} & \rowcolor{gray!50}\textbf{Postcondition} \\
-        The developer is successfully logged in using his Microsoft and selected the option on the screen for creating a new project.
+        %% Row Precondition & Postcondition
+        \rowcolor{gray!50}\textbf{Precondition} & \textbf{Postcondition} \\
+        The developer is successfully logged in using his Microsoft Account and selected the option on the screen for creating a new project.
         &
-        The developer gets a message which confirms that the project was successfully created.\\ \hline
+        The developer gets a message which confirms that the project was successfully created. \\ \hline
 
-        \rowcolor{gray!50}\textbf{User Intention} & \rowcolor{gray!50}\textbf{System Response} \\
+        %% Row User Intention & System Response
+        \rowcolor{gray!50}\textbf{User Intention} & \textbf{System Response} \\
         A developer works on a new project and wants to reflect the project in the system.
         &
         The system approves the creation of the project. \\ \hline
 
-        & \\ \hline
+        %% Empty Row (Add content or remove this row if it's not needed)
+        \multicolumn{2}{|c|}{} \\ \hline
 
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Remarks}} \\
-        \multicolumn{2}{|p{1\textwidth}|}{None.} \\ \hline
+        %% Row Remarks
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Remarks}} \\
+        \multicolumn{2}{|l|}{None.} \\ \hline
     \end{tabular}
     \caption{UC-8: Create projects.}
-    \label{tab:uc-create-project}
+    \label{tab:uc-8_create_projects}
 \end{table}
 
 \subsubsection{Use Case UC-9: Create Extensions}\label{subsubsec:use-case-uc-9:-create-extensions}
@@ -406,83 +407,72 @@ The following goals have been established for the system:
     \begin{tabular}{|p{0.5\textwidth}|p{0.5\textwidth}|}
 
         \hline
-        %%% Row  Name
-        \rowcolor{gray!50}\textbf{Name} & \rowcolor{gray!50}\textbf{Jira Ticket Number} \\
-        UC-9 - Create extensions.
-        &
+        \rowcolor{gray!50}\textbf{Name} & \textbf{Jira Ticket Number} \\
+        UC-9 - Create extensions &
         \href{https://fh-burgenland.atlassian.net/browse/TRN-90}{TRN-90: Create extensions} \\ \hline
 
-        %% Row  User Role
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{User Role}} \\
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{User Role}} \\
         \multicolumn{2}{|l|}{Developer} \\ \hline
 
-        %% Row Purpose
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Purpose}} \\
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Purpose}} \\
         \multicolumn{2}{|p{1\textwidth}|}{Create a new extension by passing a name and a scope to the extension. If the scope is set to project scope, then an existing project needs to be selected.} \\ \hline
 
-        %% Row Preconditon & Postcondition
-        \rowcolor{gray!50}\textbf{Precondition} & \rowcolor{gray!50}\textbf{Postcondition} \\
+        \rowcolor{gray!50}\textbf{Precondition} & \textbf{Postcondition} \\
         The developer is successfully logged in using his Microsoft account and selected the option on the screen for creating a new project.
         &
-        The developer gets a message which confirms that the extension was successfully created.\\ \hline
+        The developer gets a message which confirms that the extension was successfully created. \\ \hline
 
-        \rowcolor{gray!50}\textbf{User Intention} & \rowcolor{gray!50}\textbf{System Response} \\
+        \rowcolor{gray!50}\textbf{User Intention} & \textbf{System Response} \\
         A developer needs to create an extension for a project or a global extension.
         The developer selects the scope and the project if the scope is set to project scope.
         &
         The system approves the creation of the extension by showing a success message. \\ \hline
 
-        & \\ \hline
+        %% Empty Row (Add content or remove this row if it's not needed)
+        \multicolumn{2}{|c|}{} \\ \hline
 
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Remarks}} \\
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Remarks}} \\
         \multicolumn{2}{|p{1\textwidth}|}{None.} \\ \hline
     \end{tabular}
     \caption{UC-9: Create extensions}
-    \label{tab:uc-create-extensions}
+    \label{tab:uc-9_create_extensions}
 \end{table}
-
-\subsubsection{Use Case UC-10: Rename extensions}\label{subsubsec:use-case-uc-10:-rename-extensions}
 
 \begin{table}[H]
     \centering
     \begin{tabular}{|p{0.5\textwidth}|p{0.5\textwidth}|}
 
         \hline
-        %%% Row  Name
-        \rowcolor{gray!50}\textbf{Name} & \rowcolor{gray!50}\textbf{Jira Ticket Number} \\
-        UC-10 - Rename Extensions
-        &
+        \rowcolor{gray!50}\textbf{Name} & \textbf{Jira Ticket Number} \\
+        UC-10 - Rename Extensions &
         \href{https://fh-burgenland.atlassian.net/browse/TRN-113}{TRN-113: Rename Extensions} \\ \hline
 
-        %% Row  User Role
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{User Role}} \\
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{User Role}} \\
         \multicolumn{2}{|l|}{Developer} \\ \hline
 
-        %% Row Purpose
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Purpose}} \\
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Purpose}} \\
         \multicolumn{2}{|p{1\textwidth}|}{Rename an already in the system existing extension.} \\ \hline
 
-        %% Row Preconditon & Postcondition
-        \rowcolor{gray!50}\textbf{Precondition} & \rowcolor{gray!50}\textbf{Postcondition} \\
+        \rowcolor{gray!50}\textbf{Precondition} & \textbf{Postcondition} \\
         The developer is successfully logged in using his Microsoft and searched for the specific extension he wants to rename.
         &
         The table shows the extension displaying the new name.
-        The new name is also persisted to the database.\\ \hline
+        The new name is also persisted to the database. \\ \hline
 
-        \rowcolor{gray!50}\textbf{User Intention} & \rowcolor{gray!50}\textbf{System Response} \\
+        \rowcolor{gray!50}\textbf{User Intention} & \textbf{System Response} \\
         A developer wants to rename an already existing extension to fit new needs.
         &
         The system approves the change by showing the change in the table. \\ \hline
 
-        & \\ \hline
+        %% Empty Row (Add content or remove this row if it's not needed)
+        \multicolumn{2}{|c|}{} \\ \hline
 
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Remarks}} \\
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Remarks}} \\
         \multicolumn{2}{|p{1\textwidth}|}{None.} \\ \hline
     \end{tabular}
     \caption{UC-10: Rename extensions}
-    \label{tab:uc-rename-extensions}
+    \label{tab:uc-10_rename_extensions}
 \end{table}
-
 
 %F12 & Modify Project Name & A project which already exists in the system can be renamed. \\ \hline
 
@@ -493,39 +483,34 @@ The following goals have been established for the system:
     \begin{tabular}{|p{0.5\textwidth}|p{0.5\textwidth}|}
 
         \hline
-        %%% Row  Name
-        \rowcolor{gray!50}\textbf{Name} & \rowcolor{gray!50}\textbf{Jira Ticket Number} \\
-        UC-11 - Rename Projects
-        &
+        \rowcolor{gray!50}\textbf{Name} & \textbf{Jira Ticket Number} \\
+        UC-11 - Rename Projects &
         \href{https://fh-burgenland.atlassian.net/browse/TRN-114}{TRN-114: Rename Projects} \\ \hline
 
-        %% Row  User Role
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{User Role}} \\
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{User Role}} \\
         \multicolumn{2}{|l|}{Developer} \\ \hline
 
-        %% Row Purpose
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Purpose}} \\
-        \multicolumn{2}{|p{1\textwidth}|}{A project needs to be renamed due to new needs.} \\ \hline
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Purpose}} \\
+        \multicolumn{2}{|l|}{A project needs to be renamed due to new needs.} \\ \hline
 
-        %% Row Preconditon & Postcondition
-        \rowcolor{gray!50}\textbf{Precondition} & \rowcolor{gray!50}\textbf{Postcondition} \\
-        The developer is successfully logged in using his Microsoft account.
-        The developer searched for the specific project he wants to rename.
+        \rowcolor{gray!50}\textbf{Precondition} & \textbf{Postcondition} \\
+        The developer is successfully logged in using his Microsoft account and searched for the specific project he wants to rename.
         &
-        The respective project has been renamed and the change has been persisted to the database.\\ \hline
+        The respective project has been renamed and the change has been persisted to the database. \\ \hline
 
-        \rowcolor{gray!50}\textbf{User Intention} & \rowcolor{gray!50}\textbf{System Response} \\
+        \rowcolor{gray!50}\textbf{User Intention} & \textbf{System Response} \\
         The developer has the need to rename a project due to new needs which came up.
         &
         The project was successfully altered in the database and the new project name is displayed on the screen. \\ \hline
 
-        & \\ \hline
+        %% Empty Row (Add content or remove this row if it's not needed)
+        \multicolumn{2}{|c|}{} \\ \hline
 
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Remarks}} \\
-        \multicolumn{2}{|p{1\textwidth}|}{None.} \\ \hline
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Remarks}} \\
+        \multicolumn{2}{|l|}{None.} \\ \hline
     \end{tabular}
     \caption{UC-11: Rename Projects}
-    \label{tab:uc-rename-projects}
+    \label{tab:uc-11_rename_projects}
 \end{table}
 
 \subsubsection{Use Case UC-12: Import reserved typecodes}\label{subsubsec:use-case-uc-12:-import-reserved-typecodes}
@@ -535,38 +520,34 @@ The following goals have been established for the system:
     \begin{tabular}{|p{0.5\textwidth}|p{0.5\textwidth}|}
 
         \hline
-        %%% Row  Name
-        \rowcolor{gray!50}\textbf{Name} & \rowcolor{gray!50}\textbf{Jira Ticket Number} \\
-        UC-12 - Import reserved typecodes
-        &
-        \href{https://fh-burgenland.atlassian.net/browse/TRN-7}{TRN-7: Import reserved typecodes} \\ \hline
+        \rowcolor{gray!50}\textbf{Name} & \textbf{Jira Ticket Number} \\
+        UC-12 - Import Reserved Typecodes &
+        \href{https://fh-burgenland.atlassian.net/browse/TRN-7}{TRN-7: Import Reserved Typecodes} \\ \hline
 
-        %% Row  User Role
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{User Role}} \\
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{User Role}} \\
         \multicolumn{2}{|l|}{Administrator} \\ \hline
 
-        %% Row Purpose
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Purpose}} \\
-        \multicolumn{2}{|p{1\textwidth}|}{Administrators can import internal system typecodes via a ``reservedTypecodes.txt`` file} \\ \hline
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Purpose}} \\
+        \multicolumn{2}{|l|}{Administrators can import internal system typecodes via a ``reservedTypecodes.txt`` file.} \\ \hline
 
-        %% Row Preconditon & Postcondition
-        \rowcolor{gray!50}\textbf{Precondition} & \rowcolor{gray!50}\textbf{Postcondition} \\
+        \rowcolor{gray!50}\textbf{Precondition} & \textbf{Postcondition} \\
         The administrator has a txt file containing proper reserved typecodes.
         &
-        Reserved typecodes have been imported successfully.\\ \hline
+        Reserved typecodes have been imported successfully. \\ \hline
 
-        \rowcolor{gray!50}\textbf{User Intention} & \rowcolor{gray!50}\textbf{System Response} \\
+        \rowcolor{gray!50}\textbf{User Intention} & \textbf{System Response} \\
         The administrator wants to import reserved typecodes via a ``reservedTypecodes.txt`` file.
         &
-        The client sends a POST request to the server and the projects are imported. \\ \hline
+        The client sends a POST request to the server and the typecodes are imported. \\ \hline
 
-        & \\ \hline
+        %% Empty Row (Add content or remove this row if it's not needed)
+        \multicolumn{2}{|c|}{} \\ \hline
 
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Remarks}} \\
-        \multicolumn{2}{|p{1\textwidth}|}{None.} \\ \hline
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Remarks}} \\
+        \multicolumn{2}{|l|}{None.} \\ \hline
     \end{tabular}
-    \caption{UC-12: Import reserved typecodes}
-    \label{tab:uc-import-reserved-typecodes}
+    \caption{UC-12: Import Reserved Typecodes}
+    \label{tab:uc-12_import_reserved_typecodes}
 \end{table}
 
 \subsubsection{Use Case UC-13: Import projects via XML files}\label{subsubsec:use-case-uc-13:-import-projects-via-xml-files}
@@ -576,38 +557,34 @@ The following goals have been established for the system:
     \begin{tabular}{|p{0.5\textwidth}|p{0.5\textwidth}|}
 
         \hline
-        %%% Row  Name
-        \rowcolor{gray!50}\textbf{Name} & \rowcolor{gray!50}\textbf{Jira Ticket Number} \\
-        UC-13 - Import Projects via XML files
-        &
-        \href{https://fh-burgenland.atlassian.net/browse/TRN-115}{TRN-115: Import projects via XML files} \\ \hline
+        \rowcolor{gray!50}\textbf{Name} & \textbf{Jira Ticket Number} \\
+        UC-13 - Import Projects via XML Files &
+        \href{https://fh-burgenland.atlassian.net/browse/TRN-115}{TRN-115: Import Projects via XML Files} \\ \hline
 
-        %% Row  User Role
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{User Role}} \\
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{User Role}} \\
         \multicolumn{2}{|l|}{Administrator} \\ \hline
 
-        %% Row Purpose
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Purpose}} \\
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Purpose}} \\
         \multicolumn{2}{|l|}{Administrators can import new projects via XML files.} \\ \hline
 
-        %% Row Preconditon & Postcondition
-        \rowcolor{gray!50}\textbf{Precondition} & \rowcolor{gray!50}\textbf{Postcondition} \\
+        \rowcolor{gray!50}\textbf{Precondition} & \textbf{Postcondition} \\
         The administrator has an XML file containing proper project items.
         &
-        Projects have been imported successfully.\\ \hline
+        Projects have been imported successfully. \\ \hline
 
-        \rowcolor{gray!50}\textbf{User Intention} & \rowcolor{gray!50}\textbf{System Response} \\
+        \rowcolor{gray!50}\textbf{User Intention} & \textbf{System Response} \\
         An administrator wants to import new projects via an XML file.
         &
         The client sends a POST request to the server and the projects are imported. \\ \hline
 
-        & \\ \hline
+        %% Empty Row (Add content or remove this row if it's not needed)
+        \multicolumn{2}{|c|}{} \\ \hline
 
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Remarks}} \\
-        \multicolumn{2}{|p{1\textwidth}|}{The systems allows duplicates but marks them as conflicts once they have been imported.} \\ \hline
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Remarks}} \\
+        \multicolumn{2}{|l|}{The systems allows duplicates but marks them as conflicts once they have been imported.} \\ \hline
     \end{tabular}
-    \caption{UC-13: Import projects via XML files}
-    \label{tab:uc-import-projects-via-xml-files}
+    \caption{UC-13: Import Projects via XML Files}
+    \label{tab:uc-13_import_projects_via_xml_files}
 \end{table}
 
 \subsubsection{Use Case UC-14: Login via microsoft account}\label{subsubsec:use-case-uc-14:-login-via-microsoft-account}
@@ -617,38 +594,34 @@ The following goals have been established for the system:
     \begin{tabular}{|p{0.5\textwidth}|p{0.5\textwidth}|}
 
         \hline
-        %%% Row  Name
-        \rowcolor{gray!50}\textbf{Name} & \rowcolor{gray!50}\textbf{Jira Ticket Number} \\
-        UC-14 - Login via Microsoft account.
-        &
+        \rowcolor{gray!50}\textbf{Name} & \textbf{Jira Ticket Number} \\
+        UC-14 - Login via Microsoft account. &
         \href{https://fh-burgenland.atlassian.net/browse/TRN-2}{TRN-2: Login via Microsoft Account} \\ \hline
 
-        %% Row  User Role
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{User Role}} \\
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{User Role}} \\
         \multicolumn{2}{|l|}{Developer} \\ \hline
 
-        %% Row Purpose
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Purpose}} \\
-        \multicolumn{2}{|l|}{Users can log into the registry via their microsoft account.} \\ \hline
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Purpose}} \\
+        \multicolumn{2}{|l|}{Users can log into the registry via their Microsoft account.} \\ \hline
 
-        %% Row Preconditon & Postcondition
-        \rowcolor{gray!50}\textbf{Precondition} & \rowcolor{gray!50}\textbf{Postcondition} \\
+        \rowcolor{gray!50}\textbf{Precondition} & \textbf{Postcondition} \\
         The developer is shown the login mask and has entered their login data correctly.
         &
-        The user has been logged in and is shown the dashboard.  \\ \hline
+        The user has been logged in and is shown the dashboard. \\ \hline
 
-        \rowcolor{gray!50}\textbf{User Intention} & \rowcolor{gray!50}\textbf{System Response} \\
+        \rowcolor{gray!50}\textbf{User Intention} & \textbf{System Response} \\
         A developer wants to log into the registry.
         &
         The system authenticates and grants access to the developer. \\ \hline
 
-        & \\ \hline
+        %% Empty Row (Add content or remove this row if it's not needed)
+        \multicolumn{2}{|c|}{} \\ \hline
 
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Remarks}} \\
-        \multicolumn{2}{|p{1\textwidth}|}{Microsoft Entra shall be used for identification.} \\ \hline
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Remarks}} \\
+        \multicolumn{2}{|l|}{Microsoft Entra shall be used for identification.} \\ \hline
     \end{tabular}
-    \caption{UC-14: Login via microsoft account}
-    \label{tab:uc-login-via-microsoft-account}
+    \caption{UC-14: Login via Microsoft account}
+    \label{tab:uc-14_login_via_microsoft_account}
 \end{table}
 
 \subsubsection{Use Case UC-15: Logout from Typecode-Registry}\label{subsubsec:use-case-uc-15:-logout}
@@ -658,38 +631,34 @@ The following goals have been established for the system:
     \begin{tabular}{|p{0.5\textwidth}|p{0.5\textwidth}|}
 
         \hline
-        %%% Row  Name
-        \rowcolor{gray!50}\textbf{Name} & \rowcolor{gray!50}\textbf{Jira Ticket Number} \\
-        UC-15 - Logout from Typecode-Registry
-        &
+        \rowcolor{gray!50}\textbf{Name} & \textbf{Jira Ticket Number} \\
+        UC-15 - Logout from Typecode-Registry &
         \href{https://fh-burgenland.atlassian.net/browse/TRN-116}{TRN-116: Logout from Typecode-Registry} \\ \hline
 
-        %% Row  User Role
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{User Role}} \\
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{User Role}} \\
         \multicolumn{2}{|l|}{Developer} \\ \hline
 
-        %% Row Purpose
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Purpose}} \\
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Purpose}} \\
         \multicolumn{2}{|l|}{Allow the user to log out.} \\ \hline
 
-        %% Row Preconditon & Postcondition
-        \rowcolor{gray!50}\textbf{Precondition} & \rowcolor{gray!50}\textbf{Postcondition} \\
+        \rowcolor{gray!50}\textbf{Precondition} & \textbf{Postcondition} \\
         The developer successfully logged in using his Microsoft account.
         &
-        The user has been logged out and is shown the login mask.  \\ \hline
+        The user has been logged out and is shown the login mask. \\ \hline
 
-        \rowcolor{gray!50}\textbf{User Intention} & \rowcolor{gray!50}\textbf{System Response} \\
+        \rowcolor{gray!50}\textbf{User Intention} & \textbf{System Response} \\
         A developer wants to log out from the registry.
         &
         The system logs the user out. \\ \hline
 
-        & \\ \hline
+        %% Empty Row (Add content or remove this row if it's not needed)
+        \multicolumn{2}{|c|}{} \\ \hline
 
-        \multicolumn{2}{|l|}{\rowcolor{gray!50}\textbf{Remarks}} \\
-        \multicolumn{2}{|p{1\textwidth}|}{None.} \\ \hline
+        \rowcolor{gray!50}\multicolumn{2}{|l|}{\textbf{Remarks}} \\
+        \multicolumn{2}{|l|}{None.} \\ \hline
     \end{tabular}
     \caption{UC-15: Logout}
-    \label{tab:uc-logout}
+    \label{tab:uc-15_logout}
 \end{table}
 
 \subsection{Technology Stack}

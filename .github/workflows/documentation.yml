@@ -1,0 +1,51 @@
+name: Build and Release LaTeX Documentation
+
+on:
+  push:
+    paths:
+      - 'doc/**'
+      - '.github/workflows/documentation.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.RELEASE_TOKEN }}
+
+      - name: Compile Software Architecture Specification
+        uses: xu-cheng/latex-action@v2
+        with:
+          root_file: main.tex
+          working_directory: doc/SAS-Typecode_Registry
+
+      - name: Rename PDF
+        run: mv ./doc/SAS-Typecode_Registry/main.pdf ./doc/SAS-Typecode_Registry/Software_Architecture_Specification.pdf
+
+      - name: Create and Push Tag
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/main')
+        run: |
+          TAG_NAME="release-$(date +'%Y%m%d%H%M%S')"
+          echo "Creating tag $TAG_NAME"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -a $TAG_NAME -m "Generated tag from GitHub Actions build"
+          git push origin $TAG_NAME
+          echo "::set-output name=tag_name::$TAG_NAME"
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        id: create_tag
+
+      - name: Upload PDF to Release
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/main')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./doc/SAS-Typecode_Registry/Software_Architecture_Specification.pdf
+          tag_name: ${{ steps.create_tag.outputs.tag_name }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}

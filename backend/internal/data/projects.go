@@ -51,3 +51,8 @@ func (pm ProjectModel) ReadAll() (projects []*Project, err error) {
 
 	return projects, nil
 }
+
+func (pm ProjectModel) ReadProjectName(id int64, projectName *string) error {
+	query := `SELECT name FROM project WHERE id = $1`
+	return pm.DB.QueryRow(query, id).Scan(&projectName)
+}
