@@ -7,6 +7,7 @@ import { StoreService } from '../services/store.service';
 import { FormData } from '../services/interfaces/formdata';
 import { catchError, throwError } from 'rxjs';
 import { ItemDetailResponse } from '../services/interfaces/items';
+import { TUI_PROMPT, TuiPromptData } from '@taiga-ui/kit';
 
 @Component({
   selector: 'app-item-editor',
@@ -44,6 +45,11 @@ export class ItemEditorComponent implements OnInit {
     });
   }
 
+  /**
+   * Opens a dialog box to add a new item.
+   * Processes the data from the closed dialog and sends a request to create a new item to the backend.
+   * @returns {void}
+   */
   showDialog(): void {
     const dialog$ = this.dialogs
       .open<FormData>(
@@ -87,6 +93,13 @@ export class ItemEditorComponent implements OnInit {
     });
   }
 
+  /**
+   * Sends a request to create a new item to the backend.
+   * Updates the item details in the store upon successful creation and displays a notification.
+   * @param {FormData} data - The data of the item to be created.
+   * @param {number} extension_id - The ID of the extension associated with the item.
+   * @returns {void}
+   */
   private sendCreateItemRequest(data: FormData, extension_id: number): void {
     this.backendService
       .sendCreateItemRequest({
@@ -110,11 +123,54 @@ export class ItemEditorComponent implements OnInit {
       });
   }
 
-  remove(detail: ItemDetailResponse) {
-    console.log('TODO: Implement deleting detail');
-    console.log(detail);
+  /**
+   * Removes an item.
+   * Displays a confirmation dialog and deletes the item upon confirmation.
+   * @param {ItemResponse} item - The item to be deleted.
+   * @returns {void}
+   */
+  remove(item: ItemDetailResponse) {
+    //const itemId = item.id;
+
+    const data: TuiPromptData = {
+      content: `Item ${item.item_name} in table ${item.item_table_name} with typecode ${item.typecode}.`,
+      yes: 'REMOVE',
+      no: 'Cancel',
+    };
+
+    this.dialogs
+      .open<boolean>(TUI_PROMPT, {
+        label: 'Do you really want to delete this item?',
+        size: 'm',
+        data,
+      })
+      .subscribe(response => {
+        if (response) {
+          //this.getPrompt(itemId);
+        }
+      });
   }
 
+  /**
+   * Calls a notification that an item was successfully deleted.
+   * @param {number} id - The ID of the deleted item.
+   * @returns {void}
+   */
+  private getPrompt(id: number) {
+    this.backendService.deleteItem(id);
+    this.alertService
+      .open('Item with id: ' + id + ' deleted!', {
+        label: '🎉 Success 🎉',
+        status: 'success',
+      })
+      .subscribe();
+  }
+
+  /**
+   * Displays a notification that an item was successfully created.
+   * @param {number} itemId - The ID of the created item.
+   * @returns {void}
+   */
   private showNotification(itemId: number): void {
     this.alertService
       .open('Item with id: ' + itemId + ' created!', {

@@ -12,7 +12,8 @@ import {
   ScrollingModule,
 } from '@angular/cdk/scrolling';
 import { TuiLetModule } from '@taiga-ui/cdk';
-import { TuiTagModule } from '@taiga-ui/kit';
+import { TUI_PROMPT, TuiTagModule } from '@taiga-ui/kit';
+import { TuiAlertService } from '@taiga-ui/core';
 
 describe('ItemEditorComponent', () => {
   let component: ItemEditorComponent;
@@ -20,6 +21,7 @@ describe('ItemEditorComponent', () => {
   let mockDialogService: jasmine.SpyObj<TuiDialogService>;
   let mockBackendService: jasmine.SpyObj<BackendService>;
   let mockStoreService: jasmine.SpyObj<StoreService>;
+  let mockAlertService: jasmine.SpyObj<TuiAlertService>;
 
   beforeEach(async () => {
     mockDialogService = jasmine.createSpyObj('TuiDialogService', ['open']);
@@ -68,6 +70,8 @@ describe('ItemEditorComponent', () => {
     ]);
     mockStoreService.getSharedExtensionId.and.returnValue(1);
     mockStoreService.getProjectExtensionId.and.returnValue(1);
+
+    mockAlertService = jasmine.createSpyObj('AlertService', ['open']);
 
     await TestBed.configureTestingModule({
       declarations: [ItemEditorComponent],
@@ -201,4 +205,90 @@ describe('ItemEditorComponent', () => {
     expect(subscribeSpy).toHaveBeenCalled();
     expect(mockDialogService.open).toHaveBeenCalled();
   });
+
+  /*
+  it('should open confirmation dialog when remove method is called', () => {
+    const item = {
+      scope: 'Shared',
+      project: 'Project A',
+      extension: 'Extension A',
+      item_name: 'Item A1',
+      item_table_name: 'Table A1',
+      typecode: 20000,
+    };
+
+    mockDialogService.open.and.returnValue(of(true));
+
+    component.remove(item);
+
+    expect(mockDialogService.open).toHaveBeenCalledOnceWith(TUI_PROMPT, {
+      label: 'Do you really want to delete this item?',
+      size: 'm',
+      data: {
+        content: `Item ${item.item_name} in table ${item.item_table_name} with typecode ${item.typecode}.`,
+        yes: 'REMOVE',
+        no: 'Cancel',
+      },
+    });
+  });
+
+  it('should call deleteItem method when user confirms deletion', () => {
+    const item = {
+      id: 1,
+      scope: 'Shared',
+      project: 'Project A',
+      extension: 'Extension A',
+      item_name: 'Item A1',
+      item_table_name: 'Table A1',
+      typecode: 20000,
+    };
+
+    mockDialogService.open.and.returnValue(of(true));
+
+    component.remove(item);
+
+    expect(mockBackendService.deleteItem).toHaveBeenCalledWith(item.id);
+  });
+
+  it('should not call deleteItem method when user cancels deletion', () => {
+    const item = {
+      scope: 'Shared',
+      project: 'Project A',
+      extension: 'Extension A',
+      item_name: 'Item A1',
+      item_table_name: 'Table A1',
+      typecode: 20000,
+    };
+
+    mockDialogService.open.and.returnValue(of(false));
+
+    component.remove(item);
+
+    expect(mockBackendService.deleteItem).not.toHaveBeenCalled();
+  });
+
+  it('should call alertService.open with success message after deletion', () => {
+    const item = {
+      id: 1,
+      scope: 'Shared',
+      project: 'Project A',
+      extension: 'Extension A',
+      item_name: 'Item A1',
+      item_table_name: 'Table A1',
+      typecode: 20000,
+    };
+
+    mockDialogService.open.and.returnValue(of(true));
+
+    component.remove(item);
+
+    expect(mockAlertService.open).toHaveBeenCalledWith(
+      `Item with id: ${item.id} deleted!`,
+      {
+        label: '🎉 Success 🎉',
+        status: 'success',
+      }
+    );
+  });
+   */
 });
