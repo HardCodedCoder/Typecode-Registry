@@ -20,7 +20,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     environment:
-      TYPECODEREGISTRY_DB_DSN: "postgresql://postgres:mysecretpassword@postgres:5432/backend?sslmode=disable"
+      TYPECODEREGISTRY_DB_DSN: "postgresql://postgres:mysecretpassword@localhost:5432/backend?sslmode=disable"
     ports:
       - 8080:8080
     volumes:
