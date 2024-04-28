@@ -167,14 +167,7 @@ This approach allows us to directly use the powerful concurrency features of Go 
     \newline\newline - \textbf{tablename}: A string representing the name of the table holding item entries in SAP.
     \newline\newline - \textbf{extension\_id}: A number representing the unique identifier of an existing extension. Depending on the id, the backend determines if the item will be created for a global or project scope (depending on the scope of the extension). \\
     \hline
-    /items/ & GET, PUT, DELETE & Gets, updates, or deletes an item by its ID. \\
-    \hline
-    /items/details & GET & Fetches detailed information about an item including its associated extension and project.
-    This route utilizes joins to gather data from the `item`, `extension`, and `project` tables, returning data such as the item's name, the extension's scope, and the project's name.
-    When the extension's scope is 'Shared', the project name is set to '-'.
-    This distinction helps identify items that are accessible globally and not tied to a specific project. \\
-    \hline
-    /items/details/{id} & GET & Fetches detailed information about an item by its ID. \\
+    /items/ & GET, PUT, DELETE & Gets, updates, or deletes an item by its ID. Updating an item is idempotent \\
     \hline
     /projects & GET & Returns all projects created. \\
     \hline
@@ -232,20 +225,25 @@ Content-Type: application/json
 {
     "items": [
         {
-            "id": 1,
-            "name": "Item 1",
-            "table_name": "table1",
-            "typecode": 100,
+            "id": 31,
+            "scope": "Project",
+            "project": "Projekt A",
+            "name": "New Item",
+            "table_name": "new_table",
             "extension_id": 1,
-            "creation_date": "2023-01-01T00:00:00Z"
+            "typecode": 14010,
+            "creation_date": "2024-04-27T09:11:53.584653Z"
         },
         {
-            "id": 2,
-            "name": "Item 2",
-            "table_name": "table2",
-            "typecode": 200,
-            "extension_id": 2,
-            "creation_date": "2023-01-02T00:00:00Z"
+            "id": 30,
+            "scope": "Project",
+            "project": "Projekt A",
+            "name": "New Item",
+            "table_name": "new_table",
+            "extension_id": 1,
+            "typecode": 14009,
+            "creation_date": "2024-04-27T09:09:59.94747Z"
+
         }
     ]
 }
@@ -285,12 +283,14 @@ HTTP/1.1 201 Created
 Content-Type: application/json
 
 {
-    "id": 3,
+    "id": 34,
+    "scope": "Project",
+    "project": "",
     "name": "New Item",
     "table_name": "new_table",
-    "typecode": 300,
     "extension_id": 1,
-    "creation_date": "2023-01-03T00:00:00Z"
+    "typecode": 14011,
+    "creation_date": "2024-04-27T19:13:22.781434Z"
 }
 \end{lstlisting}
 
@@ -312,83 +312,16 @@ Content-Type: application/json
 
 {
     "id": 1,
-    "name": "Item 1",
-    "table_name": "table1",
-    "typecode": 100,
+    "scope": "Project",
+    "project": "Projekt A",
+    "name": "Item A1",
+    "table_name": "Tabelle A1",
     "extension_id": 1,
-    "creation_date": "2023-01-01T00:00:00Z"
+    "typecode": 14000,
+    "creation_date": "2024-04-24T20:02:00.573142Z"
+
 }
 \end{lstlisting}
-
-\headingSix{GET /items/details}
-
-The \texttt{GET /items/details} endpoint is designed to provide clients with detailed information about items, including data about the associated extensions and projects. This route leverages database joins to collect comprehensive information from the `item`, `extension`, and `project` tables, offering a holistic view of the items' details in one response.
-
-\begin{lstlisting}[language=json,label={lst:lstlisting5}]
-GET /items/details HTTP/1.1
-Host: example.com
-\end{lstlisting}
-
-Response:
-
-\begin{lstlisting}[language=json,label={lst:lstlisting18}]
-HTTP/1.1 200 OK
-Content-Type: application/json
-
-{
-    "details": [
-        {
-            "scope": "Shared",
-            "project": "-",
-            "extension": "Extension 1",
-            "itemName": "Item A",
-            "itemTableName": "tableA",
-            "typecode": 501
-        },
-        {
-            "scope": "Project",
-            "project": "Project Alpha",
-            "extension": "Extension 2",
-            "itemName": "Item B",
-            "itemTableName": "tableB",
-            "typecode": 502
-        }
-    ]
-}
-\end{lstlisting}
-
-This example illustrates how the API responds to a \texttt{GET} request for item details, returning a list of item details structured with both the item and its related project and extension data. This endpoint is especially useful for users who require a comprehensive dataset encompassing multiple relational aspects of items.
-
-\headingSix{GET /items/details}
-
-The \texttt{GET /items/details} endpoint is designed to provide clients with detailed information about items, including data about the associated extensions and projects. This route leverages database joins to collect comprehensive information from the `item`, `extension`, and `project` tables, offering a holistic view of the items' details in one response.
-
-\begin{lstlisting}[language=json,label={lst:lstlisting19}]
-GET /items/details/1 HTTP/1.1
-Host: example.com
-\end{lstlisting}
-
-Response:
-
-\begin{lstlisting}[language=json,label={lst:lstlisting20}]
-HTTP/1.1 200 OK
-Content-Type: application/json
-
-{
-    "detail": {
-            "scope": "Shared",
-            "project": "-",
-            "extension": "Extension 1",
-            "itemName": "Item A",
-            "itemTableName": "tableA",
-            "typecode": 14000
-        }
-}
-\end{lstlisting}
-
-This example illustrates how the API responds to a \texttt{GET} request for a specific item detail.
-This can be especially useful, when a new item was created and the client needs to retrieve the details of the newly created item,
-without needing to fetch all details again.
 
 \headingSix{GET /projects}
 

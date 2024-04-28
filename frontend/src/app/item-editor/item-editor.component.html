@@ -41,32 +41,32 @@
           </thead>
 
           <tbody
-            *tuiLet="this.store.details | tuiTableSort as sortedDetails"
+            *tuiLet="this.store.items | tuiTableSort as sortedItems"
             tuiTbody
-            [data]="sortedDetails"
+            [data]="sortedItems"
           >
-            <tr *ngFor="let detail of sortedDetails" tuiTr>
+            <tr *ngFor="let item of sortedItems" tuiTr>
               <td *tuiCell="'Scope'" tuiTd>
                 <tui-tag
                   class="tui-space_right-1"
                   [autoColor]="true"
-                  [value]="detail.scope"
+                  [value]="item.scope"
                 ></tui-tag>
               </td>
               <td *tuiCell="'Project'" tuiTd>
-                {{ detail.project }}
+                {{ item.project }}
               </td>
               <td *tuiCell="'Extension'" tuiTd>
-                {{ detail.extension }}
+                {{ getExtensionName(item.extension_id) }}
               </td>
               <td *tuiCell="'TypeName'" tuiTd>
-                {{ detail.item_name }}
+                {{ item.name }}
               </td>
               <td *tuiCell="'TableName'" tuiTd>
-                {{ detail.item_table_name }}
+                {{ item.table_name }}
               </td>
               <td *tuiCell="'Typecode'" tuiTd>
-                {{ detail.typecode }}
+                {{ item.typecode }}
               </td>
               <td *tuiCell="'Action'" tuiTd>
                 <button
@@ -78,7 +78,7 @@
                   tuiIconButton
                   type="button"
                   class="remove"
-                  (click)="remove(detail)"
+                  (click)="remove(item)"
                 ></button>
               </td>
             </tr>

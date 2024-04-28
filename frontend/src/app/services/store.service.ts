@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ExtensionResponse } from './interfaces/extension';
 import { ProjectResponse } from './interfaces/project';
-import { ItemDetailResponse, ItemResponse } from './interfaces/items';
+import { ItemResponse } from './interfaces/items';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +13,6 @@ export class StoreService {
   public sharedExtensions: ExtensionResponse[] = [];
   public projects: ProjectResponse[] = [];
   public items: ItemResponse[] = [];
-  public details: ItemDetailResponse[] = [];
 
   getSharedExtensionId(name: string): number | undefined {
     return this.sharedExtensions.find(extension => extension.name === name)?.id;
