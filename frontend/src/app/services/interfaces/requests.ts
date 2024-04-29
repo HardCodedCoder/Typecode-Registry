@@ -1,5 +1,5 @@
 export interface ItemRequest {
   name: string;
-  tableName: string;
+  table_name: string;
   extension_id: number;
 }

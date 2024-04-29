@@ -134,7 +134,7 @@ export class ItemEditorComponent implements OnInit {
     this.backendService
       .sendCreateItemRequest({
         name: data.itemName,
-        tableName: data.itemTable,
+        table_name: data.itemTable,
         extension_id: extension_id,
       })
       .subscribe(response => {
