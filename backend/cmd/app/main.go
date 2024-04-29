@@ -151,7 +151,13 @@ func main() {
 
 	addr := fmt.Sprintf(":%d", app.config.port)
 
-	handler := cors.Default().Handler(app.route())
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"}, // Allow all origins
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders: []string{"Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization"},
+	})
+
+	handler := c.Handler(app.route())
 	server := &http.Server{
 		Addr:         addr,
 		Handler:      handler,
