@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { share } from 'rxjs/operators';
 import { ItemEditorComponent } from './item-editor.component';
 import {
@@ -417,5 +417,24 @@ describe('ItemEditorComponent', () => {
 
     // Check if failure message is shown
     expect(component.showFailureMessage).toHaveBeenCalled();
+  });
+
+  it('should log an error when backend service fails', () => {
+    const error = new Error('Backend error');
+    mockBackendService.getItems.and.returnValue(throwError(() => error));
+    spyOn(console, 'error');
+
+    component.ngOnInit();
+
+    expect(console.error).toHaveBeenCalledWith('Could not fetch items', error);
+  });
+
+  it('should display "No items available" when there are no item details', () => {
+    component.store.items = null;
+    fixture.detectChanges();
+
+    const noDataContent =
+      fixture.debugElement.nativeElement.querySelector('h2');
+    expect(noDataContent.textContent).toContain('No items available.');
   });
 });

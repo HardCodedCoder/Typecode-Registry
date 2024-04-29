@@ -12,79 +12,85 @@
   </div>
 
   <!-- Items Table Div -->
-  <div>
-    <tui-scrollbar>
-      <cdk-virtual-scroll-viewport
-        #viewport
-        tuiScrollable
-        class="viewport tui-zero-scrollbar"
-        [itemSize]="45"
-        [maxBufferPx]="500"
-        [minBufferPx]="400"
-      >
-        <table tuiTable [columns]="columns">
-          <thead>
-            <tr tuiThGroup>
-              <th *tuiHead="'Scope'" tuiTh [sticky]="true">Scope</th>
-              <th *tuiHead="'Project'" tuiTh [sticky]="true">Project</th>
-              <th *tuiHead="'Extension'" tuiTh [sticky]="true">Extension</th>
-              <th *tuiHead="'TypeName'" tuiTh [sticky]="true">Name</th>
-              <th *tuiHead="'TableName'" tuiTh [sticky]="true">Table Name</th>
-              <th *tuiHead="'Typecode'" tuiTh [sticky]="true">Typecode</th>
-              <th
-                *tuiHead="'Action'"
-                tuiTh
-                [sorter]="null"
-                [sticky]="true"
-              ></th>
-            </tr>
-          </thead>
+  <ng-container *ngIf="this.store.items; else noData">
+    <div>
+      <tui-scrollbar>
+        <cdk-virtual-scroll-viewport
+          #viewport
+          tuiScrollable
+          class="viewport tui-zero-scrollbar"
+          [itemSize]="45"
+          [maxBufferPx]="500"
+          [minBufferPx]="400"
+        >
+          <table tuiTable [columns]="columns">
+            <thead>
+              <tr tuiThGroup>
+                <th *tuiHead="'Scope'" tuiTh [sticky]="true">Scope</th>
+                <th *tuiHead="'Project'" tuiTh [sticky]="true">Project</th>
+                <th *tuiHead="'Extension'" tuiTh [sticky]="true">Extension</th>
+                <th *tuiHead="'TypeName'" tuiTh [sticky]="true">Name</th>
+                <th *tuiHead="'TableName'" tuiTh [sticky]="true">Table Name</th>
+                <th *tuiHead="'Typecode'" tuiTh [sticky]="true">Typecode</th>
+                <th
+                  *tuiHead="'Action'"
+                  tuiTh
+                  [sorter]="null"
+                  [sticky]="true"
+                ></th>
+              </tr>
+            </thead>
 
-          <tbody
-            *tuiLet="this.store.items | tuiTableSort as sortedItems"
-            tuiTbody
-            [data]="sortedItems"
-          >
-            <tr *ngFor="let item of sortedItems" tuiTr>
-              <td *tuiCell="'Scope'" tuiTd>
-                <tui-tag
-                  class="tui-space_right-1"
-                  [autoColor]="true"
-                  [value]="item.scope"
-                ></tui-tag>
-              </td>
-              <td *tuiCell="'Project'" tuiTd>
-                {{ item.project }}
-              </td>
-              <td *tuiCell="'Extension'" tuiTd>
-                {{ getExtensionName(item.extension_id) }}
-              </td>
-              <td *tuiCell="'TypeName'" tuiTd>
-                {{ item.name }}
-              </td>
-              <td *tuiCell="'TableName'" tuiTd>
-                {{ item.table_name }}
-              </td>
-              <td *tuiCell="'Typecode'" tuiTd>
-                {{ item.typecode }}
-              </td>
-              <td *tuiCell="'Action'" tuiTd>
-                <button
-                  appearance="flat"
-                  icon="tuiIconTrash"
-                  shape="rounded"
-                  size="s"
-                  title="Remove"
-                  tuiIconButton
-                  type="button"
-                  class="remove"
-                  (click)="onDeleteItem(item)"
-                ></button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </cdk-virtual-scroll-viewport>
-    </tui-scrollbar>
-  </div>
+            <tbody
+              *tuiLet="this.store.items | tuiTableSort as sortedItems"
+              tuiTbody
+              [data]="sortedItems"
+            >
+              <tr *ngFor="let item of sortedItems" tuiTr>
+                <td *tuiCell="'Scope'" tuiTd>
+                  <tui-tag
+                    class="tui-space_right-1"
+                    [autoColor]="true"
+                    [value]="item.scope"
+                  ></tui-tag>
+                </td>
+                <td *tuiCell="'Project'" tuiTd>
+                  {{ item.project }}
+                </td>
+                <td *tuiCell="'Extension'" tuiTd>
+                  {{ getExtensionName(item.extension_id) }}
+                </td>
+                <td *tuiCell="'TypeName'" tuiTd>
+                  {{ item.name }}
+                </td>
+                <td *tuiCell="'TableName'" tuiTd>
+                  {{ item.table_name }}
+                </td>
+                <td *tuiCell="'Typecode'" tuiTd>
+                  {{ item.typecode }}
+                </td>
+                <td *tuiCell="'Action'" tuiTd>
+                  <button
+                    appearance="flat"
+                    icon="tuiIconTrash"
+                    shape="rounded"
+                    size="s"
+                    title="Remove"
+                    tuiIconButton
+                    type="button"
+                    class="remove"
+                    (click)="onDeleteItem(item)"
+                  ></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </cdk-virtual-scroll-viewport>
+      </tui-scrollbar>
+    </div>
+  </ng-container>
+
+  <ng-template #noData>
+    <h2>No items available.</h2>
+  </ng-template>
 </div>

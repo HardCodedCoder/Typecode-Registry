@@ -8,6 +8,7 @@ import { FormData } from '../services/interfaces/formdata';
 import { catchError, throwError } from 'rxjs';
 import { ItemResponse } from '../services/interfaces/items';
 import { TUI_PROMPT, TuiPromptData } from '@taiga-ui/kit';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-item-editor',
@@ -30,7 +31,8 @@ export class ItemEditorComponent implements OnInit {
     @Inject(Injector) private readonly injector: Injector,
     @Inject(BackendService) private readonly backendService: BackendService,
     @Inject(StoreService) public readonly store: StoreService,
-    @Inject(TuiAlertService) private readonly alertService: TuiAlertService
+    @Inject(TuiAlertService) private readonly alertService: TuiAlertService,
+    @Inject(Router) private readonly router: Router
   ) {}
 
   ngOnInit(): void {
@@ -38,6 +40,23 @@ export class ItemEditorComponent implements OnInit {
       next: response => {
         this.store.items = response.items;
         console.log(this.store.items);
+
+        if (response.items === null) {
+          console.warn('NULL response: /items');
+
+          if (this.store.hasShown204Error) {
+            this.showInformationNotification();
+          }
+
+          if (!this.store.hasShown204Error) {
+            this.router.navigate(['/error/204'], {
+              state: {
+                errorOrigin: '/items',
+              },
+            });
+            this.store.hasShown204Error = true;
+          }
+        }
       },
       error: error => {
         console.error('Could not fetch items', error);
@@ -178,9 +197,11 @@ export class ItemEditorComponent implements OnInit {
               if (response.status === 204) {
                 console.log('Received response 204 from backend');
                 this.showSuccessMessage('deleted', item.id);
-                this.store.items = this.store.items.filter(
-                  i => i.id !== item.id
-                );
+                if (this.store.items != null) {
+                  this.store.items = this.store.items.filter(
+                    i => i.id !== item.id
+                  );
+                }
               } else {
                 this.showFailureMessage(
                   `Could not delete item: ${item.id}! Received status code: ${response.status}`
@@ -222,6 +243,18 @@ export class ItemEditorComponent implements OnInit {
       .open(errorMessage, {
         label: '❌ Failure ❌',
         status: 'error',
+      })
+      .subscribe();
+  }
+
+  /**
+   * Shows an information notification.
+   */
+  private showInformationNotification(): void {
+    this.alertService
+      .open('Please populate the database.', {
+        label: '💡 Information 💡',
+        status: 'info',
       })
       .subscribe();
   }

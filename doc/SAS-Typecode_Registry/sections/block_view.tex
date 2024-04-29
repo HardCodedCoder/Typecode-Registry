@@ -658,3 +658,28 @@ Those links are:
 
 The \texttt{SidebarMenuComponent} is designed to enhance user navigation and streamline access to key features, ensuring a user-friendly and intuitive experience.
 
+The \texttt{SidebarMenuComponent} is designed to enhance user navigation and streamline access to key features, ensuring a user-friendly and intuitive experience.
+
+\headingFive{Error Display Component}
+
+The \texttt{ErrorDisplayComponent} is responsible for the presentation of custom error pages in response to specific server status scenarios including 204 No Content, 404 Not Found, 500 Internal Server Error, and 520 Unknown Error.
+The purpose of this component is to provide users with clear, informative feedback when encountering errors, guiding them on how to proceed or resolve the issue.
+
+\begin{itemize}
+    \item \textbf{Error Detection}: Classifying errors based on HTTP status codes.
+    \item \textbf{Error Handling}: Displaying a custom error page tailored to the specific error, enhancing the user's understanding of the issue.
+    \item \textbf{User Guidance}: Providing actionable advice or options to users for each error scenario, improving user experience during failures.
+    \item \textbf{Navigation}: Offering links or buttons to navigate users back to the application's main pages or relevant sections.
+\end{itemize}
+
+In all but one case, error codes are sent from the backend to the frontend as part of the HTTP response. The \texttt{ErrorDisplayComponent} interprets those codes and displays the appropriate error description and guidance to the user.
+The one exception is the 204 No Content status, which is handled directly by the frontend when no data (null) is received. In case the error is not recognized, a generic error code 520 (Unknown Error) is displayed.
+The following table provides an overview of common error scenarios and their corresponding HTTP status codes:
+
+\begin{itemize}
+    \item \textbf{0 No Connection}: Suggests that there is no connection to the server, possibly due to network issues or the server being down.
+    \item \textbf{204 No Content}: Indicates that the server successfully processed the request but did not return any content owing to the absence of data.
+    \item \textbf{404 Not Found}: Signifies that the requested resource could not be found on the server, typically due to an incorrect URL or a missing resource.
+    \item \textbf{500 Internal Server Error}: The server encountered an unexpected condition that prevented it from fulfilling the request, often due to a server malfunction. This error may also occur when there is no connection to the database.
+    \item \textbf{520 Unknown Error}: This error signifies an unforeseen issue that does not fit into any other category, indicating an ambiguous problem on the server side. It is used as a catch-all for unclassified errors.
+\end{itemize}

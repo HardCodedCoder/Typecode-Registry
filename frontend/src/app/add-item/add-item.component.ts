@@ -48,26 +48,50 @@ export class AddItemComponent implements OnInit, OnDestroy {
     );
   }
 
+  /**
+   * Returns the names of the extensions to be displayed in the combobox.
+   *
+   * @returns The names of the extensions to be displayed in the combobox.
+   */
   get extensionNames(): string[] {
     return this.extensionsToDisplay
       ? this.extensionsToDisplay.map(extension => extension.name)
       : [];
   }
 
+  /**
+   * Returns the names of the projects to be displayed in the combobox.
+   *
+   * @returns The names of the projects to be displayed in the combobox.
+   */
   get projectNames(): string[] {
     return this.store.projects
       ? this.store.projects.map(project => project.name)
       : [];
   }
 
+  /**
+   * Returns a validation error if the entered extension does not exist.
+   *
+   * @returns A validation error if the entered extension does not exist.
+   */
   get extensionValidationError(): TuiValidationError | null {
     return new TuiValidationError('The entered extension does not exist.');
   }
 
+  /**
+   * Returns a validation error if the entered project does not exist.
+   *
+   * @returns A validation error if the entered project does not exist.
+   */
   get projectValidationError(): TuiValidationError | null {
     return new TuiValidationError('The entered project does not exist.');
   }
 
+  /**
+   * Unsubscribes from the destroy$ observable.
+   * This method is called when the component is destroyed.
+   */
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
@@ -93,6 +117,10 @@ export class AddItemComponent implements OnInit, OnDestroy {
       },
     });
 
+    /**
+     * Fetches the list of projects from the backend.
+     * If the request is successful, it updates the list of projects in the store.
+     */
     this.backend.getProjects().subscribe({
       next: response => {
         this.store.projects = response.projects;
@@ -155,18 +183,38 @@ export class AddItemComponent implements OnInit, OnDestroy {
     this.lastSelectedScope = $event.extensionScope;
   }
 
+  /**
+   * Validates the selected extension.
+   *
+   * @param control - The control to validate.
+   * @returns A validation error if the selected extension is invalid.
+   */
   validExtensionValidator(control: AbstractControl): ValidationErrors | null {
     return this.extensionNames.includes(control.value)
       ? null
       : { invalidExtension: true };
   }
 
+  /**
+   * Validates the selected project.
+   *
+   * @param control - The control to validate.
+   * @returns A validation error if the selected project is invalid.
+   */
   validProjectValidator(control: AbstractControl): ValidationErrors | null {
     return this.projectNames.includes(control.value)
       ? null
       : { invalidProject: true };
   }
 
+  /**
+   * Handles changes when the user selects a project.
+   *
+   * This method is triggered when the user selects a project from the combobox.
+   * It updates the list of extensions to be displayed based on the selected project.
+   *
+   * @param $event - The event object containing the selected project.
+   */
   onProjectSelected($event: any) {
     if (this.projectNames.includes($event)) {
       this.extensionsToDisplay = this.store.projectExtensions;
@@ -184,10 +232,19 @@ export class AddItemComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Submits the form data.
+   */
   submit(): void {
     this.context.completeWith(this.form.value);
   }
 
+  /**
+   * Validates the form.
+   *
+   * @returns A validation error if the form is invalid.
+   * @returns null if the form is valid.
+   */
   private validateForm(): ValidatorFn {
     console.log('validate form called');
     return (control: AbstractControl): ValidationErrors | null => {
