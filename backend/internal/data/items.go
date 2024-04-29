@@ -172,7 +172,7 @@ func (i ItemModel) DeleteItem(id int64) error {
 	}
 
 	if rowsAffected == 0 {
-		return errors.New("no record found.")
+		return errors.New("no record found")
 	}
 
 	return nil

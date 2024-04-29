@@ -2,7 +2,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { share } from 'rxjs/operators';
 import { ItemEditorComponent } from './item-editor.component';
-import { TuiDialogService, TuiScrollbarModule } from '@taiga-ui/core';
+import {
+  TuiAlertService,
+  TuiDialogService,
+  TuiScrollbarModule,
+} from '@taiga-ui/core';
 import { BackendService } from '../services/backend.service';
 import { StoreService } from '../services/store.service';
 import { TuiTableModule } from '@taiga-ui/addon-table';
@@ -13,6 +17,7 @@ import {
 } from '@angular/cdk/scrolling';
 import { TuiLetModule } from '@taiga-ui/cdk';
 import { TuiTagModule } from '@taiga-ui/kit';
+import { ItemResponse } from '../services/interfaces/items';
 
 describe('ItemEditorComponent', () => {
   let component: ItemEditorComponent;
@@ -20,7 +25,7 @@ describe('ItemEditorComponent', () => {
   let mockDialogService: jasmine.SpyObj<TuiDialogService>;
   let mockBackendService: jasmine.SpyObj<BackendService>;
   let mockStoreService: jasmine.SpyObj<StoreService>;
-  //let mockAlertService: jasmine.SpyObj<TuiAlertService>;
+  let mockAlertService: jasmine.SpyObj<TuiAlertService>;
 
   beforeEach(async () => {
     mockDialogService = jasmine.createSpyObj('TuiDialogService', ['open']);
@@ -29,6 +34,7 @@ describe('ItemEditorComponent', () => {
       'sendCreateItemRequest',
       'getItems',
       'getExtensions',
+      'deleteItem',
     ]);
     mockBackendService.getItems.and.returnValue(
       of({
@@ -121,7 +127,9 @@ describe('ItemEditorComponent', () => {
     mockStoreService.getSharedExtensionId.and.returnValue(1);
     mockStoreService.getProjectExtensionId.and.returnValue(1);
 
-    //mockAlertService = jasmine.createSpyObj('AlertService', ['open']);
+    mockAlertService = jasmine.createSpyObj('TuiAlertService', ['open']);
+
+    mockAlertService.open.and.returnValue(of({}));
 
     await TestBed.configureTestingModule({
       declarations: [ItemEditorComponent],
@@ -138,6 +146,7 @@ describe('ItemEditorComponent', () => {
         { provide: TuiDialogService, useValue: mockDialogService },
         { provide: BackendService, useValue: mockBackendService },
         { provide: StoreService, useValue: mockStoreService },
+        { provide: TuiAlertService, useValue: mockAlertService },
       ],
     }).compileComponents();
 
@@ -306,89 +315,107 @@ describe('ItemEditorComponent', () => {
     expect(result).toBeUndefined();
   });
 
-  /*
-  it('should open confirmation dialog when remove method is called', () => {
-    const item = {
-      scope: 'Shared',
-      project: 'Project A',
-      extension: 'Extension A',
-      item_name: 'Item A1',
-      item_table_name: 'Table A1',
-      typecode: 20000,
-    };
-
-    mockDialogService.open.and.returnValue(of(true));
-
-    component.remove(item);
-
-    expect(mockDialogService.open).toHaveBeenCalledOnceWith(TUI_PROMPT, {
-      label: 'Do you really want to delete this item?',
-      size: 'm',
-      data: {
-        content: `Item ${item.item_name} in table ${item.item_table_name} with typecode ${item.typecode}.`,
-        yes: 'REMOVE',
-        no: 'Cancel',
-      },
-    });
-  });
-
-  it('should call deleteItem method when user confirms deletion', () => {
-    const item = {
-      id: 1,
-      scope: 'Shared',
-      project: 'Project A',
-      extension: 'Extension A',
-      item_name: 'Item A1',
-      item_table_name: 'Table A1',
-      typecode: 20000,
-    };
-
-    mockDialogService.open.and.returnValue(of(true));
-
-    component.remove(item);
-
-    expect(mockBackendService.deleteItem).toHaveBeenCalledWith(item.id);
-  });
-
-  it('should not call deleteItem method when user cancels deletion', () => {
-    const item = {
-      scope: 'Shared',
-      project: 'Project A',
-      extension: 'Extension A',
-      item_name: 'Item A1',
-      item_table_name: 'Table A1',
-      typecode: 20000,
-    };
-
-    mockDialogService.open.and.returnValue(of(false));
-
-    component.remove(item);
-
-    expect(mockBackendService.deleteItem).not.toHaveBeenCalled();
-  });
-
-  it('should call alertService.open with success message after deletion', () => {
-    const item = {
-      id: 1,
-      scope: 'Shared',
-      project: 'Project A',
-      extension: 'Extension A',
-      item_name: 'Item A1',
-      item_table_name: 'Table A1',
-      typecode: 20000,
-    };
-
-    mockDialogService.open.and.returnValue(of(true));
-
-    component.remove(item);
-
+  it('should call alertService.show when showSuccessMessage is called', () => {
+    const action = 'created';
+    const id = 1;
+    component.showSuccessMessage(action, id);
     expect(mockAlertService.open).toHaveBeenCalledWith(
-      `Item with id: ${item.id} deleted!`,
+      `Item with id: ${id} ${action}!`,
       {
         label: '🎉 Success 🎉',
         status: 'success',
       }
     );
   });
-   */
+
+  it('should not delete the item if the user cancels the operation', () => {
+    const item: ItemResponse = {
+      id: 3,
+      scope: 'Project',
+      project: 'Project A',
+      extension_id: 2,
+      name: 'Test Item',
+      table_name: 'Test Table',
+      typecode: 2,
+      creation_date: new Date(),
+    };
+    spyOn(component, 'showSuccessMessage');
+
+    mockDialogService.open.and.returnValue(of(false)); // user clicks cancel.
+
+    component.onDeleteItem(item);
+
+    expect(mockBackendService.deleteItem).not.toHaveBeenCalled();
+
+    expect(component.showSuccessMessage).not.toHaveBeenCalled();
+  });
+
+  it('should update items list after deletion on successful backend response', () => {
+    // Prepare initial list of items in the StoreService
+    mockStoreService.items = [
+      {
+        id: 1,
+        scope: 'Project',
+        project: 'Project A',
+        extension_id: 1,
+        name: 'Item 1',
+        table_name: 'Table 1',
+        typecode: 101,
+        creation_date: new Date('2023-01-01'),
+      },
+      {
+        id: 2,
+        scope: 'Project',
+        project: 'Project B',
+        extension_id: 2,
+        name: 'Item 2',
+        table_name: 'Table 2',
+        typecode: 102,
+        creation_date: new Date('2023-01-02'),
+      },
+    ];
+
+    const initialItems: ItemResponse[] = [...mockStoreService.items];
+    const itemToDelete: ItemResponse = initialItems[0];
+
+    // User confirms the deletion
+    mockDialogService.open.and.returnValue(of(true));
+    // Simulate successful backend deletion response
+    mockBackendService.deleteItem.and.returnValue(of({ status: 204 }));
+
+    // Execute onDeleteItem function
+    component.onDeleteItem(itemToDelete);
+
+    // Verify that items list in StoreService is updated
+    expect(mockStoreService.items.length).toBeLessThan(initialItems.length);
+    expect(
+      mockStoreService.items.find(item => item.id === itemToDelete.id)
+    ).toBeUndefined();
+  });
+
+  it('should handle failure response from backend service', () => {
+    const itemToDelete: ItemResponse = {
+      id: 1,
+      scope: 'Project',
+      project: 'Project A',
+      extension_id: 1,
+      name: 'Item 1',
+      table_name: 'Table 1',
+      typecode: 101,
+      creation_date: new Date('2023-01-01'),
+    };
+
+    // User confirms the deletion
+    mockDialogService.open.and.returnValue(of(true));
+    // Simulate backend failure response
+    mockBackendService.deleteItem.and.returnValue(of({ status: 500 }));
+
+    spyOn(component, 'showFailureMessage');
+
+    // Execute onDeleteItem function
+    component.onDeleteItem(itemToDelete);
+
+    // Check if failure message is shown
+    expect(component.showFailureMessage).toHaveBeenCalled();
+  });
 });

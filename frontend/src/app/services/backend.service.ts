@@ -6,7 +6,6 @@ import { ProjectsAPIResponse } from './interfaces/project';
 import { ItemAPIResponse, ItemsAPIResponse } from './interfaces/items';
 import { ItemRequest } from './interfaces/requests';
 import { environment } from '../../environments/environment';
-import { StoreService } from './store.service';
 
 @Injectable({
   providedIn: 'root',
@@ -77,15 +76,31 @@ export class BackendService {
       );
   }
 
-  deleteItem(id: number) {
-    return this.http.delete(`${this.apiUrl}/items/${id}`).pipe(
-      tap(_ => console.log(`deleted item with id: ${id}`)),
-      catchError(
-        this.handleError('deleteItem', {
-          details: [],
-        })
-      )
-    );
+  /**
+     Deletes an item from the backend.
+
+     This method sends an HTTP DELETE request to the backend to delete an item. The item to delete is identified by the id parameter.
+     The endpoint it hits is ${this.apiUrl}/items/${id}, where this.apiUrl is the base URL of the backend and id is the ID of the item to delete.
+
+     If the request is successful and the item is deleted, it logs a message to the console.
+
+     If the request fails, it will trigger the handleError method. This method logs the error and returns an Observable that emits a default object.
+     The default object is { details: [] }.
+
+     @param id - The ID of the item to delete.
+     @returns An Observable of any. Subscribe to this Observable to get the data when the request succeeds or fails.
+     */
+  deleteItem(id: number): Observable<any> {
+    return this.http
+      .delete(`${this.apiUrl}/items/${id}`, { observe: 'response' })
+      .pipe(
+        tap(response => {
+          if (response.status === 204) {
+            console.log(`Deleted item with id: ${id}`);
+          }
+        }),
+        catchError(this.handleError('deleteItem', { details: [] }))
+      );
   }
 
   /**

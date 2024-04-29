@@ -151,10 +151,7 @@ func (app *application) deleteItem(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error during deleting the requested item, no rows affected.", http.StatusInternalServerError)
 	}
 
-	err = app.writeJSON(w, http.StatusNoContent, nil, nil)
-	if err != nil {
-		app.logger.Err(err)
-	}
+	w.WriteHeader(http.StatusNoContent)
 }
 
 // createItem handles the POST request to create a new item.

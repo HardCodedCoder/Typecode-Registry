@@ -149,7 +149,7 @@ export class ItemEditorComponent implements OnInit {
           },
         });
 
-        this.showNotification(response.item.id);
+        this.showSuccessMessage('created', response.item.id);
       });
   }
 
@@ -157,11 +157,8 @@ export class ItemEditorComponent implements OnInit {
    * Removes an item.
    * Displays a confirmation dialog and deletes the item upon confirmation.
    * @param {ItemResponse} item - The item to be deleted.
-   * @returns {void}
    */
-  remove(item: ItemResponse) {
-    //const itemId = item.id;
-
+  onDeleteItem(item: ItemResponse): void {
     const data: TuiPromptData = {
       content: `Item ${item.name} in table ${item.table_name} with typecode ${item.typecode}.`,
       yes: 'REMOVE',
@@ -176,20 +173,39 @@ export class ItemEditorComponent implements OnInit {
       })
       .subscribe(response => {
         if (response) {
-          //this.getPrompt(itemId);
+          this.backendService.deleteItem(item.id).subscribe({
+            next: response => {
+              if (response.status === 204) {
+                console.log('Received response 204 from backend');
+                this.showSuccessMessage('deleted', item.id);
+                this.store.items = this.store.items.filter(
+                  i => i.id !== item.id
+                );
+              } else {
+                this.showFailureMessage(
+                  `Could not delete item: ${item.id}! Received status code: ${response.status}`
+                );
+              }
+            },
+            error: error =>
+              this.showFailureMessage(
+                `Could not delete item: ${item.id}! Error: ${error}`
+              ),
+          });
         }
       });
   }
 
   /**
-   * Calls a notification that an item was successfully deleted.
-   * @param {number} id - The ID of the deleted item.
+   * Displays a success notification for various actions.
+   * @param {string} action - The action performed ('created' or 'deleted').
+   * @param {number} itemId - The ID of the item affected.
    * @returns {void}
    */
-  private getPrompt(id: number) {
-    this.backendService.deleteItem(id);
+  showSuccessMessage(action: string, itemId: number): void {
+    const message = `Item with id: ${itemId} ${action}!`;
     this.alertService
-      .open('Item with id: ' + id + ' deleted!', {
+      .open(message, {
         label: '🎉 Success 🎉',
         status: 'success',
       })
@@ -197,15 +213,15 @@ export class ItemEditorComponent implements OnInit {
   }
 
   /**
-   * Displays a notification that an item was successfully created.
-   * @param {number} itemId - The ID of the created item.
+   * Displays a failure notification for various actions.
+   * @param {string} errorMessage - The custom error message to display.
    * @returns {void}
    */
-  private showNotification(itemId: number): void {
+  showFailureMessage(errorMessage: string): void {
     this.alertService
-      .open('Item with id: ' + itemId + ' created!', {
-        label: '🎉 Success 🎉',
-        status: 'success',
+      .open(errorMessage, {
+        label: '❌ Failure ❌',
+        status: 'error',
       })
       .subscribe();
   }
