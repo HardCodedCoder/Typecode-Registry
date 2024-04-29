@@ -60,7 +60,7 @@ describe('BackendService', () => {
   it('should create an item successfully', () => {
     const mockItemRequest: ItemRequest = {
       name: 'item1',
-      tableName: 'table1',
+      table_name: 'table1',
       extension_id: 1,
     };
     const mockItemResponse: ItemAPIResponse = {
@@ -85,9 +85,12 @@ describe('BackendService', () => {
   });
 
   it('should handle error when creating an item fails', () => {
+    const mockDate = new Date(2024, 3, 29, 12, 23, 36); // Set the mock date
+    jasmine.clock().mockDate(mockDate); // Mock the Date object
+
     const mockItemRequest: ItemRequest = {
       name: 'item1',
-      tableName: 'table1',
+      table_name: 'table1',
       extension_id: 1,
     };
     const expectedResponse: ItemAPIResponse = {
@@ -98,8 +101,8 @@ describe('BackendService', () => {
         name: '',
         table_name: '',
         extension_id: 0,
-        typecode: 0, // Adjusted the expected typecode to 0
-        creation_date: new Date(),
+        typecode: 0,
+        creation_date: mockDate, // Use the mock date
       },
     };
     service.sendCreateItemRequest(mockItemRequest).subscribe(response => {

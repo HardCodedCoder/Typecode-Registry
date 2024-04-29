@@ -134,9 +134,24 @@ func (app *application) updateItem(w http.ResponseWriter, r *http.Request) {
 // deleteItem handles the DELETE request for a specific item.
 // It extracts the item ID from the URL and deletes the item with that ID.
 // If the ID is not a valid integer, it returns a 400 Bad Request.
-// TODO: finish implementation of the updateItem handler.
+// When the item is successfully deleted, it returns a 204 No Content status.
 func (app *application) deleteItem(w http.ResponseWriter, r *http.Request) {
-	panic("not implemented")
+	id := r.URL.Path[len("/items/"):]
+	idInt, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		app.logger.Warn().Msg(fmt.Sprintf("Bad Request in %s using id %s",
+			GetFunctionName(),
+			id))
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+	}
+
+	err = app.models.Items.DeleteItem(idInt)
+	if err != nil {
+		app.logger.Err(err)
+		http.Error(w, "error during deleting the requested item, no rows affected.", http.StatusInternalServerError)
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
 
 // createItem handles the POST request to create a new item.

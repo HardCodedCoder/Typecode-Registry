@@ -6,45 +6,13 @@ import { ProjectsAPIResponse } from './interfaces/project';
 import { ItemAPIResponse, ItemsAPIResponse } from './interfaces/items';
 import { ItemRequest } from './interfaces/requests';
 import { environment } from '../../environments/environment';
-import { StoreService } from './store.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BackendService {
   private apiUrl = environment.backendUrl;
-  constructor(
-    private http: HttpClient,
-    private store: StoreService
-  ) {}
-
-  /**
-   * Fetches all extensions of a given scope from the backend.
-   *
-   * This method sends an HTTP GET request to the backend to retrieve all extensions of a specific scope.
-   * The endpoint it hits is `${this.apiUrl}/extensions/${scope}`, where `this.apiUrl` is the base URL of the backend and `scope` is the scope of the extensions to fetch.
-   *
-   * If the request is successful, it returns an Observable that emits an `ExtensionsAPIResponse`.
-   * The `ExtensionsAPIResponse` is an object that contains an array of extensions.
-   *
-   * If the request fails, it will trigger the `handleError` method. This method logs the error and returns an Observable that emits a default `ExtensionsAPIResponse` object.
-   * The default `ExtensionsAPIResponse` object is `{ extensions: [] }`, which represents an empty list of extensions.
-   *
-   * @param scope - The scope of the extensions to fetch. This can be 'Shared' or 'Project'.
-   * @returns An Observable of `ExtensionsAPIResponse`. Subscribe to this Observable to get the data when the request succeeds or fails.
-   */
-  getExtensions(scope: string): Observable<ExtensionsAPIResponse> {
-    return this.http
-      .get<ExtensionsAPIResponse>(`${this.apiUrl}/extensions/${scope}`)
-      .pipe(
-        tap(_ => console.log(`fetched extensions of scope ${scope}`)),
-        catchError(
-          this.handleError<ExtensionsAPIResponse>('getExtensions', {
-            extensions: [],
-          })
-        )
-      );
-  }
+  constructor(private http: HttpClient) {}
 
   /**
    * Fetches all items from the backend.
@@ -103,6 +71,61 @@ export class BackendService {
               extension_id: 0,
               creation_date: new Date(),
             },
+          })
+        )
+      );
+  }
+
+  /**
+     Deletes an item from the backend.
+
+     This method sends an HTTP DELETE request to the backend to delete an item. The item to delete is identified by the id parameter.
+     The endpoint it hits is ${this.apiUrl}/items/${id}, where this.apiUrl is the base URL of the backend and id is the ID of the item to delete.
+
+     If the request is successful and the item is deleted, it logs a message to the console.
+
+     If the request fails, it will trigger the handleError method. This method logs the error and returns an Observable that emits a default object.
+     The default object is { details: [] }.
+
+     @param id - The ID of the item to delete.
+     @returns An Observable of any. Subscribe to this Observable to get the data when the request succeeds or fails.
+     */
+  deleteItem(id: number): Observable<any> {
+    return this.http
+      .delete(`${this.apiUrl}/items/${id}`, { observe: 'response' })
+      .pipe(
+        tap(response => {
+          if (response.status === 204) {
+            console.log(`Deleted item with id: ${id}`);
+          }
+        }),
+        catchError(this.handleError('deleteItem', { details: [] }))
+      );
+  }
+
+  /**
+   * Fetches all extensions of a given scope from the backend.
+   *
+   * This method sends an HTTP GET request to the backend to retrieve all extensions of a specific scope.
+   * The endpoint it hits is `${this.apiUrl}/extensions/${scope}`, where `this.apiUrl` is the base URL of the backend and `scope` is the scope of the extensions to fetch.
+   *
+   * If the request is successful, it returns an Observable that emits an `ExtensionsAPIResponse`.
+   * The `ExtensionsAPIResponse` is an object that contains an array of extensions.
+   *
+   * If the request fails, it will trigger the `handleError` method. This method logs the error and returns an Observable that emits a default `ExtensionsAPIResponse` object.
+   * The default `ExtensionsAPIResponse` object is `{ extensions: [] }`, which represents an empty list of extensions.
+   *
+   * @param scope - The scope of the extensions to fetch. This can be 'Shared' or 'Project'.
+   * @returns An Observable of `ExtensionsAPIResponse`. Subscribe to this Observable to get the data when the request succeeds or fails.
+   */
+  getExtensions(scope: string): Observable<ExtensionsAPIResponse> {
+    return this.http
+      .get<ExtensionsAPIResponse>(`${this.apiUrl}/extensions/${scope}`)
+      .pipe(
+        tap(_ => console.log(`fetched extensions of scope ${scope}`)),
+        catchError(
+          this.handleError<ExtensionsAPIResponse>('getExtensions', {
+            extensions: [],
           })
         )
       );

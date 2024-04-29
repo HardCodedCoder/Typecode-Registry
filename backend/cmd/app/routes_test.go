@@ -136,6 +136,22 @@ func testRouting(t *testing.T, routes []TestRoute, mux *http.ServeMux) {
 	}
 }
 
+func deleteAndTestHTTPResponse(t *testing.T, server *httptest.Server, endpoint string, expectedStatusCode int) *http.Response {
+	req, err := http.NewRequest(http.MethodDelete, server.URL+endpoint, nil)
+	if err != nil {
+		t.Fatalf("Failed to create DELETE request: %s", err)
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		t.Fatalf("Failed to make DELETE request")
+	}
+
+	testHTTPResponse(t, resp, expectedStatusCode)
+	return resp
+}
+
 func TestReturnedServeMuxIsNotNil(t *testing.T) {
 	app := application{}
 	mux := app.route()
@@ -718,6 +734,42 @@ func TestGetItemDetailRouteReturnsCorrectItem(t *testing.T) {
 		responseItem.Item.CreationDate.Round(time.Second).Equal(testItem.CreationDate.Round(time.Second)) == false {
 		t.Errorf("Expected item to be %v, got %v", testItem, responseItem.Item)
 	}
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	_ = db.Close()
+}
+
+func TestIfItemsRouteHTTPDeleteRequestDeletesItemInDatabase(t *testing.T) {
+	db, mock, app := setupMockAndApp(t)
+	dummyItemId := 1
+
+	mockDeleteItemExecution(mock, dummyItemId, 0, 1)
+
+	server := setupHTTPServer(app)
+	defer server.Close()
+
+	_ = deleteAndTestHTTPResponse(t, server, fmt.Sprintf("/items/%d", dummyItemId), http.StatusNoContent)
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	_ = db.Close()
+}
+
+func TestIfNoRowDeletedStatusInternalServerErrorIsReturned(t *testing.T) {
+	db, mock, app := setupMockAndApp(t)
+	dummyItemId := 1
+
+	mockDeleteItemExecution(mock, dummyItemId, 0, 0)
+
+	server := setupHTTPServer(app)
+	defer server.Close()
+
+	_ = deleteAndTestHTTPResponse(t, server, fmt.Sprintf("/items/%d", dummyItemId), http.StatusInternalServerError)
 
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
