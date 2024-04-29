@@ -60,7 +60,7 @@ describe('BackendService', () => {
   it('should create an item successfully', () => {
     const mockItemRequest: ItemRequest = {
       name: 'item1',
-      tableName: 'table1',
+      table_name: 'table1',
       extension_id: 1,
     };
     const mockItemResponse: ItemAPIResponse = {
@@ -87,7 +87,7 @@ describe('BackendService', () => {
   it('should handle error when creating an item fails', () => {
     const mockItemRequest: ItemRequest = {
       name: 'item1',
-      tableName: 'table1',
+      table_name: 'table1',
       extension_id: 1,
     };
     const expectedResponse: ItemAPIResponse = {

@@ -223,7 +223,7 @@ describe('ItemEditorComponent', () => {
     );
     expect(mockBackendService.sendCreateItemRequest).toHaveBeenCalledWith({
       name: formData.itemName,
-      tableName: formData.itemTable,
+      table_name: formData.itemTable,
       extension_id: extensionId,
     });
   });
