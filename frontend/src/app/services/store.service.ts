@@ -12,7 +12,7 @@ export class StoreService {
   public projectExtensions: ExtensionResponse[] = [];
   public sharedExtensions: ExtensionResponse[] = [];
   public projects: ProjectResponse[] = [];
-  public items: ItemResponse[] = [];
+  public items: ItemResponse[] | null = [];
   public hasShown204Error: boolean = false;
 
   /**

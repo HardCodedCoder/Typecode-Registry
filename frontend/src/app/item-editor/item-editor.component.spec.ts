@@ -430,7 +430,7 @@ describe('ItemEditorComponent', () => {
   });
 
   it('should display "No items available" when there are no item details', () => {
-    component.store.items = [];
+    component.store.items = null;
     fixture.detectChanges();
 
     const noDataContent =

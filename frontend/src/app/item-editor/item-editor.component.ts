@@ -197,9 +197,11 @@ export class ItemEditorComponent implements OnInit {
               if (response.status === 204) {
                 console.log('Received response 204 from backend');
                 this.showSuccessMessage('deleted', item.id);
-                this.store.items = this.store.items.filter(
-                  i => i.id !== item.id
-                );
+                if (this.store.items != null) {
+                  this.store.items = this.store.items.filter(
+                    i => i.id !== item.id
+                  );
+                }
               } else {
                 this.showFailureMessage(
                   `Could not delete item: ${item.id}! Received status code: ${response.status}`
