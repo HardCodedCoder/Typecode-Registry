@@ -82,7 +82,7 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data envelo
 
 	js = append(js, '\n')
 
-	app.logger.Printf("Sending the following data to client: %s", string(js))
+	app.logger.Debug().Msg(fmt.Sprintf("Sending the following data to client: %s", string(js)))
 
 	for key, value := range headers {
 		w.Header()[key] = value

@@ -74,12 +74,19 @@ func (app *application) getItemHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// getItems handles the GET request for all items.
+// It returns all items stored in the database.
+// If there are no items in the database, it returns a 404 Not Found.
+// If there is an error while reading the items from the database, it returns a 500 Internal Server Error.
 func (app *application) getItems(w http.ResponseWriter) {
+	app.logger.Debug().Msg("reading items from database")
 	itemDetails, err := app.models.Items.ReadItems()
 	if err != nil {
 		app.logger.Error().Msg(fmt.Sprintf("Error fetching item details from database: %s", err))
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
+
+	app.logger.Debug().Msg(fmt.Sprintf("found %d items in database", len(itemDetails)))
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"items": itemDetails}, nil)
 	if err != nil {
@@ -104,6 +111,8 @@ func (app *application) getItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	app.logger.Debug().Msg(fmt.Sprintf("Reading item details from database using id %s", id))
+
 	item, err := app.models.Items.ReadItem(idInt)
 	if err != nil {
 		app.logger.Err(err)
@@ -114,6 +123,8 @@ func (app *application) getItem(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+
+	app.logger.Debug().Msg(fmt.Sprintf("found item with id %d in database", idInt))
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"item": item}, nil)
 	if err != nil {
@@ -126,9 +137,65 @@ func (app *application) getItem(w http.ResponseWriter, r *http.Request) {
 // updateItem handles the PUT request for a specific item.
 // It extracts the item ID from the URL and updates the details of the item with that ID.
 // If the ID is not a valid integer, it returns a 400 Bad Request.
-// TODO: finish implementation of the updateItem handler and update documentation
 func (app *application) updateItem(w http.ResponseWriter, r *http.Request) {
-	panic("not implemented")
+	id := r.URL.Path[len("/items/"):]
+	idInt, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		app.logger.Info().Msg(fmt.Sprintf("bad request in %s using id %s",
+			GetFunctionName(),
+			id))
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	if idInt < 1 {
+		app.logger.Info().Msg(fmt.Sprintf("bad request in %s using id %d",
+			GetFunctionName(),
+			idInt))
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	app.logger.Debug().Msg("reading request body")
+	var item data.Item
+	err = app.readJSON(w, r, &item)
+	if err != nil {
+		app.logger.Error().Msg(fmt.Sprintf("failed to decode request body: %v", err))
+		http.Error(w, "failed to decode request body", http.StatusBadRequest)
+		return
+	}
+
+	app.logger.Debug().Msg(fmt.Sprintf("successfully decoded request body %v", item))
+	app.logger.Debug().Msg(fmt.Sprintf("validating item: %v", item))
+
+	if item.Name == "" || item.TableName == "" {
+		app.logger.Error().Msg(fmt.Sprintf("Bad Request: Invalid item update request with data: %v", item))
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+
+	if item.ID == 0 {
+		item.ID = idInt
+	} else if item.ID != idInt {
+		app.logger.Error().Msg(fmt.Sprintf("ID in request body does not match ID in URL: %d != %d", item.ID, idInt))
+		http.Error(w, "ID in request body does not match ID in URL", http.StatusBadRequest)
+		return
+	}
+
+	app.logger.Debug().Msg(fmt.Sprintf("Valid item: %v", item))
+	app.logger.Debug().Msg(fmt.Sprintf("Updating item with id %d", idInt))
+	err = app.models.Items.UpdateItem(&item)
+	if err != nil {
+		msg := fmt.Sprintf("update failed: %v", err)
+		http.Error(w, msg, http.StatusInternalServerError)
+		return
+	}
+
+	app.logger.Debug().Msg(fmt.Sprintf("successfully updated item with id %d", idInt))
+	app.logger.Debug().Msg("Writing response")
+
+	w.WriteHeader(http.StatusNoContent)
+	app.logger.Debug().Msg("Response written")
 }
 
 // deleteItem handles the DELETE request for a specific item.
