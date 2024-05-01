@@ -1,8 +1,8 @@
+<div class="dialog-class">
 <form [formGroup]="form">
-
-    <p>Scope: </p>
-    <p>Project: </p>
-    <p>Extension: </p>
+    <p><span class="field-style">Scope:</span> {{ updateItemData.item.scope }}</p>
+    <p><span class="field-style">Project:</span> {{ updateItemData.item.project}} </p>
+    <p><span class="field-style">Extension:</span> {{ updateItemData.item.extension_id }} </p>
 
     <!-- Item Name Header and Input -->
     <div class="tui-row tui-row_sme tui-form__header_margin-bottom_small">
@@ -13,8 +13,8 @@
                         formControlName="itemName"
                         tuiHintContent="Enter the item name that should be created here."
                 >
-                    Item Name
-                    <input placeholder="" tuiTextfield />
+                    {{ updateItemData.item.name }}
+                    <input placeholder="Item Name" tuiTextfield />
                 </tui-input>
                 <tui-error
                         formControlName="itemName"
@@ -35,7 +35,7 @@
                         formControlName="itemTable"
                         tuiHintContent="Enter the item name that should be created here."
                 >
-                    Item Table Name
+                    {{ updateItemData.item.table_name }}
                     <input placeholder="New Item" tuiTextfield />
                 </tui-input>
                 <tui-error
@@ -46,7 +46,7 @@
         </div>
     </div>
 
-    <p>Typecode: </p>
+    <p><span class="field-style">Typecode:</span> {{ updateItemData.item.typecode}} </p>
 
     <div class="tui-form__buttons">
         <button
@@ -61,3 +61,4 @@
         </button>
     </div>
 </form>
+</div>

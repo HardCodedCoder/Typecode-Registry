@@ -1,0 +1,8 @@
+.field-style {
+  font-weight: bold;
+  font-family: Arial-BoldMT;
+}
+
+:host ::ng-deep .tui-dialog{
+  background-color: #FF0000
+  }

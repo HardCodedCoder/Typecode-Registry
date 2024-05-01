@@ -4,7 +4,7 @@ import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { AddItemComponent } from '../add-item/add-item.component';
 import { BackendService } from '../services/backend.service';
 import { StoreService } from '../services/store.service';
-import { FormData } from '../services/interfaces/formdata';
+import {FormData, UpdateItemFormData} from '../services/interfaces/formdata';
 import { catchError, throwError } from 'rxjs';
 import { ItemResponse } from '../services/interfaces/items';
 import { TUI_PROMPT, TuiPromptData } from '@taiga-ui/kit';
@@ -262,14 +262,19 @@ export class ItemEditorComponent implements OnInit {
 
   onEditItem(item: ItemResponse): void {
     console.log(item);
+    const data: UpdateItemFormData = {
+      item: item,
+      new_item_name: '',
+      new_table_name: '',
+    };
+
     const dialog$ = this.dialogs
-      .open<FormData>(
-        new PolymorpheusComponent(UpdateItemComponent, this.injector, {
-          item: item,
-        }),
+      .open<UpdateItemFormData>(
+        new PolymorpheusComponent(UpdateItemComponent, this.injector),
         {
           dismissible: true,
           label: 'Update Item',
+          data: data,
         }
       )
       .pipe(
@@ -280,11 +285,9 @@ export class ItemEditorComponent implements OnInit {
       );
 
     dialog$.subscribe({
-      next: (data: FormData) => {
+      next: (data: UpdateItemFormData) => {
         console.log('item-editor: Dialog closed with data:', data);
-      },
-      complete: () => {
-        console.info('item-editor: Dialog closed');
+        if (data.new_item_name === '' && data.new)
       },
     });
   }
