@@ -9,6 +9,7 @@ import { catchError, throwError } from 'rxjs';
 import { ItemResponse } from '../services/interfaces/items';
 import { TUI_PROMPT, TuiPromptData } from '@taiga-ui/kit';
 import { Router } from '@angular/router';
+import { UpdateItemComponent } from '../update-item/update-item.component';
 
 @Component({
   selector: 'app-item-editor',
@@ -257,5 +258,34 @@ export class ItemEditorComponent implements OnInit {
         status: 'info',
       })
       .subscribe();
+  }
+
+  onEditItem(item: ItemResponse): void {
+    console.log(item);
+    const dialog$ = this.dialogs
+      .open<FormData>(
+        new PolymorpheusComponent(UpdateItemComponent, this.injector, {
+          item: item,
+        }),
+        {
+          dismissible: true,
+          label: 'Update Item',
+        }
+      )
+      .pipe(
+        catchError(err => {
+          console.error('item-editor: Error opening dialog:', err);
+          return throwError(err);
+        })
+      );
+
+    dialog$.subscribe({
+      next: (data: FormData) => {
+        console.log('item-editor: Dialog closed with data:', data);
+      },
+      complete: () => {
+        console.info('item-editor: Dialog closed');
+      },
+    });
   }
 }

@@ -70,17 +70,45 @@
                   {{ item.typecode }}
                 </td>
                 <td *tuiCell="'Action'" tuiTd>
-                  <button
-                    appearance="flat"
-                    icon="tuiIconTrash"
-                    shape="rounded"
-                    size="s"
-                    title="Remove"
-                    tuiIconButton
-                    type="button"
-                    class="remove"
-                    (click)="onDeleteItem(item)"
-                  ></button>
+                    <tui-hosted-dropdown  [content]="dropdownContent">
+                        <button
+                                tuiIconButton
+                                type="button"
+                                icon="tuiIconMoreVertical"
+                                appearance="flat"
+                                shape="rounded"
+                                size="s"
+                                class="options"
+                        >
+                        </button>
+                    </tui-hosted-dropdown>
+
+                    <ng-template #dropdownContent let-closeDropdown="closeDropdown">
+                        <div class="dropdown-options">
+                            <button
+                                    tuiIconButton
+                                    type="button"
+                                    (click)="onEditItem(item);
+                                    closeDropdown()"
+                                    icon="tuiIconEdit3"
+                                    appearance="flat"
+                                    shape="rounded"
+                                    size="s"
+                            >
+                            </button>
+                            <button
+                                    tuiIconButton
+                                    type="button"
+                                    (click)="onDeleteItem(item);
+                                    closeDropdown()"
+                                    icon="tuiIconTrash"
+                                    appearance="flat"
+                                    shape="rounded"
+                                    size="s"
+                            >
+                            </button>
+                        </div>
+                    </ng-template>
                 </td>
               </tr>
             </tbody>

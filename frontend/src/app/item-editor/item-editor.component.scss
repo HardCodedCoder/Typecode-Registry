@@ -30,11 +30,11 @@ tr {
   }
 }
 
-.remove {
+.options {
   opacity: 0;
 }
-tr:hover .remove,
-tr:focus-within .remove {
+tr:hover .options,
+tr:focus-within .options {
   opacity: 1;
 }
 
