@@ -1,13 +1,38 @@
 package main
 
 import (
+	"Typecode-Registry/internal/data"
+	"bytes"
 	"database/sql"
 	"database/sql/driver"
+	"encoding/json"
 	"errors"
 	"github.com/DATA-DOG/go-sqlmock"
+	"net/http"
+	"net/http/httptest"
 	"regexp"
 	"time"
 )
+
+func setupUpdateTest(mock sqlmock.Sqlmock, app *application, item data.Item, result driver.Result, err error) (*httptest.ResponseRecorder, sqlmock.Sqlmock) {
+	body, _ := json.Marshal(item)
+	req, _ := http.NewRequest(http.MethodPut, "/items/1", bytes.NewBuffer(body))
+	resp := httptest.NewRecorder()
+
+	query := `UPDATE item
+    SET name = $1, table_name = $2
+    WHERE id = $3
+    AND (name != $1 OR table_name != $2)`
+	exec := mock.ExpectExec(regexp.QuoteMeta(query)).WithArgs(item.Name, item.TableName, item.ID)
+	if result != nil {
+		exec.WillReturnResult(result)
+	} else if err != nil {
+		exec.WillReturnError(err)
+	}
+
+	app.updateItem(resp, req)
+	return resp, mock
+}
 
 func setupExtensionMock(mock sqlmock.Sqlmock, id int64, projectId sql.NullInt32, scope, name, description string, returnRow bool) {
 	extensionArgs := []driver.Value{id}

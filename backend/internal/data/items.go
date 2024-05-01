@@ -8,7 +8,7 @@ import (
 
 // Item represents detailed information about an item, including relevant
 // data about its associated extension and project. It is used to structure the
-// data retrieved from the database.
+// data retrieved from the database. /items/1
 type Item struct {
 	ID           int64     `json:"id"`
 	Scope        string    `json:"scope"`
@@ -176,4 +176,15 @@ func (i ItemModel) DeleteItem(id int64) error {
 	}
 
 	return nil
+}
+
+// UpdateItem updates an existing item in the database.
+// It returns an error if the SQL query fails.
+func (i ItemModel) UpdateItem(d *Item) error {
+	query := `UPDATE item
+	SET name = $1, table_name = $2
+	WHERE id = $3
+	AND (name != $1 OR table_name != $2)`
+	_, err := i.DB.Exec(query, d.Name, d.TableName, d.ID)
+	return err
 }
