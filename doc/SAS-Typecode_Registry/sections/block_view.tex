@@ -626,6 +626,43 @@ Input validation is enforced by the \texttt{FormGroup}'s built-in validators and
 The 'Create' button remains inactive as long as any form control remains invalid or unfilled.
 The component is structured to prevent form submission if any validation errors persist, ensuring data integrity and user adherence to input requirements.
 
+\headingFive{Update Item Component}
+
+The Update Item Component exemplifies the dynamic and interactive nature of the application's frontend, enabling users to modify existing item details with precision.
+It features robust integration with backend services for data retrieval, employs sophisticated user input validation mechanisms, and maintains data integrity throughout the update process.
+
+Figure~\ref{fig:updateitem_component} illustrates the architectural overview of the \texttt{UpdateItemComponent}, delineating its form structure, backend integration for data population, dynamic content adaptation based on user selections, and the validation procedures essential for its operation.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{./images/frontend/update-item-component}
+    \caption{Architecture and interaction flow within the UpdateItemComponent.}
+    \label{fig:updateitem_component}
+\end{figure}
+
+\headingSix{Form Structure and User Interaction}
+The Update Item Component is developed using Angular's reactive forms, facilitating seamless user interactions through a series of input controls tailored for modifying item attributes.
+Validators are meticulously configured to ensure the accuracy and compliance of user-submitted data with established business rules.
+Upon initiating the update process, the modified data is dispatched to the backend for processing or emitted to parent components as dictated by the application's data flow architecture.
+
+\headingSix{Service Integration}
+Leveraging the \texttt{BackendService}, the component dynamically retrieves and populates existing item details into the form controls, providing users with contextual information for making informed modifications.
+This integration ensures coherence and consistency between the frontend and backend systems.
+Additionally, the \texttt{StoreService} is employed to manage the application's state, facilitating real-time updates and maintaining synchronization across various components.
+
+\headingSix{User Input Validation and Error Handling}
+The Update Item Component implements robust validation strategies to verify the accuracy and completeness of user inputs before initiating the update operation.
+The following key fields constitute the modification form:
+
+\begin{itemize}
+    \item \textbf{Item Name}: An essential field for updating the name of the item.
+    Input validation prompts an error message if the field is left empty or contains invalid characters.
+    \item \textbf{Table Name}: A mandatory field specifying the table name for storing updated item data in SAP. Similar to the item name, user input validation is enforced to ensure data integrity.
+\end{itemize}
+
+Validation procedures, including built-in \texttt{FormGroup} validators are employed to verify user selections against available data retrieved from the \texttt{StoreService}.
+The 'Update' button remains inactive until all form controls are valid and accurately filled, ensuring adherence to input requirements and safeguarding data consistency during the modification process.
+
 \headingFive{Backend Service}
 The \texttt{BackendService} acts as the intermediary between the frontend and backend, facilitating data exchange and API calls.
 It encapsulates the logic for HTTP requests, error handling, and data transformation, ensuring a seamless communication channel between the Angular application and the Golang backend.
