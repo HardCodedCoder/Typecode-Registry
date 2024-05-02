@@ -1,0 +1,87 @@
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Inject,
+  OnDestroy,
+  Renderer2,
+} from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { StoreService } from '../services/store.service';
+import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
+import { TuiDialogContext } from '@taiga-ui/core';
+import { UpdateItemFormData } from '../services/interfaces/formdata';
+
+@Component({
+  selector: 'app-update-item',
+  templateUrl: './update-item.component.html',
+  styleUrl: './update-item.component.scss',
+})
+export class UpdateItemComponent implements OnDestroy, AfterViewInit {
+  updateItemData: UpdateItemFormData;
+  form: FormGroup;
+  private destroy$ = new Subject<void>();
+
+  constructor(
+    private formBuilder: FormBuilder,
+    public store: StoreService,
+    @Inject(POLYMORPHEUS_CONTEXT)
+    private readonly context: TuiDialogContext<UpdateItemFormData>,
+    private el: ElementRef,
+    private renderer: Renderer2
+  ) {
+    this.form = this.formBuilder.group({
+      itemName: ['', Validators.required],
+      itemTable: ['', Validators.required],
+    });
+
+    this.updateItemData = this.context.data ?? {
+      item: {
+        id: 0,
+        scope: '',
+        project: '',
+        extension_id: 0,
+        name: '',
+        table_name: '',
+        typecode: 0,
+        creation_date: new Date(),
+      },
+      new_item_name: '',
+      new_table_name: '',
+    };
+  }
+
+  /**
+   * Unsubscribes from the destroy$ observable.
+   * This method is called when the component is destroyed.
+   */
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  /**
+   * Submits the form data.
+   */
+  submit(): void {
+    this.updateItemData.new_item_name = this.form.value.itemName;
+    this.updateItemData.new_table_name = this.form.value.itemTable;
+    this.context.completeWith(this.updateItemData);
+  }
+
+  ngAfterViewInit(): void {
+    this.setDialogHeaderColor();
+  }
+
+  private setDialogHeaderColor() {
+    const dialogElement = this.el.nativeElement.closest('.t-content');
+    if (dialogElement) {
+      this.renderer.setStyle(dialogElement, 'background-color', '#232528CC');
+    }
+    const h2Element = dialogElement.querySelector('h2');
+    if (h2Element) {
+      this.renderer.setStyle(h2Element, 'color', 'white');
+    }
+  }
+}

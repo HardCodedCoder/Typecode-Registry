@@ -13,6 +13,7 @@ import {
   TuiButtonModule,
   TuiSvgModule,
   TuiScrollbarModule,
+  TuiHostedDropdownModule,
 } from '@taiga-ui/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
@@ -39,6 +40,7 @@ import {
 } from '@angular/cdk/scrolling';
 import { RouterModule } from '@angular/router';
 import { ErrorDisplayComponent } from './error-display/error-display.component';
+import { UpdateItemComponent } from './update-item/update-item.component';
 
 @NgModule({
   declarations: [
@@ -47,6 +49,7 @@ import { ErrorDisplayComponent } from './error-display/error-display.component';
     ItemEditorComponent,
     AddItemComponent,
     ErrorDisplayComponent,
+    UpdateItemComponent,
   ],
   imports: [
     BrowserAnimationsModule,
@@ -77,6 +80,7 @@ import { ErrorDisplayComponent } from './error-display/error-display.component';
     CdkVirtualScrollViewport,
     CdkFixedSizeVirtualScroll,
     RouterModule,
+    TuiHostedDropdownModule,
   ],
   providers: [{ provide: TUI_SANITIZER, useClass: NgDompurifySanitizer }],
   bootstrap: [AppComponent],
