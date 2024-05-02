@@ -25,86 +25,63 @@
                                 </tr>
                             </thead>
 
-              <tbody
-                *tuiLet="this.store.items | tuiTableSort as sortedItems"
-                tuiTbody
-                [data]="sortedItems"
-              >
-                <tr *ngFor="let item of sortedItems" tuiTr>
-                  <td *tuiCell="'Scope'" tuiTd>
-                    <tui-tag
-                      class="tui-space_right-1"
-                      [autoColor]="true"
-                      [value]="item.scope"
-                    ></tui-tag>
-                  </td>
-                  <td *tuiCell="'Project'" tuiTd>
-                    {{ item.project }}
-                  </td>
-                  <td *tuiCell="'Extension'" tuiTd>
-                    {{ getExtensionName(item.extension_id) }}
-                  </td>
-                  <td *tuiCell="'TypeName'" tuiTd>
-                    {{ item.name }}
-                  </td>
-                  <td *tuiCell="'TableName'" tuiTd>
-                    {{ item.table_name }}
-                  </td>
-                  <td *tuiCell="'Typecode'" tuiTd>
-                    {{ item.typecode }}
-                  </td>
-                  <td *tuiCell="'Action'" tuiTd>
-                    <tui-hosted-dropdown [content]="dropdownContent">
-                      <button
-                        tuiIconButton
-                        type="button"
-                        icon="tuiIconMoreVertical"
-                        appearance="flat"
-                        shape="rounded"
-                        size="s"
-                        class="options"
-                      > </button>
-                    </tui-hosted-dropdown>
+                            <tbody *tuiLet="this.store.items | tuiTableSort as sortedItems" tuiTbody
+                                [data]="sortedItems">
+                                <tr *ngFor="let item of sortedItems" tuiTr>
+                                    <td *tuiCell="'Scope'" tuiTd>
+                                        <tui-tag class="font-13px tui-space_right-1" [autoColor]="true"
+                                            [value]="item.scope"></tui-tag>
+                                    </td>
+                                    <td *tuiCell="'Project'" tuiTd>
+                                        {{ item.project }}
+                                    </td>
+                                    <td *tuiCell="'Extension'" tuiTd>
+                                        {{ getExtensionName(item.extension_id) }}
+                                    </td>
+                                    <td *tuiCell="'TypeName'" tuiTd>
+                                        {{ item.name }}
+                                    </td>
+                                    <td *tuiCell="'TableName'" tuiTd>
+                                        {{ item.table_name }}
+                                    </td>
+                                    <td *tuiCell="'Typecode'" tuiTd>
+                                        {{ item.typecode }}
+                                    </td>
+                                    <td *tuiCell="'Action'" tuiTd>
+                                        <tui-hosted-dropdown [content]="dropdownContent">
+                                            <button tuiIconButton type="button" icon="tuiIconMoreVertical"
+                                                appearance="flat" shape="rounded" size="s" class="options"> </button>
+                                        </tui-hosted-dropdown>
 
-                    <ng-template
-                      #dropdownContent
-                      let-closeDropdown="closeDropdown"
-                    >
-                      <div class="dropdown-options">
-                        <button
-                          tuiIconButton
-                          type="button"
-                          (click)="onEditItem(item); closeDropdown()"
-                          icon="tuiIconEdit3"
-                          appearance="flat"
-                          shape="rounded"
-                          size="s"
-                        > </button>
-                        <button
-                          tuiIconButton
-                          type="button"
-                          (click)="onDeleteItem(item); closeDropdown()"
-                          icon="tuiIconTrash"
-                          appearance="flat"
-                          shape="rounded"
-                          size="s"
-                        > </button>
-                      </div>
-                    </ng-template>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </cdk-virtual-scroll-viewport>
-        </tui-scrollbar>
-      </div>
-      <div class="project-cards">
-        <p>Project cards will be added here</p>
-      </div>
+                                        <ng-template #dropdownContent let-closeDropdown="closeDropdown">
+                                            <div class="dropdown-options">
+                                                <button tuiIconButton type="button"
+                                                    (click)="onEditItem(item); closeDropdown()" icon="tuiIconEdit3"
+                                                    appearance="flat" shape="rounded" size="s"> </button>
+                                                <button tuiIconButton type="button"
+                                                    (click)="onDeleteItem(item); closeDropdown()" icon="tuiIconTrash"
+                                                    appearance="flat" shape="rounded" size="s"> </button>
+                                            </div>
+                                        </ng-template>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </cdk-virtual-scroll-viewport>
+                </tui-scrollbar>
+            </div>
+        </div>
+
+        <ng-template #noData>
+            <h1>No items available.</h1>
+        </ng-template>
+
+        <div class="item-display">
+            <p>Item view will be added here</p>
+        </div>
     </div>
-  </ng-container>
 
-  <ng-template #noData>
-    <h2>No items available.</h2>
-  </ng-template>
+    <div class="project-card-container">
+        <p>Project cards will be added here</p>
+    </div>
 </div>

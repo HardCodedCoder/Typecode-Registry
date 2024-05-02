@@ -11,7 +11,6 @@ td,
 th {
   white-space: nowrap;
   border-color: transparent;
-  border-right-color: pink;
 }
 
 .item-container {
@@ -22,16 +21,16 @@ th {
     display: flex;
     flex-direction: row;
     width: 100%;
-    height: 60%;
+    // height: 60%;
 
     .table-sub-container {
       flex: 1;
-      height: 60%;
+      // height: 60%;
     }
   }
 
   .item-display {
-    height: 50%;
+    // height: 50%;
 
     p {
       color: white;
@@ -118,4 +117,8 @@ tr:focus-within .options {
 
 .no-data {
   color: white;
+}
+
+.dropdown-options {
+  background-color: rgba(55, 57, 60, 0.9);
 }
