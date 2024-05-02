@@ -4,11 +4,12 @@ import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { AddItemComponent } from '../add-item/add-item.component';
 import { BackendService } from '../services/backend.service';
 import { StoreService } from '../services/store.service';
-import { FormData } from '../services/interfaces/formdata';
+import { FormData, UpdateItemFormData } from '../services/interfaces/formdata';
 import { catchError, throwError } from 'rxjs';
 import { ItemResponse } from '../services/interfaces/items';
 import { TUI_PROMPT, TuiPromptData } from '@taiga-ui/kit';
 import { Router } from '@angular/router';
+import { UpdateItemComponent } from '../update-item/update-item.component';
 
 @Component({
   selector: 'app-item-editor',
@@ -257,5 +258,76 @@ export class ItemEditorComponent implements OnInit {
         status: 'info',
       })
       .subscribe();
+  }
+
+  /**
+   * Opens a dialog box to update an item.
+   * Processes the data from the closed dialog and sends a request to update the item to the backend.
+   * If an error occurs, a failure notification is displayed.
+   * @param {ItemResponse} item - The item to update.
+   * @returns {void}
+   */
+  onEditItem(item: ItemResponse): void {
+    if (item.id === 0) {
+      this.showFailureMessage(
+        'Error: Unexpected internal error! Please restart application!'
+      );
+      return;
+    }
+
+    const data: UpdateItemFormData = {
+      item: item,
+      new_item_name: '',
+      new_table_name: '',
+    };
+
+    const dialog$ = this.dialogs
+      .open<UpdateItemFormData>(
+        new PolymorpheusComponent(UpdateItemComponent, this.injector),
+        {
+          dismissible: true,
+          label: 'Update Item',
+          data: data,
+        }
+      )
+      .pipe(
+        catchError(err => {
+          console.error('item-editor: Error opening dialog:', err);
+          return throwError(err);
+        })
+      );
+
+    dialog$.subscribe({
+      next: (data: UpdateItemFormData) => {
+        console.log('item-editor: Dialog closed with data:', data);
+        if (data.error?.error === true) {
+          this.showFailureMessage(data.error.message);
+        } else {
+          this.backendService
+            .updateItem(item.id, {
+              name: data.new_item_name,
+              table_name: data.new_table_name,
+            })
+            .subscribe({
+              next: response => {
+                if (response.status === 204) {
+                  console.log('Received response 204 from backend');
+                  this.showSuccessMessage('updated', item.id);
+                  item.table_name = data.new_table_name;
+                  item.name = data.new_item_name;
+                } else {
+                  this.showFailureMessage(
+                    `Could not update item: ${item.id}! Received status code: ${response.status}`
+                  );
+                }
+              },
+              error: error =>
+                this.showFailureMessage(
+                  `Could not update item: ${item.id}! Error: ${error}`
+                ),
+            });
+        }
+      },
+    });
   }
 }

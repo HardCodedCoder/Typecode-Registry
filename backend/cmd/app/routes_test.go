@@ -6,9 +6,11 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/rs/zerolog"
+	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -150,6 +152,12 @@ func deleteAndTestHTTPResponse(t *testing.T, server *httptest.Server, endpoint s
 
 	testHTTPResponse(t, resp, expectedStatusCode)
 	return resp
+}
+
+func checkExpectations(t *testing.T, mock sqlmock.Sqlmock) {
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
 }
 
 func TestReturnedServeMuxIsNotNil(t *testing.T) {
@@ -776,4 +784,84 @@ func TestIfNoRowDeletedStatusInternalServerErrorIsReturned(t *testing.T) {
 	}
 
 	_ = db.Close()
+}
+
+func TestUpdateItem(t *testing.T) {
+	_, mock, app := setupMockAndApp(t)
+
+	t.Run("BadRequestWithInvalidID", func(t *testing.T) {
+		req, _ := http.NewRequest(http.MethodPut, "/items/invalid", nil)
+		resp := httptest.NewRecorder()
+
+		app.updateItem(resp, req)
+
+		assert.Equal(t, http.StatusBadRequest, resp.Code)
+	})
+
+	t.Run("BadRequestWithIDLessThanOne", func(t *testing.T) {
+		req, _ := http.NewRequest(http.MethodPut, "/items/0", nil)
+		resp := httptest.NewRecorder()
+
+		app.updateItem(resp, req)
+
+		assert.Equal(t, http.StatusBadRequest, resp.Code)
+	})
+
+	t.Run("BadRequestWithInvalidBody", func(t *testing.T) {
+		req, _ := http.NewRequest(http.MethodPut, "/items/1", bytes.NewBuffer([]byte(`invalid`)))
+		resp := httptest.NewRecorder()
+
+		app.updateItem(resp, req)
+
+		assert.Equal(t, http.StatusBadRequest, resp.Code)
+	})
+
+	t.Run("BadRequestWithEmptyName", func(t *testing.T) {
+		item := data.Item{TableName: "Test"}
+		body, _ := json.Marshal(item)
+		req, _ := http.NewRequest(http.MethodPut, "/items/1", bytes.NewBuffer(body))
+		resp := httptest.NewRecorder()
+
+		app.updateItem(resp, req)
+
+		assert.Equal(t, http.StatusBadRequest, resp.Code)
+	})
+
+	t.Run("BadRequestWithEmptyTableName", func(t *testing.T) {
+		item := data.Item{Name: "Test"}
+		body, _ := json.Marshal(item)
+		req, _ := http.NewRequest(http.MethodPut, "/items/1", bytes.NewBuffer(body))
+		resp := httptest.NewRecorder()
+
+		app.updateItem(resp, req)
+
+		assert.Equal(t, http.StatusBadRequest, resp.Code)
+	})
+
+	t.Run("BadRequestWithMismatchedID", func(t *testing.T) {
+		item := data.Item{ID: 2, Name: "Test", TableName: "Test"}
+		body, _ := json.Marshal(item)
+		req, _ := http.NewRequest(http.MethodPut, "/items/1", bytes.NewBuffer(body))
+		resp := httptest.NewRecorder()
+
+		app.updateItem(resp, req)
+
+		assert.Equal(t, http.StatusBadRequest, resp.Code)
+	})
+
+	t.Run("InternalServerErrorWhenUpdateFails", func(t *testing.T) {
+		item := data.Item{ID: 1, Name: "New Name", TableName: "New Table Name"}
+		resp, mock := setupUpdateTest(mock, app, item, nil, errors.New("mock error"))
+
+		assert.Equal(t, http.StatusInternalServerError, resp.Code)
+		checkExpectations(t, mock)
+	})
+
+	t.Run("Success", func(t *testing.T) {
+		item := data.Item{ID: 1, Name: "New Name", TableName: "New Table Name"}
+		resp, mock := setupUpdateTest(mock, app, item, sqlmock.NewResult(1, 1), nil)
+
+		assert.Equal(t, http.StatusNoContent, resp.Code)
+		checkExpectations(t, mock)
+	})
 }
