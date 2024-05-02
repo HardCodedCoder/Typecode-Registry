@@ -28,9 +28,9 @@ module.exports = function (config) {
           statements: 70,
           lines: 70,
           branches: 50,
-          functions: 70
-        }
-      }
+          functions: 70,
+        },
+      },
     },
     reporters: ['progress', 'kjhtml', 'coverage-istanbul'],
     port: 9876,
