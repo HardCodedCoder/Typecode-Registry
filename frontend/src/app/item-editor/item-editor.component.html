@@ -1,102 +1,75 @@
-<div>
-  <!-- Create Item Button Div -->
-  <div class="add-button">
-    <button
-      icon="tuiIconPlusLarge"
-      tuiIconButton
-      type="button"
-      class="tui-space_right-3 tui-space_bottom-3"
-      (click)="showDialog()"
-      [attr.aria-hidden]="true"
-    ></button>
-  </div>
+<div class="container">
+    <div class="item-container">
+        <!-- Create Item Button Div -->
+        <div class="add-button">
+            <button icon="tuiIconPlusLarge" tuiIconButton type="button" (click)="showDialog()"
+                [attr.aria-hidden]="true"></button>
+        </div>
 
-  <!-- Items Table Div -->
-  <ng-container *ngIf="this.store.items; else noData">
-      <div class="container">
-          <div class="table-container">
-              <tui-scrollbar>
-                  <cdk-virtual-scroll-viewport
-                      #viewport
-                      tuiScrollable
-                      class="viewport tui-zero-scrollbar"
-                      [itemSize]="45"
-                      [maxBufferPx]="500"
-                      [minBufferPx]="400"
-                  >
-                      <table tuiTable [columns]="columns">
-                          <thead>
-                          <tr tuiThGroup>
-                              <th *tuiHead="'Scope'" tuiTh [sticky]="true">Scope</th>
-                              <th *tuiHead="'Project'" tuiTh [sticky]="true">Project</th>
-                              <th *tuiHead="'Extension'" tuiTh [sticky]="true">Extension</th>
-                              <th *tuiHead="'TypeName'" tuiTh [sticky]="true">Name</th>
-                              <th *tuiHead="'TableName'" tuiTh [sticky]="true">Table Name</th>
-                              <th *tuiHead="'Typecode'" tuiTh [sticky]="true">Typecode</th>
-                              <th
-                                      *tuiHead="'Action'"
-                                      tuiTh
-                                      [sorter]="null"
-                                      [sticky]="true"
-                              ></th>
-                          </tr>
-                          </thead>
+        <!-- Items Table Div -->
+        <div *ngIf="this.store.items; else noData" class="table-container">
+            <div class="table-sub-container">
+                <tui-scrollbar>
+                    <cdk-virtual-scroll-viewport #viewport tuiScrollable class="viewport tui-zero-scrollbar"
+                        [itemSize]="45">
+                        <table tuiTable [columns]="columns">
+                            <thead>
+                                <tr tuiThGroup>
+                                    <th *tuiHead="'Scope'" tuiTh [sticky]="true">Scope</th>
+                                    <th *tuiHead="'Project'" tuiTh [sticky]="true">Project</th>
+                                    <th *tuiHead="'Extension'" tuiTh [sticky]="true">Extension</th>
+                                    <th *tuiHead="'TypeName'" tuiTh [sticky]="true">Name</th>
+                                    <th *tuiHead="'TableName'" tuiTh [sticky]="true">Table Name</th>
+                                    <th *tuiHead="'Typecode'" tuiTh [sticky]="true">Typecode</th>
+                                    <th *tuiHead="'Action'" tuiTh [sorter]="null" [sticky]="true"></th>
+                                </tr>
+                            </thead>
 
-                          <tbody
-                                  *tuiLet="this.store.items | tuiTableSort as sortedItems"
-                                  tuiTbody
-                                  [data]="sortedItems"
-                          >
-                          <tr *ngFor="let item of sortedItems" tuiTr>
-                              <td *tuiCell="'Scope'" tuiTd>
-                                  <tui-tag
-                                          class="tui-space_right-1"
-                                          [autoColor]="true"
-                                          [value]="item.scope"
-                                  ></tui-tag>
-                              </td>
-                              <td *tuiCell="'Project'" tuiTd>
-                                  {{ item.project }}
-                              </td>
-                              <td *tuiCell="'Extension'" tuiTd>
-                                  {{ getExtensionName(item.extension_id) }}
-                              </td>
-                              <td *tuiCell="'TypeName'" tuiTd>
-                                  {{ item.name }}
-                              </td>
-                              <td *tuiCell="'TableName'" tuiTd>
-                                  {{ item.table_name }}
-                              </td>
-                              <td *tuiCell="'Typecode'" tuiTd>
-                                  {{ item.typecode }}
-                              </td>
-                              <td *tuiCell="'Action'" tuiTd>
-                                  <button
-                                          appearance="flat"
-                                          icon="tuiIconTrash"
-                                          shape="rounded"
-                                          size="s"
-                                          title="Remove"
-                                          tuiIconButton
-                                          type="button"
-                                          class="remove"
-                                          (click)="onDeleteItem(item)"
-                                  ></button>
-                              </td>
-                          </tr>
-                          </tbody>
-                      </table>
-                  </cdk-virtual-scroll-viewport>
-              </tui-scrollbar>
-          </div>
-          <div class="project-cards">
-              <p>Project cards will be added here</p>
-          </div>
-      </div>
+                            <tbody *tuiLet="this.store.items | tuiTableSort as sortedItems" tuiTbody
+                                [data]="sortedItems">
+                                <tr *ngFor="let item of sortedItems" tuiTr>
+                                    <td *tuiCell="'Scope'" tuiTd>
+                                        <tui-tag class="tui-space_right-1" [autoColor]="true"
+                                            [value]="item.scope"></tui-tag>
+                                    </td>
+                                    <td *tuiCell="'Project'" tuiTd>
+                                        {{ item.project }}
+                                    </td>
+                                    <td *tuiCell="'Extension'" tuiTd>
+                                        {{ getExtensionName(item.extension_id) }}
+                                    </td>
+                                    <td *tuiCell="'TypeName'" tuiTd>
+                                        {{ item.name }}
+                                    </td>
+                                    <td *tuiCell="'TableName'" tuiTd>
+                                        {{ item.table_name }}
+                                    </td>
+                                    <td *tuiCell="'Typecode'" tuiTd>
+                                        {{ item.typecode }}
+                                    </td>
+                                    <td *tuiCell="'Action'" tuiTd>
+                                        <button appearance="flat" icon="tuiIconTrash" shape="rounded" size="s"
+                                            title="Remove" tuiIconButton type="button" class="remove"
+                                            (click)="onDeleteItem(item)"></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </cdk-virtual-scroll-viewport>
+                </tui-scrollbar>
+            </div>
+        </div>
 
-  </ng-container>
+        <ng-template #noData>
+            <h1 class="no-data">No items available.</h1>
+        </ng-template>
 
-  <ng-template #noData>
-    <h2>No items available.</h2>
-  </ng-template>
+        <div class="item-display">
+            <p>Item details will be added here</p>
+        </div>
+    </div>
+
+    <div class="project-card-container">
+        <p>Project cards will be added here</p>
+    </div>
 </div>
