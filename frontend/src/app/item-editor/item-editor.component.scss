@@ -1,25 +1,25 @@
 @import '@taiga-ui/core/styles/taiga-ui-local.scss';
 
 .container {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    height: auto;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: auto;
 }
 
 .table-container {
-    flex: 1; /* Takes up 50% of the container */
-    max-width: 70%;
+  flex: 1; /* Takes up 50% of the container */
+  max-width: 70%;
 }
 
 .project-cards {
-    flex: 1; /* Takes up the remaining 50% of the container */
-    max-width: 30%; /* Ensures it doesn't grow beyond 30% */
-    padding: 20px; /* Adds some padding inside the cards area */
+  flex: 1; /* Takes up the remaining 50% of the container */
+  max-width: 30%; /* Ensures it doesn't grow beyond 30% */
+  padding: 20px; /* Adds some padding inside the cards area */
 
-    p {
-      color: white
-    }
+  p {
+    color: white;
+  }
 }
 
 .add-button {
@@ -38,7 +38,12 @@ table {
   border-collapse: collapse;
   border-radius: 10px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.1); /* Light background for the content area */
+  background: rgba(
+    255,
+    255,
+    255,
+    0.1
+  ); /* Light background for the content area */
 }
 
 thead tr th {
@@ -51,12 +56,22 @@ thead tr th {
 }
 
 tbody tr {
-  background-color: rgba(35, 37, 40, 0.9) !important; /* Darker row background for odd rows */
+  background-color: rgba(
+    35,
+    37,
+    40,
+    0.9
+  ) !important; /* Darker row background for odd rows */
   color: white; /* Light text color for better readability */
 }
 
 tbody tr:nth-child(even) {
-  background-color: rgba(55, 57, 60, 0.9) !important; /* Slightly lighter shade for even rows */
+  background-color: rgba(
+    55,
+    57,
+    60,
+    0.9
+  ) !important; /* Slightly lighter shade for even rows */
 }
 
 tbody td {
@@ -67,11 +82,14 @@ tbody td {
   border: none;
 }
 
-.remove {
+.options {
   opacity: 0;
 }
-tr:hover .remove,
-tr:focus-within .remove {
+tr:hover .options,
+tr:focus-within .options {
   opacity: 1;
 }
 
+.dropdown-options {
+  background-color: rgba(55, 57, 60, 0.9);
+}

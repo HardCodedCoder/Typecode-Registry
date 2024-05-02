@@ -1,4 +1,12 @@
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Inject,
+  OnDestroy,
+  OnInit,
+  Renderer2,
+} from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -20,7 +28,7 @@ import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
   templateUrl: './add-item.component.html',
   styleUrl: './add-item.component.scss',
 })
-export class AddItemComponent implements OnInit, OnDestroy {
+export class AddItemComponent implements OnInit, OnDestroy, AfterViewInit {
   extensionsToDisplay: ExtensionResponse[] = [];
   projectScopeSelected: boolean = false;
   showExtensionInput: boolean = true;
@@ -34,7 +42,9 @@ export class AddItemComponent implements OnInit, OnDestroy {
     public store: StoreService,
     private backend: BackendService,
     @Inject(POLYMORPHEUS_CONTEXT)
-    private readonly context: TuiDialogContext<FormGroup>
+    private readonly context: TuiDialogContext<FormGroup>,
+    public el: ElementRef,
+    private renderer: Renderer2
   ) {
     this.form = this.formBuilder.group(
       {
@@ -258,5 +268,67 @@ export class AddItemComponent implements OnInit, OnDestroy {
 
       return null;
     };
+  }
+
+  ngAfterViewInit(): void {
+    this.applyDialogStyles();
+  }
+
+  private applyDialogStyles(): void {
+    const dialogElement = this.el.nativeElement.closest('.t-content');
+    if (dialogElement) {
+      this.applyStyles(dialogElement, {
+        'background-color': '#232528CC',
+        'background-image': "url('./assets/img/third.png')",
+        'background-size': 'cover',
+      });
+
+      const h2Element = dialogElement.querySelector('h2');
+      this.applyStyleIfElementExists(h2Element, 'color', 'white');
+
+      const elements = dialogElement.querySelectorAll(
+        'label.t-wrapper[data-appearance="whiteblock"]'
+      );
+      if (elements && elements.length > 1) {
+        this.applyStyleIfElementExists(
+          elements[0],
+          'background-color',
+          '#4D5054'
+        );
+        this.applyStyleIfElementExists(
+          elements[1],
+          'background-color',
+          '#4D5054'
+        );
+      }
+    } else {
+      console.warn('Dialog element not found when trying to apply styles.');
+    }
+  }
+
+  private applyStyles(
+    element: HTMLElement,
+    styles: { [key: string]: string }
+  ): void {
+    if (!element) {
+      console.warn('Attempted to apply styles to a null element.');
+      return;
+    }
+
+    Object.entries(styles).forEach(([key, value]) => {
+      this.renderer.setStyle(element, key, value);
+    });
+  }
+
+  private applyStyleIfElementExists(
+    element: Element | null,
+    styleProp: string,
+    value: string
+  ): void {
+    if (element) {
+      this.renderer.setStyle(element, styleProp, value);
+    } else {
+      console.warn(`Element not found for style ${styleProp}`);
+    }
   }
 }
