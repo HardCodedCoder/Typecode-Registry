@@ -43,7 +43,7 @@ export class AddItemComponent implements OnInit, OnDestroy, AfterViewInit {
     private backend: BackendService,
     @Inject(POLYMORPHEUS_CONTEXT)
     private readonly context: TuiDialogContext<FormGroup>,
-    private el: ElementRef,
+    public el: ElementRef,
     private renderer: Renderer2
   ) {
     this.form = this.formBuilder.group(
@@ -271,33 +271,64 @@ export class AddItemComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.setDialogHeaderColor();
+    this.applyDialogStyles();
   }
 
-  private setDialogHeaderColor() {
+  private applyDialogStyles(): void {
     const dialogElement = this.el.nativeElement.closest('.t-content');
     if (dialogElement) {
-      this.renderer.setStyle(dialogElement, 'background-color', '#232528CC');
-      this.renderer.setStyle(
-        dialogElement,
-        'background-image',
-        "url('./assets/img/third.png')"
+      this.applyStyles(dialogElement, {
+        'background-color': '#232528CC',
+        'background-image': "url('./assets/img/third.png')",
+        'background-size': 'cover',
+      });
+
+      const h2Element = dialogElement.querySelector('h2');
+      this.applyStyleIfElementExists(h2Element, 'color', 'white');
+
+      const elements = dialogElement.querySelectorAll(
+        'label.t-wrapper[data-appearance="whiteblock"]'
       );
-      this.renderer.setStyle(dialogElement, 'background-size', 'cover');
+      if (elements && elements.length > 1) {
+        this.applyStyleIfElementExists(
+          elements[0],
+          'background-color',
+          '#4D5054'
+        );
+        this.applyStyleIfElementExists(
+          elements[1],
+          'background-color',
+          '#4D5054'
+        );
+      }
+    } else {
+      console.warn('Dialog element not found when trying to apply styles.');
     }
-    const h2Element = dialogElement.querySelector('h2');
-    if (h2Element) {
-      this.renderer.setStyle(h2Element, 'color', 'white');
+  }
+
+  private applyStyles(
+    element: HTMLElement,
+    styles: { [key: string]: string }
+  ): void {
+    if (!element) {
+      console.warn('Attempted to apply styles to a null element.');
+      return;
     }
 
-    const elements = this.el.nativeElement.querySelectorAll(
-      'label.t-wrapper[data-appearance="whiteblock"]'
-    );
-    if (elements.length > 1) {
-      const firstElement = elements[0]; // Zugriff auf das zweite Element
-      this.renderer.setStyle(firstElement, 'background-color', '#4D5054');
-      const secondElement = elements[1]; // Zugriff auf das zweite Element
-      this.renderer.setStyle(secondElement, 'background-color', '#4D5054');
+    Object.entries(styles).forEach(([key, value]) => {
+      this.renderer.setStyle(element, key, value);
+    });
+  }
+
+  private applyStyleIfElementExists(
+    element: Element | null,
+    styleProp: string,
+    value: string
+  ): void {
+    if (element) {
+      this.renderer.setStyle(element, styleProp, value);
+    } else {
+      console.warn(`Element not found for style ${styleProp}`);
     }
   }
 }
