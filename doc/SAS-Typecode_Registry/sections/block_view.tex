@@ -340,6 +340,36 @@ Response:
 HTTP/1.1 204 No Content
 \end{lstlisting}
 
+\headingSix{PUT /items/{id}}
+
+When a client makes a \texttt{PUT} request to the \texttt{/items/{id}} endpoint, they must provide the ID of the item they want to update in the endpoint URL.)
+In the request body, the client must include a JSON object with the updated details of the item.
+The following values can be updated:
+\begin{itemize}
+    \item \texttt{name}: A string representing the name of the item.
+    \item \texttt{table\_name}: A string representing the name of the table which will then hold the item entries in SAP.
+\end{itemize}
+
+Upon receiving a valid \texttt{PUT} request, the backend service will attempt to update the item with the provided ID.
+If the item exists and is successfully updated, the service will return a \texttt{204 NoContent} status code to indicate that the request was successful.
+
+\begin{mynote}
+    NOTE: The following fields can not be updated: \\ \texttt{scope}, \texttt{project}, \texttt{extension\_id}, \texttt{typecode}, \texttt{creation\_date}.
+    Changing these fields would require more complex operations and is not supported by this endpoint, as changing the typecode would require changing the item's scope for example.
+    Changing the scope would require moving the item to a different extension, which is not supported by this endpoint.
+\end{mynote}
+
+\begin{lstlisting}[language=json,label={lst:lstlisting21}]
+PUT /items/1 HTTP/1.1
+Host: example.com
+
+{
+    "name": "New Name",
+    "table_name": "New Table Name",
+}
+
+\end{lstlisting}
+
 \headingSix{GET /projects}
 
 The \texttt{GET /projects} endpoint allows clients to retrieve all projects in the system.

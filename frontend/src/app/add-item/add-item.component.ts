@@ -1,4 +1,12 @@
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Inject,
+  OnDestroy,
+  OnInit,
+  Renderer2,
+} from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -20,7 +28,7 @@ import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
   templateUrl: './add-item.component.html',
   styleUrl: './add-item.component.scss',
 })
-export class AddItemComponent implements OnInit, OnDestroy {
+export class AddItemComponent implements OnInit, OnDestroy, AfterViewInit {
   extensionsToDisplay: ExtensionResponse[] = [];
   projectScopeSelected: boolean = false;
   showExtensionInput: boolean = true;
@@ -34,7 +42,9 @@ export class AddItemComponent implements OnInit, OnDestroy {
     public store: StoreService,
     private backend: BackendService,
     @Inject(POLYMORPHEUS_CONTEXT)
-    private readonly context: TuiDialogContext<FormGroup>
+    private readonly context: TuiDialogContext<FormGroup>,
+    private el: ElementRef,
+    private renderer: Renderer2
   ) {
     this.form = this.formBuilder.group(
       {
@@ -258,5 +268,36 @@ export class AddItemComponent implements OnInit, OnDestroy {
 
       return null;
     };
+  }
+
+  ngAfterViewInit(): void {
+    this.setDialogHeaderColor();
+  }
+
+  private setDialogHeaderColor() {
+    const dialogElement = this.el.nativeElement.closest('.t-content');
+    if (dialogElement) {
+      this.renderer.setStyle(dialogElement, 'background-color', '#232528CC');
+      this.renderer.setStyle(
+        dialogElement,
+        'background-image',
+        "url('./assets/img/third.png')"
+      );
+      this.renderer.setStyle(dialogElement, 'background-size', 'cover');
+    }
+    const h2Element = dialogElement.querySelector('h2');
+    if (h2Element) {
+      this.renderer.setStyle(h2Element, 'color', 'white');
+    }
+
+    const elements = this.el.nativeElement.querySelectorAll(
+      'label.t-wrapper[data-appearance="whiteblock"]'
+    );
+    if (elements.length > 1) {
+      const firstElement = elements[0]; // Zugriff auf das zweite Element
+      this.renderer.setStyle(firstElement, 'background-color', '#4D5054');
+      const secondElement = elements[1]; // Zugriff auf das zweite Element
+      this.renderer.setStyle(secondElement, 'background-color', '#4D5054');
+    }
   }
 }

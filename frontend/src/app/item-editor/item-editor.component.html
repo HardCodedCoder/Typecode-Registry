@@ -13,108 +13,115 @@
 
   <!-- Items Table Div -->
   <ng-container *ngIf="this.store.items; else noData">
-    <div>
-      <tui-scrollbar>
-        <cdk-virtual-scroll-viewport
-          #viewport
-          tuiScrollable
-          class="viewport tui-zero-scrollbar"
-          [itemSize]="45"
-          [maxBufferPx]="500"
-          [minBufferPx]="400"
-        >
-          <table tuiTable [columns]="columns">
-            <thead>
-              <tr tuiThGroup>
-                <th *tuiHead="'Scope'" tuiTh [sticky]="true">Scope</th>
-                <th *tuiHead="'Project'" tuiTh [sticky]="true">Project</th>
-                <th *tuiHead="'Extension'" tuiTh [sticky]="true">Extension</th>
-                <th *tuiHead="'TypeName'" tuiTh [sticky]="true">Name</th>
-                <th *tuiHead="'TableName'" tuiTh [sticky]="true">Table Name</th>
-                <th *tuiHead="'Typecode'" tuiTh [sticky]="true">Typecode</th>
-                <th
-                  *tuiHead="'Action'"
-                  tuiTh
-                  [sorter]="null"
-                  [sticky]="true"
-                ></th>
-              </tr>
-            </thead>
+    <div class="container">
+      <div class="table-container">
+        <tui-scrollbar>
+          <cdk-virtual-scroll-viewport
+            #viewport
+            tuiScrollable
+            class="viewport tui-zero-scrollbar"
+            [itemSize]="45"
+            [maxBufferPx]="500"
+            [minBufferPx]="400"
+          >
+            <table tuiTable [columns]="columns">
+              <thead>
+                <tr tuiThGroup>
+                  <th *tuiHead="'Scope'" tuiTh [sticky]="true">Scope</th>
+                  <th *tuiHead="'Project'" tuiTh [sticky]="true">Project</th>
+                  <th *tuiHead="'Extension'" tuiTh [sticky]="true">
+                    Extension
+                  </th>
+                  <th *tuiHead="'TypeName'" tuiTh [sticky]="true">Name</th>
+                  <th *tuiHead="'TableName'" tuiTh [sticky]="true">
+                    Table Name
+                  </th>
+                  <th *tuiHead="'Typecode'" tuiTh [sticky]="true">Typecode</th>
+                  <th
+                    *tuiHead="'Action'"
+                    tuiTh
+                    [sorter]="null"
+                    [sticky]="true"
+                  ></th>
+                </tr>
+              </thead>
 
-            <tbody
-              *tuiLet="this.store.items | tuiTableSort as sortedItems"
-              tuiTbody
-              [data]="sortedItems"
-            >
-              <tr *ngFor="let item of sortedItems" tuiTr>
-                <td *tuiCell="'Scope'" tuiTd>
-                  <tui-tag
-                    class="tui-space_right-1"
-                    [autoColor]="true"
-                    [value]="item.scope"
-                  ></tui-tag>
-                </td>
-                <td *tuiCell="'Project'" tuiTd>
-                  {{ item.project }}
-                </td>
-                <td *tuiCell="'Extension'" tuiTd>
-                  {{ getExtensionName(item.extension_id) }}
-                </td>
-                <td *tuiCell="'TypeName'" tuiTd>
-                  {{ item.name }}
-                </td>
-                <td *tuiCell="'TableName'" tuiTd>
-                  {{ item.table_name }}
-                </td>
-                <td *tuiCell="'Typecode'" tuiTd>
-                  {{ item.typecode }}
-                </td>
-                <td *tuiCell="'Action'" tuiTd>
-                    <tui-hosted-dropdown  [content]="dropdownContent">
-                        <button
-                                tuiIconButton
-                                type="button"
-                                icon="tuiIconMoreVertical"
-                                appearance="flat"
-                                shape="rounded"
-                                size="s"
-                                class="options"
-                        >
-                        </button>
+              <tbody
+                *tuiLet="this.store.items | tuiTableSort as sortedItems"
+                tuiTbody
+                [data]="sortedItems"
+              >
+                <tr *ngFor="let item of sortedItems" tuiTr>
+                  <td *tuiCell="'Scope'" tuiTd>
+                    <tui-tag
+                      class="tui-space_right-1"
+                      [autoColor]="true"
+                      [value]="item.scope"
+                    ></tui-tag>
+                  </td>
+                  <td *tuiCell="'Project'" tuiTd>
+                    {{ item.project }}
+                  </td>
+                  <td *tuiCell="'Extension'" tuiTd>
+                    {{ getExtensionName(item.extension_id) }}
+                  </td>
+                  <td *tuiCell="'TypeName'" tuiTd>
+                    {{ item.name }}
+                  </td>
+                  <td *tuiCell="'TableName'" tuiTd>
+                    {{ item.table_name }}
+                  </td>
+                  <td *tuiCell="'Typecode'" tuiTd>
+                    {{ item.typecode }}
+                  </td>
+                  <td *tuiCell="'Action'" tuiTd>
+                    <tui-hosted-dropdown [content]="dropdownContent">
+                      <button
+                        tuiIconButton
+                        type="button"
+                        icon="tuiIconMoreVertical"
+                        appearance="flat"
+                        shape="rounded"
+                        size="s"
+                        class="options"
+                      > </button>
                     </tui-hosted-dropdown>
 
-                    <ng-template #dropdownContent let-closeDropdown="closeDropdown">
-                        <div class="dropdown-options">
-                            <button
-                                    tuiIconButton
-                                    type="button"
-                                    (click)="onEditItem(item);
-                                    closeDropdown()"
-                                    icon="tuiIconEdit3"
-                                    appearance="flat"
-                                    shape="rounded"
-                                    size="s"
-                            >
-                            </button>
-                            <button
-                                    tuiIconButton
-                                    type="button"
-                                    (click)="onDeleteItem(item);
-                                    closeDropdown()"
-                                    icon="tuiIconTrash"
-                                    appearance="flat"
-                                    shape="rounded"
-                                    size="s"
-                            >
-                            </button>
-                        </div>
+                    <ng-template
+                      #dropdownContent
+                      let-closeDropdown="closeDropdown"
+                    >
+                      <div class="dropdown-options">
+                        <button
+                          tuiIconButton
+                          type="button"
+                          (click)="onEditItem(item); closeDropdown()"
+                          icon="tuiIconEdit3"
+                          appearance="flat"
+                          shape="rounded"
+                          size="s"
+                        > </button>
+                        <button
+                          tuiIconButton
+                          type="button"
+                          (click)="onDeleteItem(item); closeDropdown()"
+                          icon="tuiIconTrash"
+                          appearance="flat"
+                          shape="rounded"
+                          size="s"
+                        > </button>
+                      </div>
                     </ng-template>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </cdk-virtual-scroll-viewport>
-      </tui-scrollbar>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </cdk-virtual-scroll-viewport>
+        </tui-scrollbar>
+      </div>
+      <div class="project-cards">
+        <p>Project cards will be added here</p>
+      </div>
     </div>
   </ng-container>
 

@@ -1,33 +1,85 @@
 @import '@taiga-ui/core/styles/taiga-ui-local.scss';
 
+.container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: auto;
+}
+
+.table-container {
+  flex: 1; /* Takes up 50% of the container */
+  max-width: 70%;
+}
+
+.project-cards {
+  flex: 1; /* Takes up the remaining 50% of the container */
+  max-width: 30%; /* Ensures it doesn't grow beyond 30% */
+  padding: 20px; /* Adds some padding inside the cards area */
+
+  p {
+    color: white;
+  }
+}
+
 .add-button {
   margin-bottom: 5px;
 }
 
-table {
+.viewport {
+  height: 700px;
   border-radius: 10px;
-  overflow: hidden;
 }
 
-td,
-th {
-  white-space: nowrap;
-  border-color: transparent;
-  border-right-color: var(--tui-base-04);
+/* Table styles */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(
+    255,
+    255,
+    255,
+    0.1
+  ); /* Light background for the content area */
 }
-td:last-child,
-th:last-child {
-  border-right-color: transparent;
+
+thead tr th {
+  background: rgba(45, 45, 45, 0.9); /* Dark gray with some transparency */
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--tui-base-03); /* Adjust this color if needed */
+  color: white; /* Ensures text is readable on dark background */
+  text-align: center;
+  border: none;
 }
-tbody {
-  border-color: transparent;
+
+tbody tr {
+  background-color: rgba(
+    35,
+    37,
+    40,
+    0.9
+  ) !important; /* Darker row background for odd rows */
+  color: white; /* Light text color for better readability */
 }
-tr {
-  &:nth-child(even) {
-    td {
-      background: var(--tui-base-02);
-    }
-  }
+
+tbody tr:nth-child(even) {
+  background-color: rgba(
+    55,
+    57,
+    60,
+    0.9
+  ) !important; /* Slightly lighter shade for even rows */
+}
+
+tbody td {
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1); /* Subtle top border for cells */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Subtle bottom border for cells */
+  background-color: rgba(35, 37, 40, 0.8);
+  border: none;
 }
 
 .options {
@@ -38,19 +90,6 @@ tr:focus-within .options {
   opacity: 1;
 }
 
-thead {
-  tr {
-    th {
-      background: var(--tui-base-03);
-      text-transform: uppercase;
-      border-bottom: 2px solid var(--tui-base-03);
-      padding: 10px 15px;
-    }
-  }
+.dropdown-options {
+  background-color: rgba(55, 57, 60, 0.9);
 }
-
-.viewport {
-  height: 700px;
-  border-radius: 10px;
-}
-
