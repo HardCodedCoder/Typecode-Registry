@@ -41,6 +41,7 @@ import {
 import { RouterModule } from '@angular/router';
 import { ErrorDisplayComponent } from './error-display/error-display.component';
 import { UpdateItemComponent } from './update-item/update-item.component';
+import { ExtensionEditorComponent } from './extension-editor/extension-editor.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { UpdateItemComponent } from './update-item/update-item.component';
     AddItemComponent,
     ErrorDisplayComponent,
     UpdateItemComponent,
+    ExtensionEditorComponent,
   ],
   imports: [
     BrowserAnimationsModule,
