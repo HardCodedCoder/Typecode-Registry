@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"regexp"
+	"testing"
 	"time"
 )
 
@@ -34,14 +35,26 @@ func setupUpdateTest(mock sqlmock.Sqlmock, app *application, item data.Item, res
 	return resp, mock
 }
 
-func setupExtensionMock(mock sqlmock.Sqlmock, id int64, projectId sql.NullInt32, scope, name, description string, returnRow bool) {
+func setupExtensionsMock(mock sqlmock.Sqlmock, scope string) {
+	extensions := []data.Extension{
+		{ID: 1, Name: "Test-Extension-1", Description: "Test-Description-1", Scope: "Project", CreationDate: time.Now(), ItemCount: 1},
+		{ID: 3, Name: "Test-Extension-3", Description: "Test-Description-3", Scope: "Project", CreationDate: time.Now(), ItemCount: 2},
+	}
+
+	returnRows := sqlmock.NewRows([]string{"id", "project_id", "name", "description", "scope", "creation_date", "item_count"}).
+		AddRow(extensions[0].ID, extensions[0].ProjectID.Int32, extensions[0].Name, extensions[0].Description, extensions[0].Scope, extensions[0].CreationDate, extensions[0].ItemCount).
+		AddRow(extensions[1].ID, extensions[1].ProjectID.Int32, extensions[1].Name, extensions[1].Description, extensions[1].Scope, extensions[1].CreationDate, extensions[1].ItemCount)
+	mockReadAllExtensionsQuery(mock, scope, returnRows)
+}
+
+func setupExtensionMock(mock sqlmock.Sqlmock, id int64, projectId sql.NullInt32, scope, name, description string, itemCount int, returnRow bool) {
 	extensionArgs := []driver.Value{id}
 	var extensionRows *sqlmock.Rows
 	if returnRow {
-		extensionRows = sqlmock.NewRows([]string{"id", "project_id", "name", "description", "scope", "creation_date"}).
-			AddRow(id, projectId, name, description, scope, time.Now())
+		extensionRows = sqlmock.NewRows([]string{"id", "project_id", "name", "description", "scope", "creation_date", "item_count"}).
+			AddRow(id, projectId, name, description, scope, time.Now(), itemCount)
 	} else {
-		extensionRows = sqlmock.NewRows([]string{"id", "project_id", "name", "description", "scope", "creation_date"})
+		extensionRows = sqlmock.NewRows([]string{"id", "project_id", "name", "description", "scope", "creation_date", "item_count"})
 	}
 
 	mockReadExtensionByIDQuery(mock, extensionArgs, extensionRows)
@@ -65,6 +78,18 @@ func setupInsertItemMock(mock sqlmock.Sqlmock, name string, extensionID int64, t
 	mockInsertItemQuery(mock, insertArgs, insertRows)
 }
 
+func mockHTTPGetRequest(app *application, t *testing.T, path string, status int) {
+	server := setupHTTPServer(app)
+	defer server.Close()
+
+	resp, err := http.Get("http://" + server.Listener.Addr().String() + path)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	checkHTTPResponse(resp, status, t)
+}
+
 func mockDeleteItemExecution(mock sqlmock.Sqlmock, id int, lastInsertID int64, rowsAffected int64) {
 	query := regexp.QuoteMeta(`DELETE FROM item WHERE id = $1`)
 	mock.ExpectExec(query).WithArgs(id).WillReturnResult(sqlmock.NewResult(lastInsertID, rowsAffected))
@@ -77,19 +102,42 @@ func setupReadProjectNameMock(mock sqlmock.Sqlmock, id int64, name string) {
 
 func mockReadExtensionByIDQuery(mock sqlmock.Sqlmock, args []driver.Value, returnRows *sqlmock.Rows) {
 	query := regexp.QuoteMeta(`
-	    SELECT id, project_id, name, description, scope, creation_date
-	    FROM extension
-	    WHERE id = $1`)
+	   	SELECT e.id, e.project_id, e.name, e.description, e.scope, e.creation_date, COUNT(i.id) AS item_count
+		FROM extension e
+		LEFT JOIN item i ON e.id = i.extension_id
+		WHERE e.id = $1
+		GROUP BY e.id`)
 	mock.ExpectQuery(query).WithArgs(args...).WillReturnRows(returnRows)
 }
 
 func mockReadAllExtensionsQuery(mock sqlmock.Sqlmock, scope string, returnRows *sqlmock.Rows) {
-	query := regexp.QuoteMeta(`
-	    SELECT * FROM extension
-		WHERE scope = $1
-		ORDER BY id`)
-
-	mock.ExpectQuery(query).WithArgs(scope).WillReturnRows(returnRows)
+	var query string
+	if len(scope) == 0 {
+		query = regexp.QuoteMeta(`
+		SELECT e.id, e.project_id, e.name, e.description, e.scope, e.creation_date, COUNT(i.id) AS item_count
+		FROM extension e
+		LEFT JOIN item i ON e.id = i.extension_id
+		GROUP BY e.id
+		ORDER BY e.id`)
+		if returnRows != nil {
+			mock.ExpectQuery(query).WillReturnRows(returnRows)
+		} else {
+			mock.ExpectQuery(query).WillReturnError(errors.New("mock error"))
+		}
+	} else {
+		query = regexp.QuoteMeta(`
+		SELECT e.id, e.project_id, e.name, e.description, e.scope, e.creation_date, COUNT(i.id) AS item_count
+		FROM extension e
+		LEFT JOIN item i ON e.id = i.extension_id
+		WHERE LOWER(e.scope) = LOWER($1)
+		GROUP BY e.id
+		ORDER BY e.id`)
+		if returnRows != nil {
+			mock.ExpectQuery(query).WithArgs(scope).WillReturnRows(returnRows)
+		} else {
+			mock.ExpectQuery(query).WillReturnError(errors.New("mock error"))
+		}
+	}
 }
 
 func mockReadAllItemsQuery(mock sqlmock.Sqlmock, returnRows *sqlmock.Rows) {
@@ -200,14 +248,6 @@ func mockReadItemByItemIdNoRowsFound(mock sqlmock.Sqlmock, id int64) {
 	LEFT JOIN project ON extension.project_id = project.id
 	WHERE item.id = $1`)
 	mock.ExpectQuery(query).WithArgs(id).WillReturnError(sql.ErrNoRows)
-}
-
-func mockReadAllExtensionsQueryReturnsError(mock sqlmock.Sqlmock) {
-	query := regexp.QuoteMeta(`
-		SELECT * FROM extension
-		WHERE scope = $1
-		ORDER BY id`)
-	mock.ExpectQuery(query).WillReturnError(errors.New("mock error"))
 }
 
 func mockGetNextProjectFreeTypecodeQuery(mock sqlmock.Sqlmock, args []driver.Value, returnRows *sqlmock.Rows) {

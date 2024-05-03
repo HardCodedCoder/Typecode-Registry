@@ -186,7 +186,7 @@ func TestCreateItemReturnsInternalServerErrorWhenInsertFails(t *testing.T) {
 		ExtensionId: 1,
 	}
 
-	setupExtensionMock(mock, itemReq.ExtensionId, sql.NullInt32{Int32: testExtension.ProjectID.Int32, Valid: true}, testExtension.Scope, testExtension.Name, testExtension.Description, true)
+	setupExtensionMock(mock, itemReq.ExtensionId, sql.NullInt32{Int32: testExtension.ProjectID.Int32, Valid: true}, testExtension.Scope, testExtension.Name, testExtension.Description, 1, true)
 	setupTypecodeMock(mock, "Shared", data.ScopeRanges[data.ScopeShared].Start, data.ScopeRanges[data.ScopeShared].Start)
 
 	insertArgs := []driver.Value{
@@ -230,6 +230,7 @@ func TestCreateItemRoutesReturnsStatusInternalServerErrorWhenScopeSharedRangeEnd
 		Description:  "Test-Description",
 		Scope:        "Shared",
 		CreationDate: time.Now(),
+		ItemCount:    1,
 	}
 
 	// Create a new ItemRequest
@@ -239,7 +240,7 @@ func TestCreateItemRoutesReturnsStatusInternalServerErrorWhenScopeSharedRangeEnd
 		ExtensionId: 1,
 	}
 
-	setupExtensionMock(mock, itemReq.ExtensionId, sql.NullInt32{Int32: testExtension.ProjectID.Int32, Valid: true}, testExtension.Scope, testExtension.Name, testExtension.Description, true)
+	setupExtensionMock(mock, itemReq.ExtensionId, sql.NullInt32{Int32: testExtension.ProjectID.Int32, Valid: true}, testExtension.Scope, testExtension.Name, testExtension.Description, testExtension.ItemCount, true)
 	setupTypecodeMock(mock, "Shared", data.ScopeRanges[data.ScopeShared].Start, data.ScopeRanges[data.ScopeShared].End)
 
 	server := setupHTTPServer(app)
@@ -281,7 +282,7 @@ func TestSendingNotExistingExtensionIDReturnsStatusNotFound(t *testing.T) {
 
 	itemReq := ItemRequest{Name: "Test-Name", TableName: "Test-Table-Name", ExtensionId: 1}
 
-	setupExtensionMock(mock, 1, sql.NullInt32{}, "dummy", "dummy", "dummy", false)
+	setupExtensionMock(mock, 1, sql.NullInt32{}, "dummy", "dummy", "dummy", 0, false)
 
 	server := setupHTTPServer(app)
 	defer server.Close()
@@ -380,38 +381,6 @@ func TestProjectsRouteReturnsAllProjects(t *testing.T) {
 	_ = db.Close()
 }
 
-func TestExtensionsRouteGetsAllExtensionsByScope(t *testing.T) {
-	db, mock, app := setupMockAndApp(t)
-
-	extensions := []data.Extension{
-		{ID: 1, Name: "Test-Extension-1", Description: "Test-Description-1", Scope: "Project", CreationDate: time.Now()},
-		{ID: 3, Name: "Test-Extension-3", Description: "Test-Description-3", Scope: "Project", CreationDate: time.Now()},
-	}
-
-	const scope = "Project"
-	returnRows := sqlmock.NewRows([]string{"id", "project_id", "name", "description", "scope", "creation_date"}).
-		AddRow(extensions[0].ID, extensions[0].ProjectID.Int32, extensions[0].Name, extensions[0].Description, extensions[0].Scope, extensions[0].CreationDate).
-		AddRow(extensions[1].ID, extensions[1].ProjectID.Int32, extensions[1].Name, extensions[1].Description, extensions[1].Scope, extensions[1].CreationDate)
-	mockReadAllExtensionsQuery(mock, scope, returnRows)
-
-	// Mock HTTP Request
-	server := setupHTTPServer(app)
-	defer server.Close()
-
-	resp, err := http.Get("http://" + server.Listener.Addr().String() + "/extensions" + "/" + scope)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	checkHTTPResponse(resp, http.StatusOK, t)
-
-	if err := mock.ExpectationsWereMet(); err != nil {
-		t.Errorf("there were unfulfilled expectations: %s", err)
-	}
-
-	_ = db.Close()
-}
-
 func TestItemsRouteCreatesItemForProjectExtension(t *testing.T) {
 	// Initialize Mock database.
 	db, mock, app := setupMockAndApp(t)
@@ -423,6 +392,7 @@ func TestItemsRouteCreatesItemForProjectExtension(t *testing.T) {
 		Description:  "Test-Description",
 		Scope:        "Project",
 		CreationDate: time.Now(),
+		ItemCount:    1,
 	}
 
 	itemRequest := ItemRequest{
@@ -438,7 +408,7 @@ func TestItemsRouteCreatesItemForProjectExtension(t *testing.T) {
 		CreationDate: time.Now(),
 	}
 
-	setupExtensionMock(mock, testExtension.ID, sql.NullInt32{Int32: testExtension.ProjectID.Int32, Valid: true}, testExtension.Scope, testExtension.Name, testExtension.Description, true)
+	setupExtensionMock(mock, testExtension.ID, sql.NullInt32{Int32: testExtension.ProjectID.Int32, Valid: true}, testExtension.Scope, testExtension.Name, testExtension.Description, testExtension.ItemCount, true)
 	setupNextFreeTypecodeMock(mock, testExtension.ProjectID.Int32, data.ScopeRanges[data.ScopeProject].Start, data.ScopeRanges[data.ScopeProject].End, 14000)
 	setupInsertItemMock(mock, itemRequest.Name, testExtension.ID, itemRequest.TableName, 14000)
 	setupReadProjectNameMock(mock, int64(testExtension.ProjectID.Int32), testProject.Name)
@@ -472,7 +442,7 @@ func TestItemsRouteCreatesItemForProjectExtension(t *testing.T) {
 func TestItemsRouteCreatesItemForSharedExtension(t *testing.T) {
 	db, mock, app := setupMockAndApp(t)
 
-	setupExtensionMock(mock, 1, sql.NullInt32{}, "Shared", "Test-Extension", "Test-Description", true)
+	setupExtensionMock(mock, 1, sql.NullInt32{}, "Shared", "Test-Extension", "Test-Description", 1, true)
 	setupTypecodeMock(mock, "Shared", 20000, 20001)
 	setupInsertItemMock(mock, "Test-Item", 1, "Test-Item-Table-Name", 20001)
 
@@ -690,23 +660,6 @@ func TestGETItemRouteReturnsStatusNotFoundWhenItemDoesNotExist(t *testing.T) {
 	_ = db.Close()
 }
 
-func TestGETAllExtensionsReturnsStatusInternalServerErrorWhenDatabaseReturnsError(t *testing.T) {
-	db, mock, app := setupMockAndApp(t)
-
-	mockReadAllExtensionsQueryReturnsError(mock)
-
-	server := setupHTTPServer(app)
-	defer server.Close()
-
-	_ = getAndTestHTTPResponse(t, server, "/extensions/Project", http.StatusInternalServerError)
-
-	if err := mock.ExpectationsWereMet(); err != nil {
-		t.Errorf("there were unfulfilled expectations: %s", err)
-	}
-
-	_ = db.Close()
-}
-
 func TestGetItemDetailRouteReturnsCorrectItem(t *testing.T) {
 	db, mock, app := setupMockAndApp(t)
 
@@ -862,6 +815,43 @@ func TestUpdateItem(t *testing.T) {
 		resp, mock := setupUpdateTest(mock, app, item, sqlmock.NewResult(1, 1), nil)
 
 		assert.Equal(t, http.StatusNoContent, resp.Code)
+		checkExpectations(t, mock)
+	})
+}
+
+func TestReadExtension(t *testing.T) {
+	_, mock, app := setupMockAndApp(t)
+
+	t.Run("BadRequestWithInvalidScope", func(t *testing.T) {
+		req, _ := http.NewRequest(http.MethodGet, "/extensions/invalid", nil)
+		resp := httptest.NewRecorder()
+
+		app.getExtensions(resp, req)
+
+		assert.Equal(t, http.StatusBadRequest, resp.Code)
+	})
+
+	t.Run("ReadAllExtensionsUnfilteredSucceeds", func(t *testing.T) {
+		setupExtensionsMock(mock, "")
+		mockHTTPGetRequest(app, t, "/extensions", http.StatusOK)
+		checkExpectations(t, mock)
+	})
+
+	t.Run("ReadAllExtensionsFilteredSucceeds", func(t *testing.T) {
+		setupExtensionsMock(mock, "project")
+		mockHTTPGetRequest(app, t, "/extensions/project", http.StatusOK)
+		checkExpectations(t, mock)
+	})
+
+	t.Run("InternalServerErrorWhenReadByScopeFails", func(t *testing.T) {
+		mockReadAllExtensionsQuery(mock, "project", nil)
+		mockHTTPGetRequest(app, t, "/extensions/project", http.StatusInternalServerError)
+		checkExpectations(t, mock)
+	})
+
+	t.Run("InternalServerErrorWhenReadAllFails", func(t *testing.T) {
+		mockReadAllExtensionsQuery(mock, "", nil)
+		mockHTTPGetRequest(app, t, "/extensions", http.StatusInternalServerError)
 		checkExpectations(t, mock)
 	})
 }

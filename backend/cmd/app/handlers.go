@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 // ItemRequest is the request object for creating a new item.
@@ -306,30 +307,59 @@ func (app *application) getExtensionsHandler(w http.ResponseWriter, r *http.Requ
 	}
 }
 
-// getExtensions handles the GET request for all extensions with the specified scope.
+// getExtensions handles the GET request for all extensions.
+// It reads the URL path and calls the appropriate handler based on the path.
+// If the path is `/extensions`, it returns all extensions stored in the database.
+// If the path is `/extensions/<scope>`, it returns all extensions with the specified scope.
+// If the scope is not valid, it returns a 400 Bad Request.
+func (app *application) getExtensions(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path
+	basePath := "/extensions"
+
+	if path == basePath {
+		app.handleGetAllExtensions(w, r)
+	} else if strings.HasPrefix(path, basePath+"/") {
+		scope := path[len(basePath+"/"):]
+		app.handleGetExtensionsByScope(scope, w, r)
+	} else {
+		http.NotFound(w, r)
+	}
+}
+
+// handleGetAllExtensions handles the GET request for all extensions.
+// It returns all extensions stored in the database.
+// If there are no extensions in the database, it returns a 404 Not Found.
+func (app *application) handleGetAllExtensions(w http.ResponseWriter, r *http.Request) {
+	extensions, err := app.models.Extensions.ReadAll()
+	if err != nil {
+		app.logger.Err(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	err = app.writeJSON(w, http.StatusOK, envelope{"extensions": extensions}, nil)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("error while trying to write extensions to http response. error: %s", err), http.StatusInternalServerError)
+		app.logger.Err(err)
+		return
+	}
+}
+
+// handleGetExtensionsByScope handles the GET request for all extensions with the specified scope.
 // It reads the scope from the URL and returns all extensions with that scope.
 // If the scope is not valid, it returns a 400 Bad Request.
-// If there are no extensions with the specified scope, it returns a 404 Not Found.
-func (app *application) getExtensions(w http.ResponseWriter, r *http.Request) {
-	scope := r.URL.Path[len("/extensions/"):]
-
-	if scope != "Project" && scope != "Shared" {
-		app.logger.Warn().Msg(
-			fmt.Sprintf("Invalid scope: %s | responding with %s", scope, http.StatusText(http.StatusBadRequest)),
-		)
+func (app *application) handleGetExtensionsByScope(scope string, w http.ResponseWriter, r *http.Request) {
+	if strings.ToLower(scope) != "project" && strings.ToLower(scope) != "shared" {
+		app.logger.Warn().Msg(fmt.Sprintf("Invalid scope: %s | responding with %s", scope, http.StatusText(http.StatusBadRequest)))
 		http.Error(w, "Invalid scope", http.StatusBadRequest)
 		return
 	}
-
 	extensions, err := app.models.Extensions.ReadAll(scope)
 	if err != nil {
 		app.logger.Err(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
-
 	err = app.writeJSON(w, http.StatusOK, envelope{"extensions": extensions}, nil)
-
 	if err != nil {
 		http.Error(w, fmt.Sprintf("error while trying to write extensions to http response. error: %s", err), http.StatusInternalServerError)
 		app.logger.Err(err)
