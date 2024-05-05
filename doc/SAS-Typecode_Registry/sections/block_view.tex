@@ -171,6 +171,8 @@ This approach allows us to directly use the powerful concurrency features of Go 
     \hline
     /projects & GET & Returns all projects created. \\
     \hline
+    /extensions & GET & Returns all extensions created). \\
+    \hline
     /extensions/ & GET & Gets the extensions of a specific scope.
     Only two values will return extensions:
     \newline\newline - \textbf{Shared}: Returns all the shared extensions.
@@ -313,9 +315,9 @@ Content-Type: application/json
 {
     "id": 1,
     "scope": "Project",
-    "project": "Projekt A",
+    "project": "Project A",
     "name": "Item A1",
-    "table_name": "Tabelle A1",
+    "table_name": "Table A1",
     "extension_id": 1,
     "typecode": 14000,
     "creation_date": "2024-04-24T20:02:00.573142Z"
@@ -405,19 +407,59 @@ Content-Type: application/json
 }
 \end{lstlisting}
 
-\headingSix{GET /extensions/}
+\headingSix{GET /extensions}
 
-The \texttt{GET /extensions/} endpoint allows clients to retrieve all extensions of a specific scope.
-When a client makes a \texttt{GET} request to the \texttt{/extensions/} endpoint, the backend service will return a list of extensions.
-The returned extensions are filtered based on their scope, which can be either 'Shared' or 'Project'.
-\\The 'Shared' scope returns all the shared extensions, while the 'Project' scope returns all project extensions.
+The \texttt{GET /extensions} endpoint allows clients to retrieve all extensions in the system.
+When a client makes a \texttt{GET} request to the \texttt{/extensions} endpoint, the backend service will return a list of extensions.
+
 \\
+
 \begin{lstlisting}[language=json,label={lst:lstlisting13}]
-GET /extensions/ HTTP/1.1
+GET /extensions HTTP/1.1
 Host: example.com
 \end{lstlisting}
 
 Response:
+
+\begin{lstlisting}[language=json,label={lst:lstlisting23}]
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "extensions": [
+        {
+            "id": 1,
+            "project_id": null,
+            "name": "Extension 1",
+            "description": "This is extension 1",
+            "scope": "Shared",
+            "creation_date": "2023-01-01T00:00:00Z"
+            "item_count: 2"
+        },
+        {
+            "id": 2,
+            "project_id": 2,
+            "name": "Extension 2",
+            "description": "This is extension 2",
+            "scope": "Project",
+            "creation_date": "2023-01-02T00:00:00Z"
+            "item_count: 10"
+        }
+    ]
+}
+\end{lstlisting}
+
+
+\headingSix{GET /extensions/{scope}}
+The client has the option to specify the scope of the extensions they want to retrieve.
+Therefore, the client can include the scope consisting of either `shared` or `project` in the request URL\@.
+The returned extensions are then filtered based on their scope, which can be either 'Shared' or 'Project'.
+The 'Shared' scope returns all the shared extensions, while the 'Project' scope returns all project extensions.
+
+\begin{lstlisting}[language=json,label={lst:lstlisting22}]
+GET /extensions/project HTTP/1.1
+Host: example.com
+\end{lstlisting}
 
 \begin{lstlisting}[language=json,label={lst:lstlisting14}]
 HTTP/1.1 200 OK
@@ -430,8 +472,9 @@ Content-Type: application/json
             "project_id": 1,
             "name": "Extension 1",
             "description": "This is extension 1",
-            "scope": "Shared",
+            "scope": "Project",
             "creation_date": "2023-01-01T00:00:00Z"
+            "item_count: 2"
         },
         {
             "id": 2,
@@ -440,6 +483,7 @@ Content-Type: application/json
             "description": "This is extension 2",
             "scope": "Project",
             "creation_date": "2023-01-02T00:00:00Z"
+            "item_count: 0"
         }
     ]
 }

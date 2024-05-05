@@ -1,0 +1,38 @@
+.outer-container {
+  display: flex;
+}
+
+.extension-management {
+  display: block;
+  max-height: 95vh;
+  max-width: 70%;
+  overflow: auto;
+}
+
+.extension-management thead,
+.extension-management thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.extension-management tbody {
+  display: block;
+  max-height: 90vh;
+}
+
+.extension-management tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.extension-management th,
+.extension-management td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.item-cards {
+  max-width: 30%;
+}

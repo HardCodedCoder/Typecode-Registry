@@ -16,4 +16,5 @@ export interface ExtensionResponse {
   scope: string;
   description: string;
   creation_date: Date;
+  item_count?: number;
 }
