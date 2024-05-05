@@ -9,7 +9,8 @@
   overflow: auto;
 }
 
-.extension-management thead, .extension-management thead th {
+.extension-management thead,
+.extension-management thead th {
   position: sticky;
   top: 0;
   z-index: 10;
@@ -21,19 +22,17 @@
 }
 
 .extension-management tr {
-    display: table;
-    width: 100%;
-    table-layout: fixed;
+  display: table;
+  width: 100%;
+  table-layout: fixed;
 }
 
-.extension-management th, .extension-management td {
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
+.extension-management th,
+.extension-management td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
 }
 
 .item-cards {
   max-width: 30%;
 }
-
-
-

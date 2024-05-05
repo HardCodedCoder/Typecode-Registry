@@ -1,45 +1,43 @@
 <div class="outer-container">
+  <div class="extension-management">
+    <table tuiTable [columns]="columns">
+      <thead>
+        <tr tuiThGroup>
+          <th *tuiHead="'Name'" tuiTh>Name</th>
+          <th *tuiHead="'Description'" tuiTh>Description</th>
+          <th *tuiHead="'Project'" tuiTh>Project</th>
+          <th *tuiHead="'Scope'" tuiTh>Scope</th>
+          <th *tuiHead="'Item Count'" tuiTh>Number of Items</th>
+          <th *tuiHead="'Creation Date'" tuiTh>Creation Date</th>
+          <th *tuiHead="'Actions'" tuiTh>Actions</th>
+        </tr>
+      </thead>
 
-    <div class="extension-management">
+      <tbody
+        *tuiLet="
+          this.storeService.allExtensions | tuiTableSort as sortedExtensions
+        "
+        tuiTbody
+        [data]="sortedExtensions"
+      >
+        <tr *ngFor="let extension of sortedExtensions">
+          <td tuiTd>{{ extension.name }}</td>
+          <td tuiTd>{{ extension.description }}</td>
+          <td tuiTd>{{ getProjectName(extension.project_id) ?? '-' }}</td>
+          <td tuiTd>
+            <tui-tag
+              class="tui-space_right-1"
+              [autoColor]="true"
+              [value]="extension.scope"
+            ></tui-tag>
+          </td>
+          <td tuiTd>{{ extension.item_count ?? 0 }}</td>
+          <td tuiTd>{{ extension.creation_date }}</td>
+          <td tuiTd>Button</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-        <table tuiTable [columns]="columns">
-            <thead>
-                <tr tuiThGroup>
-                    <th *tuiHead="'Name'" tuiTh>Name</th>
-                    <th *tuiHead="'Description'" tuiTh>Description</th>
-                    <th *tuiHead="'Project'" tuiTh>Project</th>
-                    <th *tuiHead="'Scope'" tuiTh>Scope</th>
-                    <th *tuiHead="'Item Count'" tuiTh>Number of Items</th>
-                    <th *tuiHead="'Creation Date'" tuiTh>Creation Date</th>
-                    <th *tuiHead="'Actions'" tuiTh>Actions</th>
-                </tr>
-            </thead>
-
-            <tbody
-            *tuiLet="this.storeService.allExtensions | tuiTableSort as sortedExtensions"
-            tuiTbody
-            [data]="sortedExtensions"
-            >
-
-                <tr *ngFor="let extension of sortedExtensions">
-                    <td tuiTd>{{ extension.name }}</td>
-                    <td tuiTd>{{ extension.description }}</td>
-                    <td tuiTd>{{ getProjectName(extension.project_id) ?? '-'}}</td>
-                    <td tuiTd> <tui-tag
-                            class="tui-space_right-1"
-                            [autoColor]="true"
-                            [value]="extension.scope" ></tui-tag></td>
-                    <td tuiTd>{{ extension.item_count ?? 0 }}</td>
-                    <td tuiTd>{{ extension.creation_date }}</td>
-                    <td tuiTd>
-                        Button
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="item-cards">
-
-    </div>
+  <div class="item-cards"></div>
 </div>
