@@ -1,20 +1,19 @@
-<div>
-  <!-- Create Item Button Div -->
-  <div class="add-button">
-    <button
-      icon="tuiIconPlusLarge"
-      tuiIconButton
-      type="button"
-      class="tui-space_right-3 tui-space_bottom-3"
-      (click)="showDialog()"
-      [attr.aria-hidden]="true"
-    ></button>
-  </div>
+<div class="container">
+  <div class="item-container">
+    <!-- Create Item Button Div -->
+    <div class="add-button">
+      <button
+        icon="tuiIconPlusLarge"
+        tuiIconButton
+        type="button"
+        (click)="showDialog()"
+        [attr.aria-hidden]="true"
+      ></button>
+    </div>
 
-  <!-- Items Table Div -->
-  <ng-container *ngIf="this.store.items; else noData">
-    <div class="container">
-      <div class="table-container">
+    <!-- Items Table Div -->
+    <div *ngIf="this.store.items; else noData" class="table-container">
+      <div class="table-sub-container">
         <tui-scrollbar>
           <cdk-virtual-scroll-viewport
             #viewport
@@ -119,13 +118,18 @@
           </cdk-virtual-scroll-viewport>
         </tui-scrollbar>
       </div>
-      <div class="project-cards">
-        <p>Project cards will be added here</p>
-      </div>
     </div>
-  </ng-container>
 
-  <ng-template #noData>
-    <h2>No items available.</h2>
-  </ng-template>
+    <ng-template #noData>
+      <h1>No items available.</h1>
+    </ng-template>
+
+    <div class="item-display">
+      <p>Item view will be added here</p>
+    </div>
+  </div>
+
+  <div class="project-card-container">
+    <p>Project cards will be added here</p>
+  </div>
 </div>

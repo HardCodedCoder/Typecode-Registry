@@ -434,7 +434,7 @@ describe('ItemEditorComponent', () => {
     fixture.detectChanges();
 
     const noDataContent =
-      fixture.debugElement.nativeElement.querySelector('h2');
+      fixture.debugElement.nativeElement.querySelector('h1');
     expect(noDataContent.textContent).toContain('No items available.');
   });
 });

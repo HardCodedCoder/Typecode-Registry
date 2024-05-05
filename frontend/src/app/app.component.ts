@@ -7,14 +7,4 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'Typecode Registry';
-  isSidebarActive = false;
-
-  /**
-   * Toggles the sidebar menu.
-   *
-   * @param isActive - The state of the sidebar menu.
-   */
-  onToggleSidebar(isActive: boolean) {
-    this.isSidebarActive = isActive;
-  }
 }

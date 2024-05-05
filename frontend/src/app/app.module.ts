@@ -18,7 +18,6 @@ import {
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { SidebarMenuComponent } from './sidebar-menu/sidebar-menu.component';
 import { ItemEditorComponent } from './item-editor/item-editor.component';
 import { AddItemComponent } from './add-item/add-item.component';
 import {
@@ -42,15 +41,16 @@ import { RouterModule } from '@angular/router';
 import { ErrorDisplayComponent } from './error-display/error-display.component';
 import { UpdateItemComponent } from './update-item/update-item.component';
 import { ExtensionEditorComponent } from './extension-editor/extension-editor.component';
+import { HeaderComponent } from './header/header.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SidebarMenuComponent,
     ItemEditorComponent,
     AddItemComponent,
     ErrorDisplayComponent,
     UpdateItemComponent,
+    HeaderComponent,
     ExtensionEditorComponent,
   ],
   imports: [
