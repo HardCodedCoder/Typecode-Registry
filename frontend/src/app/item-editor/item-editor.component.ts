@@ -1,12 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  Inject,
-  Injector,
-  OnInit,
-  Renderer2,
-} from '@angular/core';
+import { Component, Inject, Injector, OnInit } from '@angular/core';
 import { TuiAlertService, TuiDialogService } from '@taiga-ui/core';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { AddItemComponent } from '../add-item/add-item.component';
@@ -24,7 +16,7 @@ import { UpdateItemComponent } from '../update-item/update-item.component';
   templateUrl: './item-editor.component.html',
   styleUrl: './item-editor.component.scss',
 })
-export class ItemEditorComponent implements OnInit, AfterViewInit {
+export class ItemEditorComponent implements OnInit {
   readonly columns: string[] = [
     'Scope',
     'Project',
@@ -41,9 +33,7 @@ export class ItemEditorComponent implements OnInit, AfterViewInit {
     @Inject(BackendService) private readonly backendService: BackendService,
     @Inject(StoreService) public readonly store: StoreService,
     @Inject(TuiAlertService) private readonly alertService: TuiAlertService,
-    @Inject(Router) private readonly router: Router,
-    private el: ElementRef,
-    private renderer: Renderer2
+    @Inject(Router) private readonly router: Router
   ) {}
 
   ngOnInit(): void {
@@ -300,20 +290,5 @@ export class ItemEditorComponent implements OnInit, AfterViewInit {
         //if (data.new_item_name === '' && data.new)
       },
     });
-  }
-
-  ngAfterViewInit(): void {
-    this.setScrollbarColor();
-  }
-
-  private setScrollbarColor() {
-    console.warn('setScrollbarColor called');
-
-    let scrollbarElement;
-    setTimeout(() => {
-      scrollbarElement = this.el.nativeElement.querySelector('.t-thumb');
-      console.log(scrollbarElement);
-      this.renderer.setStyle(scrollbarElement, 'color', '#00b5e1');
-    }, 400);
   }
 }
