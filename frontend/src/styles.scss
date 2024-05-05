@@ -1,13 +1,23 @@
 * {
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+  font-family: Roboto !important;
   font-size: 1rem;
 }
 
-.main-content {
-  background-image: url('./assets/img/item_editor_background.webp');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+h1 {
+  font-size: 26px;
+}
+
+h2 {
+  font-size: 19.5px;
+}
+
+a {
+  position: relative;
+  height: fit-content;
+  text-decoration: none;
+  font-weight: 600;
+  color: inherit;
+  cursor: pointer;
 }
