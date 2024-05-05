@@ -11,6 +11,7 @@ export class StoreService {
 
   public projectExtensions: ExtensionResponse[] = [];
   public sharedExtensions: ExtensionResponse[] = [];
+  public allExtensions: ExtensionResponse[] = [];
   public projects: ProjectResponse[] = [];
   public items: ItemResponse[] | null = [];
   public hasShown204Error: boolean = false;
