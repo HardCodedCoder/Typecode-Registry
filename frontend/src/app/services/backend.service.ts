@@ -141,17 +141,18 @@ export class BackendService {
    * @param scope - The scope of the extensions to fetch. This can be 'Shared' or 'Project'.
    * @returns An Observable of `ExtensionsAPIResponse`. Subscribe to this Observable to get the data when the request succeeds or fails.
    */
-  getExtensions(scope: string): Observable<ExtensionsAPIResponse> {
-    return this.http
-      .get<ExtensionsAPIResponse>(`${this.apiUrl}/extensions/${scope}`)
-      .pipe(
-        tap(_ => console.log(`fetched extensions of scope ${scope}`)),
-        catchError(
-          this.handleError<ExtensionsAPIResponse>('getExtensions', {
-            extensions: [],
-          })
-        )
-      );
+  getExtensions(scope: string = ''): Observable<ExtensionsAPIResponse> {
+    let endpoint: string;
+    if (scope === '') endpoint = `${this.apiUrl}/extensions`;
+    else endpoint = `${this.apiUrl}/extensions/${scope}`;
+    return this.http.get<ExtensionsAPIResponse>(endpoint).pipe(
+      tap(_ => console.log(`fetched extensions of scope ${scope}`)),
+      catchError(
+        this.handleError<ExtensionsAPIResponse>('getExtensions', {
+          extensions: [],
+        })
+      )
+    );
   }
 
   /**

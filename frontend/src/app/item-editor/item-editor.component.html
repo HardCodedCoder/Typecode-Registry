@@ -18,8 +18,10 @@
           <cdk-virtual-scroll-viewport
             #viewport
             tuiScrollable
-            class="viewport tui-zero-scrollbar"
+            class="viewport tui-scrollbar"
             [itemSize]="45"
+            [maxBufferPx]="500"
+            [minBufferPx]="400"
           >
             <table tuiTable [columns]="columns">
               <thead>
@@ -51,7 +53,7 @@
                 <tr *ngFor="let item of sortedItems" tuiTr>
                   <td *tuiCell="'Scope'" tuiTd>
                     <tui-tag
-                      class="font-13px tui-space_right-1"
+                      class="tui-space_right-1"
                       [autoColor]="true"
                       [value]="item.scope"
                     ></tui-tag>

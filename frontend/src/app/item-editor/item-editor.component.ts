@@ -260,8 +260,21 @@ export class ItemEditorComponent implements OnInit {
       .subscribe();
   }
 
+  /**
+   * Opens a dialog box to update an item.
+   * Processes the data from the closed dialog and sends a request to update the item to the backend.
+   * If an error occurs, a failure notification is displayed.
+   * @param {ItemResponse} item - The item to update.
+   * @returns {void}
+   */
   onEditItem(item: ItemResponse): void {
-    console.log(item);
+    if (item.id === 0) {
+      this.showFailureMessage(
+        'Error: Unexpected internal error! Please restart application!'
+      );
+      return;
+    }
+
     const data: UpdateItemFormData = {
       item: item,
       new_item_name: '',
@@ -287,7 +300,33 @@ export class ItemEditorComponent implements OnInit {
     dialog$.subscribe({
       next: (data: UpdateItemFormData) => {
         console.log('item-editor: Dialog closed with data:', data);
-        //if (data.new_item_name === '' && data.new)
+        if (data.error?.error === true) {
+          this.showFailureMessage(data.error.message);
+        } else {
+          this.backendService
+            .updateItem(item.id, {
+              name: data.new_item_name,
+              table_name: data.new_table_name,
+            })
+            .subscribe({
+              next: response => {
+                if (response.status === 204) {
+                  console.log('Received response 204 from backend');
+                  this.showSuccessMessage('updated', item.id);
+                  item.table_name = data.new_table_name;
+                  item.name = data.new_item_name;
+                } else {
+                  this.showFailureMessage(
+                    `Could not update item: ${item.id}! Received status code: ${response.status}`
+                  );
+                }
+              },
+              error: error =>
+                this.showFailureMessage(
+                  `Could not update item: ${item.id}! Error: ${error}`
+                ),
+            });
+        }
       },
     });
   }
