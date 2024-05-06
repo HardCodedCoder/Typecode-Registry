@@ -45,6 +45,14 @@ app-extension-editor {
   border-radius: 10px
 }
 
+.shadow {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+.text-shadow {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25);
+}
+
 // Table Styles here:
 .table-container thead,
 .table-container thead th {

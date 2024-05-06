@@ -22,6 +22,7 @@ i {
 
 @mixin float-animation {
   @keyframes float {
+
     0%,
     100% {
       transform: translateY(0) rotate(-3deg);
@@ -56,7 +57,7 @@ i {
 
 .page {
   position: absolute;
-  top: 0;
+  top: 6.5vh;
   left: 0;
   right: 0;
   bottom: 0;
