@@ -18,6 +18,13 @@ type ItemRequest struct {
 	ExtensionId int64  `json:"extension_id"`
 }
 
+type ExtensionRequest struct {
+	Name        string `json:"name"`
+	Scope       string `json:"scope"`
+	Description string `json:"description,omitempty"`
+	ProjectID   int64  `json:"project_id"`
+}
+
 // healthcheck is a simple handler to check if the service is up and running.
 // TODO: Add more checks to ensure the service is healthy.
 func (app *application) healthcheck(w http.ResponseWriter, r *http.Request) {
@@ -302,8 +309,34 @@ func (app *application) getExtensionsHandler(w http.ResponseWriter, r *http.Requ
 	switch r.Method {
 	case http.MethodGet:
 		app.getExtensions(w, r)
+	case http.MethodPost:
+		app.createExtension(w, r)
 	default:
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+	}
+}
+
+func (app *application) createExtension(w http.ResponseWriter, r *http.Request) {
+	app.logger.Info().Msg("got request to create extension")
+	app.logger.Info().Msg("Validating request")
+	if "/extensions" != r.URL.Path {
+		app.logger.Error().Msg(fmt.Sprintf("Bad Request: Invalid path: %s", r.URL.Path))
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+
+	var requestData ExtensionRequest
+	err := app.readJSON(w, r, &requestData)
+	if err != nil {
+		app.logger.Error().Msg(fmt.Sprintf("Bad Request: Invalid JSON request: %v", err))
+		http.Error(w, "Bad Request data! Wrong content format!", http.StatusBadRequest)
+		return
+	}
+
+	if requestData.Name == "" || requestData.Scope == "" || requestData.ProjectID < 1 {
+		app.logger.Error().Msg(fmt.Sprintf("Bad Request: Invalid extension create request with data: %v", requestData))
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
 	}
 }
 

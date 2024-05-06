@@ -1,5 +1,5 @@
 <div class="outer-container">
-  <div class="extension-management">
+  <div class="table-container">
     <table tuiTable [columns]="columns">
       <thead>
         <tr tuiThGroup>
@@ -14,26 +14,24 @@
       </thead>
 
       <tbody
-        *tuiLet="
-          this.storeService.allExtensions | tuiTableSort as sortedExtensions
-        "
+        *tuiLet="this.storeService.allExtensions | tuiTableSort as sortedExtensions"
         tuiTbody
         [data]="sortedExtensions"
       >
-        <tr *ngFor="let extension of sortedExtensions">
-          <td tuiTd>{{ extension.name }}</td>
-          <td tuiTd>{{ extension.description }}</td>
-          <td tuiTd>{{ getProjectName(extension.project_id) ?? '-' }}</td>
-          <td tuiTd>
+        <tr *ngFor="let extension of sortedExtensions" tuiTr>
+          <td *tuiCell="'Name'" tuiTd>{{ extension.name }}</td>
+          <td *tuiCell="'Description'" tuiTd>{{ extension.description }}</td>
+          <td *tuiCell="'Project'" tuiTd>{{ getProjectName(extension.project_id) ?? '-' }}</td>
+          <td *tuiCell="'Scope'" tuiTd>
             <tui-tag
               class="tui-space_right-1"
               [autoColor]="true"
               [value]="extension.scope"
             ></tui-tag>
           </td>
-          <td tuiTd>{{ extension.item_count ?? 0 }}</td>
-          <td tuiTd>{{ extension.creation_date }}</td>
-          <td tuiTd>Button</td>
+          <td *tuiCell="'Item Count'" tuiTd>{{ extension.item_count ?? 0 }}</td>
+          <td *tuiCell="'Creation Date'" tuiTd>{{ extension.creation_date }}</td>
+          <td *tuiCell="'Actions'" tuiTd>Button</td>
         </tr>
       </tbody>
     </table>
