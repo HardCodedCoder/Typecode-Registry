@@ -54,6 +54,10 @@ app-extension-editor {
 }
 
 // Table Styles here:
+[_nghost-ng-c2547322422] {
+  background: none !important;
+}
+
 .table-container thead,
 .table-container thead th {
   position: sticky;
@@ -78,4 +82,12 @@ app-extension-editor {
   padding: 8px;
   border-bottom: 1px solid #ddd;
   text-align: center;
+}
+
+tbody tr {
+  background-color: #f1f1f1;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #ffffff;
 }
