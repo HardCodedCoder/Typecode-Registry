@@ -1,28 +1,16 @@
 <div class="container">
   <div class="item-container">
-    <!-- Create Item Button Div -->
-    <div class="add-button">
-      <button
-        icon="tuiIconPlusLarge"
-        tuiIconButton
-        type="button"
-        (click)="showDialog()"
-        [attr.aria-hidden]="true"
-      ></button>
-    </div>
-
     <!-- Items Table Div -->
     <div *ngIf="this.store.items; else noData" class="table-container">
       <div class="table-sub-container">
+        <!-- Create Item Button Div -->
+        <div>
+          <button icon="tuiIconPlusLarge" tuiIconButton type="button" (click)="showDialog()"
+            [attr.aria-hidden]="true"></button>
+        </div>
         <tui-scrollbar>
-          <cdk-virtual-scroll-viewport
-            #viewport
-            tuiScrollable
-            class="viewport tui-scrollbar"
-            [itemSize]="45"
-            [maxBufferPx]="500"
-            [minBufferPx]="400"
-          >
+          <cdk-virtual-scroll-viewport #viewport tuiScrollable class="viewport tui-scrollbar" [itemSize]="45"
+            [maxBufferPx]="500" [minBufferPx]="400">
             <table tuiTable [columns]="columns">
               <thead>
                 <tr tuiThGroup>
@@ -36,27 +24,14 @@
                     Table Name
                   </th>
                   <th *tuiHead="'Typecode'" tuiTh [sticky]="true">Typecode</th>
-                  <th
-                    *tuiHead="'Action'"
-                    tuiTh
-                    [sorter]="null"
-                    [sticky]="true"
-                  ></th>
+                  <th *tuiHead="'Action'" tuiTh [sorter]="null" [sticky]="true">Actions</th>
                 </tr>
               </thead>
 
-              <tbody
-                *tuiLet="this.store.items | tuiTableSort as sortedItems"
-                tuiTbody
-                [data]="sortedItems"
-              >
+              <tbody *tuiLet="this.store.items | tuiTableSort as sortedItems" tuiTbody [data]="sortedItems">
                 <tr *ngFor="let item of sortedItems" tuiTr>
                   <td *tuiCell="'Scope'" tuiTd>
-                    <tui-tag
-                      class="tui-space_right-1"
-                      [autoColor]="true"
-                      [value]="item.scope"
-                    ></tui-tag>
+                    <tui-tag class="tui-space_right-1" [autoColor]="true" [value]="item.scope"></tui-tag>
                   </td>
                   <td *tuiCell="'Project'" tuiTd>
                     {{ item.project }}
@@ -75,40 +50,16 @@
                   </td>
                   <td *tuiCell="'Action'" tuiTd>
                     <tui-hosted-dropdown [content]="dropdownContent">
-                      <button
-                        tuiIconButton
-                        type="button"
-                        icon="tuiIconMoreVertical"
-                        appearance="flat"
-                        shape="rounded"
-                        size="s"
-                        class="options"
-                      ></button>
+                      <button tuiIconButton type="button" icon="tuiIconMoreVertical" appearance="flat" shape="rounded"
+                        size="s" class="options"></button>
                     </tui-hosted-dropdown>
 
-                    <ng-template
-                      #dropdownContent
-                      let-closeDropdown="closeDropdown"
-                    >
+                    <ng-template #dropdownContent let-closeDropdown="closeDropdown">
                       <div class="dropdown-options">
-                        <button
-                          tuiIconButton
-                          type="button"
-                          (click)="onEditItem(item); closeDropdown()"
-                          icon="tuiIconEdit3"
-                          appearance="flat"
-                          shape="rounded"
-                          size="s"
-                        ></button>
-                        <button
-                          tuiIconButton
-                          type="button"
-                          (click)="onDeleteItem(item); closeDropdown()"
-                          icon="tuiIconTrash"
-                          appearance="flat"
-                          shape="rounded"
-                          size="s"
-                        ></button>
+                        <button tuiIconButton type="button" (click)="onEditItem(item); closeDropdown()"
+                          icon="tuiIconEdit3" appearance="flat" shape="rounded" size="s"></button>
+                        <button tuiIconButton type="button" (click)="onDeleteItem(item); closeDropdown()"
+                          icon="tuiIconTrash" appearance="flat" shape="rounded" size="s"></button>
                       </div>
                     </ng-template>
                   </td>
