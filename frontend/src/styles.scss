@@ -32,6 +32,23 @@ app-extension-editor {
   border-radius: 10px;
 }
 
+// [tuiWrapper][data-appearance='custom'] {
+//   background: #d900ff !important;
+//   color: #ffffff !important;
+
+//   .wrapper-hover {
+//     background: #a381ff !important;
+//   }
+
+//   .wrapper-active {
+//     background: #8f75d1 !important;
+//   }
+
+//   .wrapper-disabled {
+//     background: #eaecee !important;
+//   }
+// }
+
 // Layout Styles:
 .outer-container {
   display: flex;
@@ -55,6 +72,10 @@ app-extension-editor {
 // Table Styles:
 [_nghost-ng-c2547322422] {
   background: none !important;
+}
+
+[_nghost-ng-c1783503476] {
+  border: none !important;
 }
 
 .table-container thead,
@@ -81,6 +102,7 @@ app-extension-editor {
   padding: 8px;
   border-bottom: 1px solid #ddd;
   text-align: center;
+  border-color: transparent !important;
 }
 
 tbody tr {
