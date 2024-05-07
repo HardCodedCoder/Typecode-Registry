@@ -8,9 +8,7 @@
           <button icon="tuiIconPlusLarge" tuiIconButton type="button" (click)="showDialog()"
             [attr.aria-hidden]="true"></button>
         </div>
-        <tui-scrollbar>
-          <cdk-virtual-scroll-viewport #viewport tuiScrollable class="viewport tui-scrollbar" [itemSize]="45"
-            [maxBufferPx]="500" [minBufferPx]="400">
+        <tui-scrollbar class="border-radius">
             <table tuiTable [columns]="columns">
               <thead>
                 <tr tuiThGroup>
@@ -55,18 +53,15 @@
                     </tui-hosted-dropdown>
 
                     <ng-template #dropdownContent let-closeDropdown="closeDropdown">
-                      <div class="dropdown-options">
-                        <button tuiIconButton type="button" (click)="onEditItem(item); closeDropdown()"
+                        <button tuiIconButton type="button" (click)="onEditItem(item);"
                           icon="tuiIconEdit3" appearance="flat" shape="rounded" size="s"></button>
-                        <button tuiIconButton type="button" (click)="onDeleteItem(item); closeDropdown()"
+                        <button tuiIconButton type="button" (click)="onDeleteItem(item);"
                           icon="tuiIconTrash" appearance="flat" shape="rounded" size="s"></button>
-                      </div>
                     </ng-template>
                   </td>
                 </tr>
               </tbody>
             </table>
-          </cdk-virtual-scroll-viewport>
         </tui-scrollbar>
       </div>
     </div>
@@ -75,12 +70,12 @@
       <h1>No items available.</h1>
     </ng-template>
 
-    <div class="item-display">
+    <div class="item-display border-radius">
       <p>Item view will be added here</p>
     </div>
   </div>
 
-  <div class="project-card-container">
+  <div class="project-card-container border-radius">
     <p>Project cards will be added here</p>
   </div>
 </div>

@@ -1,3 +1,4 @@
+// General Styles:
 * {
   padding: 0;
   box-sizing: border-box;
@@ -22,17 +23,16 @@ a {
   cursor: pointer;
 }
 
-.add-button {
-  margin-bottom: 5px;
-}
-
 app-extension-editor {
   display: flex;
   height: 100%;
 }
 
-// Layout Styles here:
+.border-radius {
+  border-radius: 10px;
+}
 
+// Layout Styles:
 .outer-container {
   display: flex;
 }
@@ -52,7 +52,7 @@ app-extension-editor {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25);
 }
 
-// Table Styles here:
+// Table Styles:
 [_nghost-ng-c2547322422] {
   background: none !important;
 }

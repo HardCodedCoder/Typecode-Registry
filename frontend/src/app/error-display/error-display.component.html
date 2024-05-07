@@ -11,7 +11,7 @@
       size="l"
       tuiButton
       type="button"
-      routerLink="/typecodes"
+      routerLink="/"
       [attr.aria-hidden]="true"
     >
       {{ errorDetails.buttonText }}
@@ -21,7 +21,7 @@
   <!-- Guidance for User -->
   <div class="error-message">
     <h2>This might help:</h2>
-    <ol>
+    <ol class="border-radius">
       <li *ngFor="let guidanceItem of errorDetails.guidance">
         {{ guidanceItem }}
       </li>

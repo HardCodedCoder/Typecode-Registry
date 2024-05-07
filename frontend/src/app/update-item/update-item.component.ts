@@ -1,11 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  Inject,
-  OnDestroy,
-  Renderer2,
-} from '@angular/core';
+import { Component, Inject, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
@@ -17,7 +10,7 @@ import { UpdateItemFormData } from '../services/interfaces/formdata';
   templateUrl: './update-item.component.html',
   styleUrl: './update-item.component.scss',
 })
-export class UpdateItemComponent implements OnDestroy, AfterViewInit {
+export class UpdateItemComponent implements OnDestroy {
   updateItemData: UpdateItemFormData;
   form: FormGroup;
   private destroy$ = new Subject<void>();
@@ -25,9 +18,7 @@ export class UpdateItemComponent implements OnDestroy, AfterViewInit {
   constructor(
     private formBuilder: FormBuilder,
     @Inject(POLYMORPHEUS_CONTEXT)
-    private readonly context: TuiDialogContext<UpdateItemFormData>,
-    private el: ElementRef,
-    private renderer: Renderer2
+    private readonly context: TuiDialogContext<UpdateItemFormData>
   ) {
     this.form = this.formBuilder.group({
       itemName: ['', Validators.required],
@@ -74,36 +65,5 @@ export class UpdateItemComponent implements OnDestroy, AfterViewInit {
     this.updateItemData.new_item_name = this.form.value.itemName;
     this.updateItemData.new_table_name = this.form.value.itemTable;
     this.context.completeWith(this.updateItemData);
-  }
-
-  ngAfterViewInit(): void {
-    this.applyDialogStyles();
-  }
-
-  public applyDialogStyles() {
-    const dialogElement = this.el.nativeElement.closest('.t-content');
-    if (!dialogElement) {
-      console.warn('Dialog element not found');
-      return;
-    }
-    this.applyStyleIfElementExists(
-      dialogElement,
-      'background-color',
-      '#232528CC'
-    );
-    const h2Element = dialogElement.querySelector('h2');
-    this.applyStyleIfElementExists(h2Element, 'color', 'white');
-  }
-
-  private applyStyleIfElementExists(
-    element: Element | null,
-    styleProp: string,
-    value: string
-  ): void {
-    if (element) {
-      this.renderer.setStyle(element, styleProp, value);
-    } else {
-      console.warn(`Element not found for style ${styleProp}`);
-    }
   }
 }

@@ -180,14 +180,14 @@ export class ItemEditorComponent implements OnInit {
    */
   onDeleteItem(item: ItemResponse): void {
     const data: TuiPromptData = {
-      content: `Item ${item.name} in table ${item.table_name} with typecode ${item.typecode}.`,
-      yes: 'REMOVE',
+      content: `This will delete Item <b>${item.name}</b> in Table <b>${item.table_name}</b> with Typecode <b>${item.typecode}</b>.`,
+      yes: 'Remove',
       no: 'Cancel',
     };
 
     this.dialogs
       .open<boolean>(TUI_PROMPT, {
-        label: 'Do you really want to delete this item?',
+        label: 'Do you really want to delete this Item?',
         size: 'm',
         data,
       })
