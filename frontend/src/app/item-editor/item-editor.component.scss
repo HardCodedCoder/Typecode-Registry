@@ -6,13 +6,6 @@
   height: 100%;
 }
 
-// EXPERIMENTAL
-td,
-th {
-  white-space: nowrap;
-  border-color: transparent;
-}
-
 .item-container {
   width: 75%;
   height: 100%;
@@ -28,8 +21,29 @@ th {
       flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      // height: 60%;
+
+      .table-menu {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding-bottom: 1rem;
+
+        tui-input {
+          width: 250px;
+          margin-left: 0;
+        }
+
+        :last-child {
+          margin-right: 0.5rem;
+        }
+
+        button {
+          height: 44px;
+          width: 44px;
+          border-radius: 100%;
+          margin-left: 1rem;
+        }
+      }
     }
   }
 

@@ -10,6 +10,7 @@ import { ItemResponse } from '../services/interfaces/items';
 import { TUI_PROMPT, TuiPromptData } from '@taiga-ui/kit';
 import { Router } from '@angular/router';
 import { UpdateItemComponent } from '../update-item/update-item.component';
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-item-editor',
@@ -26,6 +27,9 @@ export class ItemEditorComponent implements OnInit {
     'Typecode',
     'Action',
   ];
+  searchForm = new FormGroup({
+    search: new FormControl(''),
+  });
 
   constructor(
     @Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
@@ -225,7 +229,7 @@ export class ItemEditorComponent implements OnInit {
    * @returns {void}
    */
   showSuccessMessage(action: string, itemId: number): void {
-    const message = `Item with id: ${itemId} ${action}!`;
+    const message = `Item with ID: ${itemId} ${action}!`;
     this.alertService
       .open(message, {
         label: '🎉 Success 🎉',
