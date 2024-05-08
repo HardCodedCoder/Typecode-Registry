@@ -28,37 +28,17 @@ app-extension-editor {
   height: 100%;
 }
 
+tui-scrollbar {
+  height: 100%;
+}
+
 .border-radius {
   border-radius: 10px;
 }
 
-// [tuiWrapper][data-appearance='custom'] {
-//   background: #d900ff !important;
-//   color: #ffffff !important;
-
-//   .wrapper-hover {
-//     background: #a381ff !important;
-//   }
-
-//   .wrapper-active {
-//     background: #8f75d1 !important;
-//   }
-
-//   .wrapper-disabled {
-//     background: #eaecee !important;
-//   }
-// }
-
 // Layout Styles:
 .outer-container {
   display: flex;
-}
-
-.table-container {
-  display: block;
-  max-height: 95vh;
-  overflow: auto;
-  border-radius: 10px;
 }
 
 .shadow {
@@ -70,12 +50,21 @@ app-extension-editor {
 }
 
 // Table Styles:
+[_nghost-ng-c1783503476] {
+  // table header
+  font-size: 0.9rem !important;
+  border: none !important;
+}
+
 [_nghost-ng-c2547322422] {
+  // table
+  font-size: 0.9rem !important;
   background: none !important;
 }
 
-[_nghost-ng-c1783503476] {
-  border: none !important;
+[_ngcontent-ng-c2674606483] {
+  // tag (first column)
+  font-size: 0.9rem;
 }
 
 .table-container thead,
@@ -83,12 +72,6 @@ app-extension-editor {
   position: sticky;
   top: 0;
   z-index: 10;
-  text-align: center;
-}
-
-.table-container tbody {
-  display: block;
-  max-height: 90vh;
 }
 
 .table-container tr {
