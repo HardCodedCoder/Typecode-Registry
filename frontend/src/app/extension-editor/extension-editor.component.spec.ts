@@ -7,6 +7,7 @@ import { ExtensionsAPIResponse } from '../services/interfaces/extension';
 import { ProjectsAPIResponse } from '../services/interfaces/project';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TuiTableModule } from '@taiga-ui/addon-table';
+import { TuiScrollbarModule } from '@taiga-ui/core';
 
 describe('ExtensionEditorComponent', () => {
   let component: ExtensionEditorComponent;
@@ -18,7 +19,7 @@ describe('ExtensionEditorComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ExtensionEditorComponent],
       providers: [StoreService, BackendService],
-      imports: [HttpClientTestingModule, TuiTableModule],
+      imports: [HttpClientTestingModule, TuiTableModule, TuiScrollbarModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ExtensionEditorComponent);

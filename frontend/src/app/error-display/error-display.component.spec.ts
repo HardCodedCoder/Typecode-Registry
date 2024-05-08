@@ -7,6 +7,7 @@ import {
   httpStatusCodes,
   HttpStatusDetails,
 } from '../services/interfaces/http-status-codes';
+import { TuiNotificationModule } from '@taiga-ui/core';
 
 describe('ErrorDisplayComponent', () => {
   let component: ErrorDisplayComponent;
@@ -18,7 +19,7 @@ describe('ErrorDisplayComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ErrorDisplayComponent],
-      imports: [RouterTestingModule],
+      imports: [RouterTestingModule, TuiNotificationModule],
       providers: [{ provide: ActivatedRoute, useValue: activatedRouteStub }],
     }).compileComponents();
 

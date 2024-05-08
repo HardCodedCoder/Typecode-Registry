@@ -6,6 +6,7 @@ import {
   TuiAlertService,
   TuiDialogService,
   TuiScrollbarModule,
+  TuiTextfieldControllerModule,
 } from '@taiga-ui/core';
 import { BackendService } from '../services/backend.service';
 import { StoreService } from '../services/store.service';
@@ -15,8 +16,9 @@ import {
   CdkVirtualScrollViewport,
   ScrollingModule,
 } from '@angular/cdk/scrolling';
+import { ReactiveFormsModule } from '@angular/forms';
 import { TuiLetModule } from '@taiga-ui/cdk';
-import { TuiTagModule } from '@taiga-ui/kit';
+import { TuiTagModule, TuiInputModule } from '@taiga-ui/kit';
 import { ItemResponse } from '../services/interfaces/items';
 
 describe('ItemEditorComponent', () => {
@@ -140,7 +142,10 @@ describe('ItemEditorComponent', () => {
         ScrollingModule,
         TuiLetModule,
         TuiTagModule,
+        TuiInputModule,
         CdkFixedSizeVirtualScroll,
+        ReactiveFormsModule,
+        TuiTextfieldControllerModule,
       ],
       providers: [
         { provide: TuiDialogService, useValue: mockDialogService },
@@ -320,7 +325,7 @@ describe('ItemEditorComponent', () => {
     const id = 1;
     component.showSuccessMessage(action, id);
     expect(mockAlertService.open).toHaveBeenCalledWith(
-      `Item with id: ${id} ${action}!`,
+      `Item with ID: ${id} ${action}!`,
       {
         label: '🎉 Success 🎉',
         status: 'success',

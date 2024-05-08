@@ -5,15 +5,31 @@
       <div class="table-sub-container">
         <div class="table-menu">
           <form [formGroup]="searchForm" tuiTextfieldIcon="tuiIconSearchLarge">
-            <tui-input label="Search" formControlName="search" [tuiTextfieldCleaner]="true" tuiTextfieldSize="m">
+            <tui-input
+              label="Search"
+              formControlName="search"
+              [tuiTextfieldCleaner]="true"
+              tuiTextfieldSize="m"
+            >
               Search
               <input tuiTextfield />
             </tui-input>
           </form>
-          <button appearance="destructive" icon="tuiIconFilterLarge" tuiIconButton type="button"
-            [attr.aria-hidden]="true"></button>
-          <button appearance="accent" icon="tuiIconPlusLarge" tuiIconButton type="button" (click)="showDialog()"
-            [attr.aria-hidden]="true"></button>
+          <button
+            appearance="destructive"
+            icon="tuiIconFilterLarge"
+            tuiIconButton
+            type="button"
+            [attr.aria-hidden]="true"
+          ></button>
+          <button
+            appearance="accent"
+            icon="tuiIconPlusLarge"
+            tuiIconButton
+            type="button"
+            (click)="showDialog()"
+            [attr.aria-hidden]="true"
+          ></button>
         </div>
 
         <tui-scrollbar class="border-radius">
@@ -32,10 +48,18 @@
               </tr>
             </thead>
 
-            <tbody *tuiLet="this.store.items | tuiTableSort as sortedItems" tuiTbody [data]="sortedItems">
+            <tbody
+              *tuiLet="this.store.items | tuiTableSort as sortedItems"
+              tuiTbody
+              [data]="sortedItems"
+            >
               <tr *ngFor="let item of sortedItems" tuiTr>
                 <td *tuiCell="'Scope'" tuiTd>
-                  <tui-tag class="tui-space_right-1" [autoColor]="true" [value]="item.scope"></tui-tag>
+                  <tui-tag
+                    class="tui-space_right-1"
+                    [autoColor]="true"
+                    [value]="item.scope"
+                  ></tui-tag>
                 </td>
                 <td *tuiCell="'Project'" tuiTd>
                   {{ item.project }}
@@ -54,15 +78,39 @@
                 </td>
                 <td *tuiCell="'Action'" tuiTd>
                   <tui-hosted-dropdown [content]="dropdownContent">
-                    <button tuiIconButton type="button" icon="tuiIconMoreVertical" appearance="flat" shape="rounded"
-                      size="s" class="options"></button>
+                    <button
+                      tuiIconButton
+                      type="button"
+                      icon="tuiIconMoreVertical"
+                      appearance="flat"
+                      shape="rounded"
+                      size="s"
+                      class="options"
+                    ></button>
                   </tui-hosted-dropdown>
 
-                  <ng-template #dropdownContent let-closeDropdown="closeDropdown">
-                    <button tuiIconButton type="button" (click)="onEditItem(item)" icon="tuiIconEdit3" appearance="flat"
-                      shape="rounded" size="s"></button>
-                    <button tuiIconButton type="button" (click)="onDeleteItem(item)" icon="tuiIconTrash"
-                      appearance="flat" shape="rounded" size="s"></button>
+                  <ng-template
+                    #dropdownContent
+                    let-closeDropdown="closeDropdown"
+                  >
+                    <button
+                      tuiIconButton
+                      type="button"
+                      (click)="onEditItem(item)"
+                      icon="tuiIconEdit3"
+                      appearance="flat"
+                      shape="rounded"
+                      size="s"
+                    ></button>
+                    <button
+                      tuiIconButton
+                      type="button"
+                      (click)="onDeleteItem(item)"
+                      icon="tuiIconTrash"
+                      appearance="flat"
+                      shape="rounded"
+                      size="s"
+                    ></button>
                   </ng-template>
                 </td>
               </tr>
@@ -85,7 +133,9 @@
 
   <div class="project-card-container border-radius">
     <p>
-      Project cards will be added here<br /><i>(browse library for components)</i>
+      Project cards will be added here<br /><i
+        >(browse library for components)</i
+      >
     </p>
   </div>
 </div>

@@ -14,9 +14,13 @@
           </tr>
         </thead>
 
-        <tbody *tuiLet="
-          this.storeService.allExtensions | tuiTableSort as sortedExtensions
-        " tuiTbody [data]="sortedExtensions">
+        <tbody
+          *tuiLet="
+            this.storeService.allExtensions | tuiTableSort as sortedExtensions
+          "
+          tuiTbody
+          [data]="sortedExtensions"
+        >
           <tr *ngFor="let extension of sortedExtensions" tuiTr>
             <td *tuiCell="'Name'" tuiTd>{{ extension.name }}</td>
             <td *tuiCell="'Description'" tuiTd>{{ extension.description }}</td>
@@ -24,9 +28,15 @@
               {{ getProjectName(extension.project_id) ?? '-' }}
             </td>
             <td *tuiCell="'Scope'" tuiTd>
-              <tui-tag class="tui-space_right-1" [autoColor]="true" [value]="extension.scope"></tui-tag>
+              <tui-tag
+                class="tui-space_right-1"
+                [autoColor]="true"
+                [value]="extension.scope"
+              ></tui-tag>
             </td>
-            <td *tuiCell="'Item Count'" tuiTd>{{ extension.item_count ?? 0 }}</td>
+            <td *tuiCell="'Item Count'" tuiTd>
+              {{ extension.item_count ?? 0 }}
+            </td>
             <td *tuiCell="'Creation Date'" tuiTd>
               {{ extension.creation_date }}
             </td>
