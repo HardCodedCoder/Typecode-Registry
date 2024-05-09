@@ -9,7 +9,7 @@ import { ItemResponse } from './interfaces/items';
 export class StoreService {
   public projectExtensions: ExtensionResponse[] = [];
   public sharedExtensions: ExtensionResponse[] = [];
-  public allExtensions: ExtensionResponse[] = [];
+  public allExtensions: ExtensionResponse[] | null = [];
   public projects: ProjectResponse[] = [];
   public items: ItemResponse[] | null = [];
   public hasShown204ErrorItems: boolean = false;

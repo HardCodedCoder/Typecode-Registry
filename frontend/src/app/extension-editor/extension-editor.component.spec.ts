@@ -7,11 +7,9 @@ import { ExtensionsAPIResponse } from '../services/interfaces/extension';
 import { ProjectsAPIResponse } from '../services/interfaces/project';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TuiTableModule } from '@taiga-ui/addon-table';
-import { TuiScrollbarModule } from '@taiga-ui/core';
-import {TuiElasticContainerModule} from '@taiga-ui/kit';
-import { TuiAlertService } from '@taiga-ui/core';
-import { Router } from '@angular/router';
-import { FormControl, FormGroup } from '@angular/forms';
+import { TuiScrollbarModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
+import {TuiElasticContainerModule, TuiInputModule} from '@taiga-ui/kit';
+import { ReactiveFormsModule } from '@angular/forms';
 
 describe('ExtensionEditorComponent', () => {
   let component: ExtensionEditorComponent;
@@ -23,7 +21,7 @@ describe('ExtensionEditorComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ExtensionEditorComponent],
       providers: [StoreService, BackendService],
-      imports: [HttpClientTestingModule, TuiTableModule, TuiScrollbarModule, TuiElasticContainerModule, TuiAlertService, Router, FormControl, FormGroup],
+      imports: [HttpClientTestingModule, TuiTableModule, TuiScrollbarModule, TuiElasticContainerModule, TuiInputModule, ReactiveFormsModule, TuiTextfieldControllerModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ExtensionEditorComponent);
@@ -137,5 +135,14 @@ describe('ExtensionEditorComponent', () => {
     const projectName = component.getProjectName(3);
 
     expect(projectName).toBeUndefined();
+  });
+
+  it('should display "No extensions available" when there are no extensions', () => {
+    component.storeService.allExtensions = null;
+    fixture.detectChanges();
+
+    const noDataContent =
+      fixture.debugElement.nativeElement.querySelector('h1');
+    expect(noDataContent.textContent).toContain('No extensions available.');
   });
 });
