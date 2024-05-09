@@ -1,6 +1,35 @@
 <div class="outer-container">
   <div class="table-container">
-    <tui-scrollbar class="border-radius">
+    <div class="table-menu">
+      <form [formGroup]="searchForm" tuiTextfieldIcon="tuiIconSearchLarge">
+        <tui-input
+          label="Search"
+          formControlName="search"
+          [tuiTextfieldCleaner]="true"
+          tuiTextfieldSize="m"
+        >
+          Search
+          <input tuiTextfield />
+        </tui-input>
+      </form>
+      <button
+        appearance="destructive"
+        icon="tuiIconFilterLarge"
+        tuiIconButton
+        type="button"
+        [attr.aria-hidden]="true"
+      ></button>
+      <button
+        appearance="accent"
+        icon="tuiIconPlusLarge"
+        tuiIconButton
+        type="button"
+        (click)="showDialog()"
+        [attr.aria-hidden]="true"
+      ></button>
+    </div>
+
+    <tui-scrollbar *ngIf="this.storeService.allExtensions; else noData" class="border-radius">
       <table tuiTable [columns]="columns">
         <thead>
           <tr tuiThGroup>
@@ -14,25 +43,28 @@
           </tr>
         </thead>
 
-        <tbody
-          *tuiLet="
+        <tbody *tuiLet="
             this.storeService.allExtensions | tuiTableSort as sortedExtensions
-          "
-          tuiTbody
-          [data]="sortedExtensions"
-        >
+          " tuiTbody [data]="sortedExtensions">
           <tr *ngFor="let extension of sortedExtensions" tuiTr>
             <td *tuiCell="'Name'" tuiTd>{{ extension.name }}</td>
-            <td *tuiCell="'Description'" tuiTd>{{ extension.description }}</td>
+            <td *tuiCell="'Description'" tuiTd>
+              <tui-elastic-container>
+                <!-- conditional rendering based on length and expanded state -->
+                {{ expandedItemId === extension.id || extension.description.length <= MAX_DESCRIPTION_LENGTH ?
+                  extension.description : (extension.description | slice:0:MAX_DESCRIPTION_LENGTH) + '...' }} <!-- show
+                  button only if description is longer than MAX_DESCRIPTION_LENGTH -->
+                  <button *ngIf="extension.description.length > MAX_DESCRIPTION_LENGTH" tuiLink
+                    (click)="toggle(extension.id)">
+                    Show {{ expandedItemId === extension.id ? 'less' : 'more' }}
+                  </button>
+              </tui-elastic-container>
+            </td>
             <td *tuiCell="'Project'" tuiTd>
               {{ getProjectName(extension.project_id) ?? '-' }}
             </td>
             <td *tuiCell="'Scope'" tuiTd>
-              <tui-tag
-                class="tui-space_right-1"
-                [autoColor]="true"
-                [value]="extension.scope"
-              ></tui-tag>
+              <tui-tag class="tui-space_right-1" [autoColor]="true" [value]="extension.scope"></tui-tag>
             </td>
             <td *tuiCell="'Item Count'" tuiTd>
               {{ extension.item_count ?? 0 }}
@@ -45,6 +77,10 @@
         </tbody>
       </table>
     </tui-scrollbar>
+
+    <ng-template #noData>
+      <h1>No items available.</h1>
+    </ng-template>
   </div>
 
   <div class="item-cards"></div>

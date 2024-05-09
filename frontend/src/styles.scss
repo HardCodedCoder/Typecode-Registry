@@ -36,9 +36,14 @@ tui-scrollbar {
   border-radius: 10px;
 }
 
+.text-align-flex-start {
+  text-align: flex-start;
+}
+
 // Layout Styles:
 .outer-container {
   display: flex;
+  height: 75%;
 }
 
 .shadow {
@@ -95,4 +100,26 @@ tbody tr {
 
 tbody tr:nth-child(even) {
   background-color: #ffffff;
+}
+
+.table-menu {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-bottom: 0.75rem;
+
+  tui-input {
+    width: 250px;
+  }
+
+  button {
+    height: 44px;
+    width: 44px;
+    border-radius: 100%;
+    margin-left: 0.75rem;
+  }
+
+  button:last-child {
+    margin-right: 0.5rem;
+  }
 }
