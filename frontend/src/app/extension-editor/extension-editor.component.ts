@@ -1,6 +1,9 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { StoreService } from '../services/store.service';
 import { BackendService } from '../services/backend.service';
+import { TuiAlertService } from '@taiga-ui/core';
+import { Router } from '@angular/router';
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-extension-editor',
@@ -8,6 +11,12 @@ import { BackendService } from '../services/backend.service';
   styleUrl: './extension-editor.component.scss',
 })
 export class ExtensionEditorComponent implements OnInit {
+  readonly MAX_DESCRIPTION_LENGTH = 40;
+  expandedItemId: number | null = null;
+  searchForm = new FormGroup({
+    search: new FormControl(''),
+  });
+  
   readonly columns: string[] = [
     'Name',
     'Description',
@@ -20,7 +29,9 @@ export class ExtensionEditorComponent implements OnInit {
 
   constructor(
     @Inject(StoreService) public readonly storeService: StoreService,
-    @Inject(BackendService) public readonly backendService: BackendService
+    @Inject(BackendService) public readonly backendService: BackendService,
+    @Inject(TuiAlertService) private readonly alertService: TuiAlertService,
+    @Inject(Router) private readonly router: Router,
   ) {}
 
   getProjectName(project_id: number): string | undefined {
@@ -32,6 +43,23 @@ export class ExtensionEditorComponent implements OnInit {
     this.backendService.getExtensions().subscribe(extensions => {
       this.storeService.allExtensions = extensions.extensions;
       console.log(this.storeService.allExtensions);
+
+      if (this.storeService.allExtensions === null) {
+        console.warn('NULL response: /extensions');
+
+        if (this.storeService.hasShown204ErrorExtensions) {
+          this.showInformationNotification();
+        }
+
+        if (!this.storeService.hasShown204ErrorExtensions) {
+          this.router.navigate(['/error/204'], {
+            state: {
+              errorOrigin: '/extensions',
+            },
+          });
+          this.storeService.hasShown204ErrorExtensions = true;
+        }
+      }
     });
 
     this.backendService.getProjects().subscribe(projects => {
@@ -39,4 +67,28 @@ export class ExtensionEditorComponent implements OnInit {
       console.log(this.storeService.projects);
     });
   }
+
+  showDialog(): void {
+    console.log('Add Extension Dialog');
+  }
+
+  toggle(extensionId: number): void {
+    if (this.expandedItemId === extensionId) {
+      this.expandedItemId = null;  // collapse the description
+    } else {
+      this.expandedItemId = extensionId;  // expand the description
+    }
+  }
+
+    /**
+   * Shows an information notification.
+   */
+    private showInformationNotification(): void {
+      this.alertService
+        .open('Please populate the database.', {
+          label: '💡 Information 💡',
+          status: 'info',
+        })
+        .subscribe();
+    }
 }

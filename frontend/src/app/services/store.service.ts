@@ -7,14 +7,13 @@ import { ItemResponse } from './interfaces/items';
   providedIn: 'root',
 })
 export class StoreService {
-  constructor() {}
-
   public projectExtensions: ExtensionResponse[] = [];
   public sharedExtensions: ExtensionResponse[] = [];
   public allExtensions: ExtensionResponse[] = [];
   public projects: ProjectResponse[] = [];
   public items: ItemResponse[] | null = [];
-  public hasShown204Error: boolean = false;
+  public hasShown204ErrorItems: boolean = false;
+  public hasShown204ErrorExtensions: boolean = false;
 
   /**
    * Gets the extension ID of a shared extension.

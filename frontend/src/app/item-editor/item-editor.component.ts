@@ -49,17 +49,17 @@ export class ItemEditorComponent implements OnInit {
         if (response.items === null) {
           console.warn('NULL response: /items');
 
-          if (this.store.hasShown204Error) {
+          if (this.store.hasShown204ErrorItems) {
             this.showInformationNotification();
           }
 
-          if (!this.store.hasShown204Error) {
+          if (!this.store.hasShown204ErrorItems) {
             this.router.navigate(['/error/204'], {
               state: {
                 errorOrigin: '/items',
               },
             });
-            this.store.hasShown204Error = true;
+            this.store.hasShown204ErrorItems = true;
           }
         }
       },

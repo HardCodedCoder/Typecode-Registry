@@ -28,6 +28,7 @@ import {
   TuiInputModule,
   TuiRadioBlockModule,
   TuiTagModule,
+  TuiElasticContainerModule,
 } from '@taiga-ui/kit';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
@@ -46,6 +47,7 @@ import { HeaderComponent } from './header/header.component';
 import {
   TuiNotificationModule,
   TuiTextfieldControllerModule,
+  TuiLinkModule
 } from '@taiga-ui/core';
 
 @NgModule({
@@ -91,6 +93,8 @@ import {
     TuiNotificationModule,
     TuiTextfieldControllerModule,
     FormsModule,
+    TuiElasticContainerModule,
+    TuiLinkModule
   ],
   providers: [{ provide: TUI_SANITIZER, useClass: NgDompurifySanitizer }],
   bootstrap: [AppComponent],
