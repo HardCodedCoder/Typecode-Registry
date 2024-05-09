@@ -1,7 +1,6 @@
 header {
   width: 100%;
-  height: 6.5vh;
-  min-height: 60px;
+  height: 7vh;
   white-space: nowrap;
   display: flex;
   justify-content: space-between;
@@ -9,11 +8,14 @@ header {
   padding: 0 4rem;
 }
 
-.flex {
+.logo-section {
   display: flex;
+  align-items: center;
+  height: 100%;
 }
 
 .logo {
+  height: 50%;
   width: 64px;
   object-fit: contain;
   cursor: pointer;
@@ -24,6 +26,7 @@ nav {
   width: 25vw;
   min-width: 340px;
   max-width: 400px;
+  height: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -57,7 +60,7 @@ nav {
   }
 
   .user-img {
-    width: 42px;
+    height: 70%;
     border: 2px solid #0084ca;
     border-radius: 100%;
     cursor: pointer;
