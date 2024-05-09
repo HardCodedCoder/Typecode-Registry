@@ -7,15 +7,15 @@ import (
 	"time"
 )
 
-// NullInt32 Helper type to handle nullable int32 values.
-type NullInt32 struct {
-	sql.NullInt32
+// NullInt64 Helper type to handle nullable int32 values.
+type NullInt64 struct {
+	sql.NullInt64
 }
 
-// MarshalJSON returns the JSON encoding of the NullInt32.
-func (v NullInt32) MarshalJSON() ([]byte, error) {
+// MarshalJSON returns the JSON encoding of the NullInt64.
+func (v NullInt64) MarshalJSON() ([]byte, error) {
 	if v.Valid {
-		return json.Marshal(v.Int32)
+		return json.Marshal(v.Int64)
 	} else {
 		return json.Marshal(nil)
 	}
@@ -24,7 +24,7 @@ func (v NullInt32) MarshalJSON() ([]byte, error) {
 // Extension represents an extension in the database.
 type Extension struct {
 	ID           int64     `json:"id"`
-	ProjectID    NullInt32 `json:"project_id,omitempty"`
+	ProjectID    NullInt64 `json:"project_id,omitempty"`
 	Name         string    `json:"name"`
 	Description  string    `json:"description"`
 	Scope        string    `json:"scope"`
@@ -148,4 +148,14 @@ func (e ExtensionModel) ReadAll(scope ...string) ([]*Extension, error) {
 	}
 
 	return extensions, nil
+}
+
+func (e ExtensionModel) Insert(d *Extension) error {
+	query := `
+		INSERT INTO extension (name, description, scope, project_id)
+		VALUES ($1, $2, $3, $4)
+		RETURNING id, creation_date`
+
+	args := []interface{}{d.Name, d.Description, d.Scope, d.ProjectID}
+	return e.DB.QueryRow(query, args...).Scan(&d.ID, &d.CreationDate)
 }
