@@ -3,7 +3,6 @@
   padding: 0;
   box-sizing: border-box;
   font-family: Roboto, Arial, sans-serif !important;
-  font-size: 1rem;
 }
 
 h1 {
@@ -28,16 +27,24 @@ app-extension-editor {
   height: 100%;
 }
 
-tui-scrollbar {
-  height: 100%;
+.font-size-09 {
+  font-size: 0.9rem !important;
 }
 
 .border-radius {
   border-radius: 10px;
 }
 
-.text-align-flex-start {
-  text-align: flex-start;
+.text-align-start {
+  text-align: start;
+}
+
+tui-scrollbar {
+  height: 100%;
+}
+
+tui-notification {
+  font-size: 1rem !important;
 }
 
 // Layout Styles:
