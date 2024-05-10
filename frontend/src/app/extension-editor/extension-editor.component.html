@@ -36,8 +36,8 @@
               <tui-elastic-container class="text-align-start font-size-09">
                 <!-- conditional rendering based on set membership and description length -->
                 {{ expandedItemIds.has(extension.id) || extension.description.length <= MAX_DESCRIPTION_LENGTH ?
-                  extension.description : (extension.description | slice:0:MAX_DESCRIPTION_LENGTH) + '...' }}
-                  <!-- show button only if description is longer than MAX_DESCRIPTION_LENGTH -->
+                  extension.description : (extension.description | slice:0:MAX_DESCRIPTION_LENGTH) + '...' }} <!-- show
+                  button only if description is longer than MAX_DESCRIPTION_LENGTH -->
                   <button *ngIf="extension.description.length > MAX_DESCRIPTION_LENGTH" tuiLink
                     (click)="toggle(extension.id)"
                     [attr.aria-expanded]="expandedItemIds.has(extension.id) ? 'true' : 'false'">
@@ -55,7 +55,8 @@
               {{ extension.item_count ?? 0 }}
             </td>
             <td *tuiCell="'Creation Date'" tuiTd>
-              {{ extension.creation_date }}
+              <span>{{ extension.creation_date | date: 'fullDate' }} </span>
+              <span>{{ extension.creation_date | date: 'shortTime' }}</span>
             </td>
             <td *tuiCell="'Actions'" tuiTd>Button</td>
           </tr>
