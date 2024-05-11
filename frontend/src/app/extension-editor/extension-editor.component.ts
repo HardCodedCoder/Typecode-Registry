@@ -40,36 +40,42 @@ export class ExtensionEditorComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.backendService.getExtensions().subscribe(extensions => {
-      this.storeService.allExtensions = extensions.extensions;
-      console.log(this.storeService.allExtensions);
+    this.backendService.getExtensions().subscribe({
+      next: response => {
+        this.storeService.allExtensions = response.extensions;
+        console.log(this.storeService.allExtensions);
 
-      if (this.storeService.allExtensions === null) {
-        console.warn('NULL response: /extensions');
+        if (this.storeService.allExtensions === null) {
+          console.warn('NULL response: /extensions');
 
-        if (this.storeService.hasShown204ErrorExtensions) {
-          this.showInformationNotification();
+          if (this.storeService.hasShown204ErrorExtensions) {
+            this.showInformationNotification();
+          }
+
+          if (!this.storeService.hasShown204ErrorExtensions) {
+            this.router.navigate(['/error/204'], {
+              state: {
+                errorOrigin: '/extensions',
+              },
+            });
+            this.storeService.hasShown204ErrorExtensions = true;
+          }
         }
-
-        if (!this.storeService.hasShown204ErrorExtensions) {
-          this.router.navigate(['/error/204'], {
-            state: {
-              errorOrigin: '/extensions',
-            },
-          });
-          this.storeService.hasShown204ErrorExtensions = true;
-        }
-      }
+      },
+      error: error => {
+        console.error('Could not fetch extensions', error);
+      },
     });
 
-    this.backendService.getProjects().subscribe(projects => {
-      this.storeService.projects = projects.projects;
-      console.log(this.storeService.projects);
+    this.backendService.getProjects().subscribe({
+      next: projects => {
+        this.storeService.projects = projects.projects;
+        console.log(this.storeService.projects);
+      },
+      error: error => {
+        console.error('Could not fetch projects', error);
+      },
     });
-  }
-
-  showDialog(): void {
-    console.log('Add Extension Dialog');
   }
 
   toggle(extensionId: number): void {

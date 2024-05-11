@@ -37,6 +37,7 @@ describe('ItemEditorComponent', () => {
       'getItems',
       'getExtensions',
       'deleteItem',
+      'getProjects',
     ]);
     mockBackendService.getItems.and.returnValue(
       of({
@@ -122,6 +123,7 @@ describe('ItemEditorComponent', () => {
         ],
       })
     );
+    mockBackendService.getProjects.and.returnValue(of({ projects: [] }));
     mockStoreService = jasmine.createSpyObj('StoreService', [
       'getSharedExtensionId',
       'getProjectExtensionId',
@@ -130,7 +132,6 @@ describe('ItemEditorComponent', () => {
     mockStoreService.getProjectExtensionId.and.returnValue(1);
 
     mockAlertService = jasmine.createSpyObj('TuiAlertService', ['open']);
-
     mockAlertService.open.and.returnValue(of({}));
 
     await TestBed.configureTestingModule({
@@ -441,5 +442,43 @@ describe('ItemEditorComponent', () => {
     const noDataContent =
       fixture.debugElement.nativeElement.querySelector('h1');
     expect(noDataContent.textContent).toContain('No items available.');
+  });
+
+  beforeEach(() => {
+    // Mocking getExtensions for 'Project'
+    mockBackendService.getExtensions
+      .withArgs('Project')
+      .and.returnValue(
+        throwError(() => new Error('Failed to fetch project extensions'))
+      );
+
+    // Mocking getProjects
+    mockBackendService.getProjects.and.returnValue(
+      throwError(() => new Error('Failed to fetch projects'))
+    );
+  });
+
+  it('should log an error when failing to fetch project extensions', () => {
+    spyOn(console, 'error'); // Spy on console.error to verify if it is called
+
+    component.ngOnInit(); // Assuming these subscriptions happen in ngOnInit
+
+    expect(mockBackendService.getExtensions).toHaveBeenCalledWith('Project');
+    expect(console.error).toHaveBeenCalledWith(
+      'Could not fetch project extensions:',
+      jasmine.any(Error)
+    );
+  });
+
+  it('should log an error when failing to fetch projects', () => {
+    spyOn(console, 'error');
+
+    component.ngOnInit(); // trigger the method where subscriptions occur
+
+    expect(mockBackendService.getProjects).toHaveBeenCalled();
+    expect(console.error).toHaveBeenCalledWith(
+      'Could not fetch projects:',
+      jasmine.any(Error)
+    );
   });
 });
