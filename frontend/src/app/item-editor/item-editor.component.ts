@@ -85,6 +85,15 @@ export class ItemEditorComponent implements OnInit {
         console.error('Could not fetch project extensions:', error);
       },
     });
+
+    this.backendService.getProjects().subscribe({
+      next: response => {
+        this.store.projects = response.projects;
+      },
+      error: error => {
+        console.error('Could not fetch projects:', error);
+      },
+    });
   }
 
   /**
