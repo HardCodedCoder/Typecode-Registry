@@ -56,7 +56,8 @@
             </td>
             <td *tuiCell="'Creation Date'" tuiTd>
               <span>{{ extension.creation_date | date: 'fullDate' }} </span>
-              <span>{{ extension.creation_date | date: 'shortTime' }}</span>
+              <br>
+              <span class="no-wrap">{{ extension.creation_date | date: 'shortTime' }}</span>
             </td>
             <td *tuiCell="'Actions'" tuiTd>Button</td>
           </tr>
