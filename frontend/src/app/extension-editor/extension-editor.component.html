@@ -8,9 +8,9 @@
         </tui-input>
       </form>
       <button appearance="destructive" icon="tuiIconFilterLarge" tuiIconButton type="button"
-        [attr.aria-hidden]="true"></button>
+        [attr.aria-hidden]="true" size="m"></button>
       <button appearance="accent" icon="tuiIconPlusLarge" tuiIconButton type="button" (click)="showDialog()"
-        [attr.aria-hidden]="true"></button>
+        [attr.aria-hidden]="true" size="m"></button>
     </div>
 
     <tui-scrollbar *ngIf="this.storeService.allExtensions; else noData" class="border-radius">
