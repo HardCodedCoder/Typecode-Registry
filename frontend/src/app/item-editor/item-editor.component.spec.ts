@@ -7,6 +7,7 @@ import {
   TuiDialogService,
   TuiScrollbarModule,
   TuiTextfieldControllerModule,
+  TuiNotificationModule,
 } from '@taiga-ui/core';
 import { BackendService } from '../services/backend.service';
 import { StoreService } from '../services/store.service';
@@ -147,6 +148,7 @@ describe('ItemEditorComponent', () => {
         CdkFixedSizeVirtualScroll,
         ReactiveFormsModule,
         TuiTextfieldControllerModule,
+        TuiNotificationModule,
       ],
       providers: [
         { provide: TuiDialogService, useValue: mockDialogService },

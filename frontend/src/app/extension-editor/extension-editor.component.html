@@ -32,10 +32,10 @@
 
     <tui-scrollbar
       *ngIf="this.storeService.allExtensions; else noData"
-      class="border-radius"
+      class="border-radius shadow"
     >
       <table tuiTable [columns]="columns">
-        <thead>
+        <thead class="shadow">
           <tr tuiThGroup>
             <th *tuiHead="'Name'" tuiTh>Name</th>
             <th *tuiHead="'Description'" tuiTh>Description</th>

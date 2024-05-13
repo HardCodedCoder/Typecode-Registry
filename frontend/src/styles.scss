@@ -22,6 +22,10 @@ a {
   cursor: pointer;
 }
 
+pre {
+  margin: 0;
+}
+
 app-extension-editor {
   display: flex;
   height: 100%;
@@ -48,10 +52,20 @@ tui-scrollbar {
 }
 
 tui-notification {
+  width: fit-content;
   font-size: 1rem !important;
 }
 
-// Layout Styles:
+.code {
+  font-family: monospace, courier, Arial !important;
+  font-size: 0.9rem;
+  background-color: #f6f6f6;
+  color: rgba(27, 31, 59, 0.65);
+  border: 1px solid #d7d7d7;
+  border-radius: 10px;
+  padding: 5px;
+}
+
 .outer-container {
   display: flex;
   height: 75%;

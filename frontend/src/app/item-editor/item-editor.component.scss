@@ -17,24 +17,91 @@
     display: flex;
     flex-direction: row;
     width: 100%;
-    height: 75%;
-    padding-bottom: 2rem !important;
+    padding-bottom: 1rem !important;
+    overflow: hidden;
 
     .table-sub-container {
       flex: 1;
       display: flex;
       flex-direction: column;
+
+      tbody {
+        tr {
+          transition: 200ms;
+          cursor: pointer;
+
+          &:hover {
+            background-color: #ff7043;
+            color: #ffffff;
+            transition: 200ms;
+          }
+        }
+      }
     }
   }
 
   .item-display {
-    height: 25%;
+    width: 100%;
     font-size: 1rem;
     background-color: #ffffff;
-    padding: 1.25rem;
+    overflow: unset;
+    padding: 0.75rem 0 0.75rem 0;
 
-    p {
-      margin: 0;
+    h2 {
+      width: fit-content;
+      margin-top: 0;
+      margin-left: 0.75rem;
+    }
+
+    tui-notification {
+      margin: 0 0.75rem;
+    }
+
+    .item-display-sub-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+
+      .snippet-container {
+        height: 100%;
+        width: 100%;
+        display: flex;
+
+        > div:first-child {
+          padding: 0 0.5rem 0 0.75rem;
+        }
+
+        > div:last-child {
+          padding: 0 0.75rem 0 0.5rem;
+        }
+
+        div {
+          width: 50%;
+
+          .snippet-heading {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.35rem;
+            padding: 0 0.125rem;
+          }
+
+          .code-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+
+            div {
+              width: 100%;
+
+              code {
+                width: fit-content;
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
@@ -48,11 +115,11 @@
   .project-card-sub-container {
     columns: 2;
     gap: 0.66rem;
-    margin: 0.66rem 1rem 0.66rem 0.66rem;
+    margin: 0.75rem 1rem 0.75rem 0.75rem;
 
     tui-island {
       box-sizing: border-box;
-      margin: 0 0 0.66rem;
+      margin: 0 0 0.75rem;
       break-inside: avoid;
 
       button {
@@ -60,6 +127,11 @@
       }
     }
   }
+}
+
+.selected {
+  color: #ffffff;
+  background-color: #ff7043 !important;
 }
 
 .options {

@@ -36,10 +36,10 @@
 
         <tui-scrollbar
           *ngIf="this.store.items; else noData"
-          class="border-radius"
+          class="border-radius shadow"
         >
           <table tuiTable [columns]="columns">
-            <thead>
+            <thead class="shadow">
               <tr tuiThGroup>
                 <th *tuiHead="'Scope'" tuiTh [sticky]="true">Scope</th>
                 <th *tuiHead="'Project'" tuiTh [sticky]="true">Project</th>
@@ -58,7 +58,12 @@
               tuiTbody
               [data]="sortedItems"
             >
-              <tr *ngFor="let item of sortedItems" tuiTr>
+              <tr
+                *ngFor="let item of sortedItems"
+                (click)="selectItem(item)"
+                tuiTr
+                [class.selected]="item === selectedItem"
+              >
                 <td *tuiCell="'Scope'" tuiTd>
                   <tui-tag
                     class="tui-space_right-1"
@@ -129,14 +134,49 @@
       <h1>No items available.</h1>
     </ng-template>
 
-    <div class="item-display border-radius">
-      <p>
-        Item view will be added here<br /><i>(browse library for components)</i>
-      </p>
+    <div class="item-display border-radius shadow">
+      <div
+        *ngIf="selectedItem; else noItemSelected"
+        class="item-display-sub-container"
+      >
+        <h2>Snippets</h2>
+        <div class="snippet-container">
+          <div>
+            <div class="snippet-heading">
+              <span>Item Snippet</span>
+              <button tuiLink (click)="copyText(getItemSnippet(selectedItem))">
+                Copy
+              </button>
+            </div>
+            <div class="code-container code">
+              <pre>{{ getItemSnippet(selectedItem) }}</pre>
+            </div>
+          </div>
+          <div>
+            <div class="snippet-heading">
+              <span>Relation Snippet</span>
+              <button
+                tuiLink
+                (click)="copyText(getRelationSnippet(selectedItem))"
+              >
+                Copy
+              </button>
+            </div>
+            <div class="code-container code">
+              <pre>{{ getRelationSnippet(selectedItem) }}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <ng-template #noItemSelected>
+      <h2>Snippets</h2>
+      <tui-notification>Please select an item.</tui-notification>
+    </ng-template>
   </div>
 
-  <div class="project-card-container border-radius">
+  <div class="project-card-container shadow border-radius">
     <tui-scrollbar>
       <div class="project-card-sub-container">
         <tui-island
