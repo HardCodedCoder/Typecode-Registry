@@ -45,7 +45,7 @@ export const httpStatusCodes: Record<HttpStatusCode, HttpStatusDetails> = {
       'Review the server logs to ensure that the request is being processed correctly and no data should be returned.',
       'Adjust the query or request parameters to test different responses from the server.',
     ],
-    buttonText: 'Return to Typecodes',
+    buttonText: 'Return to Items',
     imgName: 'treasure_chest.png',
   },
   '404': {
@@ -58,7 +58,7 @@ export const httpStatusCodes: Record<HttpStatusCode, HttpStatusDetails> = {
       'Verify that the server routes and resource identifiers are configured correctly.',
       "Check server or API documentation to ensure the endpoint still exists and hasn't been deprecated or moved.",
     ],
-    buttonText: 'Return to Typecodes',
+    buttonText: 'Return to Items',
     imgName: 'diver.png',
   },
   '500': {

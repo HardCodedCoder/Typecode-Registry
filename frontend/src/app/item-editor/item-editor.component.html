@@ -1,121 +1,131 @@
 <div class="container">
   <div class="item-container">
-    <!-- Create Item Button Div -->
-    <div class="add-button">
-      <button
-        icon="tuiIconPlusLarge"
-        tuiIconButton
-        type="button"
-        (click)="showDialog()"
-        [attr.aria-hidden]="true"
-      ></button>
-    </div>
-
     <!-- Items Table Div -->
-    <div *ngIf="this.store.items; else noData" class="table-container">
+    <div class="table-container">
       <div class="table-sub-container">
-        <tui-scrollbar>
-          <cdk-virtual-scroll-viewport
-            #viewport
-            tuiScrollable
-            class="viewport tui-scrollbar"
-            [itemSize]="45"
-            [maxBufferPx]="500"
-            [minBufferPx]="400"
-          >
-            <table tuiTable [columns]="columns">
-              <thead>
-                <tr tuiThGroup>
-                  <th *tuiHead="'Scope'" tuiTh [sticky]="true">Scope</th>
-                  <th *tuiHead="'Project'" tuiTh [sticky]="true">Project</th>
-                  <th *tuiHead="'Extension'" tuiTh [sticky]="true">
-                    Extension
-                  </th>
-                  <th *tuiHead="'TypeName'" tuiTh [sticky]="true">Name</th>
-                  <th *tuiHead="'TableName'" tuiTh [sticky]="true">
-                    Table Name
-                  </th>
-                  <th *tuiHead="'Typecode'" tuiTh [sticky]="true">Typecode</th>
-                  <th
-                    *tuiHead="'Action'"
-                    tuiTh
-                    [sorter]="null"
-                    [sticky]="true"
-                  ></th>
-                </tr>
-              </thead>
+        <div class="table-menu">
+          <form [formGroup]="searchForm" tuiTextfieldIcon="tuiIconSearchLarge">
+            <tui-input
+              label="Search"
+              formControlName="search"
+              [tuiTextfieldCleaner]="true"
+              tuiTextfieldSize="m"
+            >
+              Search
+              <input tuiTextfield />
+            </tui-input>
+          </form>
+          <button
+            appearance="destructive"
+            icon="tuiIconFilterLarge"
+            tuiIconButton
+            type="button"
+            [attr.aria-hidden]="true"
+            size="m"
+          ></button>
+          <button
+            appearance="accent"
+            icon="tuiIconPlusLarge"
+            tuiIconButton
+            type="button"
+            (click)="showDialog()"
+            [attr.aria-hidden]="true"
+            size="m"
+          ></button>
+        </div>
 
-              <tbody
-                *tuiLet="this.store.items | tuiTableSort as sortedItems"
-                tuiTbody
-                [data]="sortedItems"
+        <tui-scrollbar
+          *ngIf="this.store.items; else noData"
+          class="border-radius shadow"
+        >
+          <table tuiTable [columns]="columns">
+            <thead class="shadow">
+              <tr tuiThGroup>
+                <th *tuiHead="'Scope'" tuiTh [sticky]="true">Scope</th>
+                <th *tuiHead="'Project'" tuiTh [sticky]="true">Project</th>
+                <th *tuiHead="'Extension'" tuiTh [sticky]="true">Extension</th>
+                <th *tuiHead="'TypeName'" tuiTh [sticky]="true">Name</th>
+                <th *tuiHead="'TableName'" tuiTh [sticky]="true">Table Name</th>
+                <th *tuiHead="'Typecode'" tuiTh [sticky]="true">Typecode</th>
+                <th *tuiHead="'Action'" tuiTh [sorter]="null" [sticky]="true">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+
+            <tbody
+              *tuiLet="this.store.items | tuiTableSort as sortedItems"
+              tuiTbody
+              [data]="sortedItems"
+            >
+              <tr
+                *ngFor="let item of sortedItems"
+                (click)="selectItem(item)"
+                tuiTr
+                [class.selected]="item === selectedItem"
               >
-                <tr *ngFor="let item of sortedItems" tuiTr>
-                  <td *tuiCell="'Scope'" tuiTd>
-                    <tui-tag
-                      class="tui-space_right-1"
-                      [autoColor]="true"
-                      [value]="item.scope"
-                    ></tui-tag>
-                  </td>
-                  <td *tuiCell="'Project'" tuiTd>
-                    {{ item.project }}
-                  </td>
-                  <td *tuiCell="'Extension'" tuiTd>
-                    {{ getExtensionName(item.extension_id) }}
-                  </td>
-                  <td *tuiCell="'TypeName'" tuiTd>
-                    {{ item.name }}
-                  </td>
-                  <td *tuiCell="'TableName'" tuiTd>
-                    {{ item.table_name }}
-                  </td>
-                  <td *tuiCell="'Typecode'" tuiTd>
-                    {{ item.typecode }}
-                  </td>
-                  <td *tuiCell="'Action'" tuiTd>
-                    <tui-hosted-dropdown [content]="dropdownContent">
-                      <button
-                        tuiIconButton
-                        type="button"
-                        icon="tuiIconMoreVertical"
-                        appearance="flat"
-                        shape="rounded"
-                        size="s"
-                        class="options"
-                      ></button>
-                    </tui-hosted-dropdown>
+                <td *tuiCell="'Scope'" tuiTd>
+                  <tui-tag
+                    class="tui-space_right-1"
+                    [autoColor]="true"
+                    [value]="item.scope"
+                  ></tui-tag>
+                </td>
+                <td *tuiCell="'Project'" tuiTd>
+                  {{ item.project }}
+                </td>
+                <td *tuiCell="'Extension'" tuiTd>
+                  {{ getExtensionName(item.extension_id) }}
+                </td>
+                <td *tuiCell="'TypeName'" tuiTd>
+                  {{ item.name }}
+                </td>
+                <td *tuiCell="'TableName'" tuiTd>
+                  {{ item.table_name }}
+                </td>
+                <td *tuiCell="'Typecode'" tuiTd>
+                  {{ item.typecode }}
+                </td>
+                <td *tuiCell="'Action'" tuiTd>
+                  <tui-hosted-dropdown [content]="dropdownContent">
+                    <button
+                      tuiIconButton
+                      type="button"
+                      icon="tuiIconMoreVertical"
+                      appearance="flat"
+                      shape="rounded"
+                      size="s"
+                      class="options"
+                    ></button>
+                  </tui-hosted-dropdown>
 
-                    <ng-template
-                      #dropdownContent
-                      let-closeDropdown="closeDropdown"
-                    >
-                      <div class="dropdown-options">
-                        <button
-                          tuiIconButton
-                          type="button"
-                          (click)="onEditItem(item); closeDropdown()"
-                          icon="tuiIconEdit3"
-                          appearance="flat"
-                          shape="rounded"
-                          size="s"
-                        ></button>
-                        <button
-                          tuiIconButton
-                          type="button"
-                          (click)="onDeleteItem(item); closeDropdown()"
-                          icon="tuiIconTrash"
-                          appearance="flat"
-                          shape="rounded"
-                          size="s"
-                        ></button>
-                      </div>
-                    </ng-template>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </cdk-virtual-scroll-viewport>
+                  <ng-template
+                    #dropdownContent
+                    let-closeDropdown="closeDropdown"
+                  >
+                    <button
+                      tuiIconButton
+                      type="button"
+                      (click)="onEditItem(item)"
+                      icon="tuiIconEdit3"
+                      appearance="flat"
+                      shape="rounded"
+                      size="s"
+                    ></button>
+                    <button
+                      tuiIconButton
+                      type="button"
+                      (click)="onDeleteItem(item)"
+                      icon="tuiIconTrash"
+                      appearance="flat"
+                      shape="rounded"
+                      size="s"
+                    ></button>
+                  </ng-template>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </tui-scrollbar>
       </div>
     </div>
@@ -124,12 +134,75 @@
       <h1>No items available.</h1>
     </ng-template>
 
-    <div class="item-display">
-      <p>Item view will be added here</p>
+    <div class="item-display border-radius shadow">
+      <div
+        *ngIf="selectedItem; else noItemSelected"
+        class="item-display-sub-container"
+      >
+        <h2>Snippets</h2>
+        <div class="snippet-container">
+          <div>
+            <div class="snippet-heading">
+              <span>Item Snippet</span>
+              <button tuiLink (click)="copyText(getItemSnippet(selectedItem))">
+                Copy
+              </button>
+            </div>
+            <div class="code-container code">
+              <pre>{{ getItemSnippet(selectedItem) }}</pre>
+            </div>
+          </div>
+          <div>
+            <div class="snippet-heading">
+              <span>Relation Snippet</span>
+              <button
+                tuiLink
+                (click)="copyText(getRelationSnippet(selectedItem))"
+              >
+                Copy
+              </button>
+            </div>
+            <div class="code-container code">
+              <pre>{{ getRelationSnippet(selectedItem) }}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <ng-template #noItemSelected>
+      <h2>Snippets</h2>
+      <tui-notification>Please select an item.</tui-notification>
+    </ng-template>
   </div>
 
-  <div class="project-card-container">
-    <p>Project cards will be added here</p>
+  <div class="project-card-container shadow border-radius">
+    <tui-scrollbar>
+      <div class="project-card-sub-container">
+        <tui-island
+          *ngFor="let project of this.store.projects"
+          textAlign="center"
+          size="s"
+          [hoverable]="true"
+          class="border-radius"
+        >
+          <h3 class="tui-island__title">{{ project.name }}</h3>
+          <p class="tui-island__paragraph">
+            <span>Typecodes: 235</span>
+            <br />
+            <span>Extensions: 17</span>
+          </p>
+          <button
+            appearance="flat"
+            size="m"
+            tuiButton
+            type="button"
+            class="tui-island__footer-button"
+          >
+            Show
+          </button>
+        </tui-island>
+      </div>
+    </tui-scrollbar>
   </div>
 </div>

@@ -42,12 +42,12 @@ func setupExtensionsMock(mock sqlmock.Sqlmock, scope string) {
 	}
 
 	returnRows := sqlmock.NewRows([]string{"id", "project_id", "name", "description", "scope", "creation_date", "item_count"}).
-		AddRow(extensions[0].ID, extensions[0].ProjectID.Int32, extensions[0].Name, extensions[0].Description, extensions[0].Scope, extensions[0].CreationDate, extensions[0].ItemCount).
-		AddRow(extensions[1].ID, extensions[1].ProjectID.Int32, extensions[1].Name, extensions[1].Description, extensions[1].Scope, extensions[1].CreationDate, extensions[1].ItemCount)
+		AddRow(extensions[0].ID, extensions[0].ProjectID.Int64, extensions[0].Name, extensions[0].Description, extensions[0].Scope, extensions[0].CreationDate, extensions[0].ItemCount).
+		AddRow(extensions[1].ID, extensions[1].ProjectID.Int64, extensions[1].Name, extensions[1].Description, extensions[1].Scope, extensions[1].CreationDate, extensions[1].ItemCount)
 	mockReadAllExtensionsQuery(mock, scope, returnRows)
 }
 
-func setupExtensionMock(mock sqlmock.Sqlmock, id int64, projectId sql.NullInt32, scope, name, description string, itemCount int, returnRow bool) {
+func setupExtensionMock(mock sqlmock.Sqlmock, id int64, projectId sql.NullInt64, scope, name, description string, itemCount int, returnRow bool) {
 	extensionArgs := []driver.Value{id}
 	var extensionRows *sqlmock.Rows
 	if returnRow {
@@ -66,7 +66,7 @@ func setupTypecodeMock(mock sqlmock.Sqlmock, scope string, lastTypecode, nextTyp
 	mockTypecodeQuery(mock, typecodeArgs, typecodeRows)
 }
 
-func setupNextFreeTypecodeMock(mock sqlmock.Sqlmock, projectId int32, scopeLowRange, scopeHighRange int32, nextTypecode int32) {
+func setupNextFreeTypecodeMock(mock sqlmock.Sqlmock, projectId int64, scopeLowRange, scopeHighRange, nextTypecode int32) {
 	typecodeArgs := []driver.Value{projectId, scopeLowRange, scopeHighRange}
 	typecodeRows := sqlmock.NewRows([]string{"next_free_typecode"}).AddRow(nextTypecode)
 	mockGetNextProjectFreeTypecodeQuery(mock, typecodeArgs, typecodeRows)
@@ -203,8 +203,8 @@ func mockTypecodeQuery(mock sqlmock.Sqlmock, args []driver.Value, returnRows *sq
 }
 
 func mockInsertItemQuery(mock sqlmock.Sqlmock, args []driver.Value, returnRows *sqlmock.Rows) {
-	query := regexp.QuoteMeta(`
-		INSERT INTO item (name, extension_id, table_name, typecode) 
+	query := regexp.QuoteMeta(
+		`INSERT INTO item (name, extension_id, table_name, typecode)
 		VALUES ($1, $2, $3, $4)
 		RETURNING id, creation_date`)
 	mock.ExpectQuery(query).WithArgs(args...).WillReturnRows(returnRows)
@@ -212,7 +212,7 @@ func mockInsertItemQuery(mock sqlmock.Sqlmock, args []driver.Value, returnRows *
 
 func mockInsertItemQueryToReturnError(mock sqlmock.Sqlmock, args []driver.Value) {
 	query := regexp.QuoteMeta(`
-		INSERT INTO item (name, extension_id, table_name, typecode) 
+		INSERT INTO item (name, extension_id, table_name, typecode)
 		VALUES ($1, $2, $3, $4)
 		RETURNING id, creation_date`)
 	mock.ExpectQuery(query).WithArgs(args...).WillReturnError(errors.New("mock error"))
@@ -277,4 +277,13 @@ func mockGetNextProjectFreeTypecodeQuery(mock sqlmock.Sqlmock, args []driver.Val
 		WHERE used_typecodes.typecode IS NULL; -- Filter to only consider typecodes not present in 'used_typecodes'
 	`)
 	mock.ExpectQuery(query).WithArgs(args...).WillReturnRows(returnRows)
+}
+
+func mockReadProjectNameReturnsProjectName(mock sqlmock.Sqlmock, id int64) {
+	query := regexp.QuoteMeta(`SELECT name FROM project WHERE id = $1`)
+	mock.ExpectQuery(query).WithArgs(id).WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow("Test-Project"))
+}
+func mockReadProjectNameReturnsError(mock sqlmock.Sqlmock, id int64) {
+	query := regexp.QuoteMeta(`SELECT name FROM project WHERE id = $1`)
+	mock.ExpectQuery(query).WithArgs(id).WillReturnError(errors.New("mock error"))
 }

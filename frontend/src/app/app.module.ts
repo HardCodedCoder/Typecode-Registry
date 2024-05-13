@@ -28,8 +28,11 @@ import {
   TuiInputModule,
   TuiRadioBlockModule,
   TuiTagModule,
+  TuiElasticContainerModule,
+  TuiIslandModule,
 } from '@taiga-ui/kit';
 import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { TuiLetModule, TuiValueChangesModule } from '@taiga-ui/cdk';
 import { HttpClientModule } from '@angular/common/http';
 import { TuiTableModule } from '@taiga-ui/addon-table';
@@ -42,6 +45,11 @@ import { ErrorDisplayComponent } from './error-display/error-display.component';
 import { UpdateItemComponent } from './update-item/update-item.component';
 import { ExtensionEditorComponent } from './extension-editor/extension-editor.component';
 import { HeaderComponent } from './header/header.component';
+import {
+  TuiNotificationModule,
+  TuiTextfieldControllerModule,
+  TuiLinkModule,
+} from '@taiga-ui/core';
 
 @NgModule({
   declarations: [
@@ -83,6 +91,12 @@ import { HeaderComponent } from './header/header.component';
     CdkFixedSizeVirtualScroll,
     RouterModule,
     TuiHostedDropdownModule,
+    TuiNotificationModule,
+    TuiTextfieldControllerModule,
+    FormsModule,
+    TuiElasticContainerModule,
+    TuiLinkModule,
+    TuiIslandModule,
   ],
   providers: [{ provide: TUI_SANITIZER, useClass: NgDompurifySanitizer }],
   bootstrap: [AppComponent],

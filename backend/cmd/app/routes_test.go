@@ -173,7 +173,7 @@ func TestCreateItemReturnsInternalServerErrorWhenInsertFails(t *testing.T) {
 
 	testExtension := data.Extension{
 		ID:           1,
-		ProjectID:    data.NullInt32{NullInt32: sql.NullInt32{Int32: 1}},
+		ProjectID:    data.NullInt64{NullInt64: sql.NullInt64{Int64: 1}},
 		Name:         "Test-Extension",
 		Description:  "Test-Description",
 		Scope:        "Shared",
@@ -186,7 +186,7 @@ func TestCreateItemReturnsInternalServerErrorWhenInsertFails(t *testing.T) {
 		ExtensionId: 1,
 	}
 
-	setupExtensionMock(mock, itemReq.ExtensionId, sql.NullInt32{Int32: testExtension.ProjectID.Int32, Valid: true}, testExtension.Scope, testExtension.Name, testExtension.Description, 1, true)
+	setupExtensionMock(mock, itemReq.ExtensionId, sql.NullInt64{Int64: testExtension.ProjectID.Int64, Valid: true}, testExtension.Scope, testExtension.Name, testExtension.Description, 1, true)
 	setupTypecodeMock(mock, "Shared", data.ScopeRanges[data.ScopeShared].Start, data.ScopeRanges[data.ScopeShared].Start)
 
 	insertArgs := []driver.Value{
@@ -196,7 +196,9 @@ func TestCreateItemReturnsInternalServerErrorWhenInsertFails(t *testing.T) {
 		20000,
 	}
 
+	mock.ExpectBegin()
 	mockInsertItemQueryToReturnError(mock, insertArgs)
+	mock.ExpectRollback()
 
 	// Mock HTTP Request
 	server := setupHTTPServer(app)
@@ -225,7 +227,7 @@ func TestCreateItemRoutesReturnsStatusInternalServerErrorWhenScopeSharedRangeEnd
 
 	testExtension := data.Extension{
 		ID:           1,
-		ProjectID:    data.NullInt32{NullInt32: sql.NullInt32{Int32: 1}},
+		ProjectID:    data.NullInt64{NullInt64: sql.NullInt64{Int64: 1}},
 		Name:         "Test-Extension",
 		Description:  "Test-Description",
 		Scope:        "Shared",
@@ -240,7 +242,7 @@ func TestCreateItemRoutesReturnsStatusInternalServerErrorWhenScopeSharedRangeEnd
 		ExtensionId: 1,
 	}
 
-	setupExtensionMock(mock, itemReq.ExtensionId, sql.NullInt32{Int32: testExtension.ProjectID.Int32, Valid: true}, testExtension.Scope, testExtension.Name, testExtension.Description, testExtension.ItemCount, true)
+	setupExtensionMock(mock, itemReq.ExtensionId, sql.NullInt64{Int64: testExtension.ProjectID.Int64, Valid: true}, testExtension.Scope, testExtension.Name, testExtension.Description, testExtension.ItemCount, true)
 	setupTypecodeMock(mock, "Shared", data.ScopeRanges[data.ScopeShared].Start, data.ScopeRanges[data.ScopeShared].End)
 
 	server := setupHTTPServer(app)
@@ -282,7 +284,7 @@ func TestSendingNotExistingExtensionIDReturnsStatusNotFound(t *testing.T) {
 
 	itemReq := ItemRequest{Name: "Test-Name", TableName: "Test-Table-Name", ExtensionId: 1}
 
-	setupExtensionMock(mock, 1, sql.NullInt32{}, "dummy", "dummy", "dummy", 0, false)
+	setupExtensionMock(mock, 1, sql.NullInt64{}, "dummy", "dummy", "dummy", 0, false)
 
 	server := setupHTTPServer(app)
 	defer server.Close()
@@ -373,100 +375,6 @@ func TestProjectsRouteReturnsAllProjects(t *testing.T) {
 	}
 
 	checkHTTPResponse(resp, http.StatusOK, t)
-
-	if err := mock.ExpectationsWereMet(); err != nil {
-		t.Errorf("there were unfulfilled expectations: %s", err)
-	}
-
-	_ = db.Close()
-}
-
-func TestItemsRouteCreatesItemForProjectExtension(t *testing.T) {
-	// Initialize Mock database.
-	db, mock, app := setupMockAndApp(t)
-
-	testExtension := data.Extension{
-		ID:           1,
-		ProjectID:    data.NullInt32{NullInt32: sql.NullInt32{Int32: 1}},
-		Name:         "Test-Extension",
-		Description:  "Test-Description",
-		Scope:        "Project",
-		CreationDate: time.Now(),
-		ItemCount:    1,
-	}
-
-	itemRequest := ItemRequest{
-		Name:        "Test-Item",
-		TableName:   "Test-Item-Table",
-		ExtensionId: 1,
-	}
-
-	testProject := data.Project{
-		ID:           1,
-		Name:         "Test-Project",
-		Description:  "Test-Description",
-		CreationDate: time.Now(),
-	}
-
-	setupExtensionMock(mock, testExtension.ID, sql.NullInt32{Int32: testExtension.ProjectID.Int32, Valid: true}, testExtension.Scope, testExtension.Name, testExtension.Description, testExtension.ItemCount, true)
-	setupNextFreeTypecodeMock(mock, testExtension.ProjectID.Int32, data.ScopeRanges[data.ScopeProject].Start, data.ScopeRanges[data.ScopeProject].End, 14000)
-	setupInsertItemMock(mock, itemRequest.Name, testExtension.ID, itemRequest.TableName, 14000)
-	setupReadProjectNameMock(mock, int64(testExtension.ProjectID.Int32), testProject.Name)
-
-	// Mock HTTP Request
-	server := setupHTTPServer(app)
-	defer server.Close()
-
-	resp := sendMockHTTPRequest(server.URL, "/items", itemRequest, t)
-
-	checkHTTPResponse(resp, http.StatusCreated, t)
-
-	expectedValues := ExpectedItemValues{
-		Name:        "Test-Item",
-		TableName:   "Test-Item-Table",
-		ExtensionID: 1,
-		Typecode:    14000,
-	}
-
-	var responseItem ResponseItem
-	getResponse(resp, &responseItem, t)
-	checkResponseValues(responseItem, expectedValues, t)
-
-	if err := mock.ExpectationsWereMet(); err != nil {
-		t.Errorf("there were unfulfilled expectations: %s", err)
-	}
-
-	_ = db.Close()
-}
-
-func TestItemsRouteCreatesItemForSharedExtension(t *testing.T) {
-	db, mock, app := setupMockAndApp(t)
-
-	setupExtensionMock(mock, 1, sql.NullInt32{}, "Shared", "Test-Extension", "Test-Description", 1, true)
-	setupTypecodeMock(mock, "Shared", 20000, 20001)
-	setupInsertItemMock(mock, "Test-Item", 1, "Test-Item-Table-Name", 20001)
-
-	server := setupHTTPServer(app)
-	defer server.Close()
-
-	resp := sendMockHTTPRequest(
-		server.URL,
-		"/items",
-		ItemRequest{Name: "Test-Item", TableName: "Test-Item-Table-Name", ExtensionId: 1},
-		t)
-
-	checkHTTPResponse(resp, http.StatusCreated, t)
-
-	expectedValues := ExpectedItemValues{
-		Name:        "Test-Item",
-		TableName:   "Test-Item-Table-Name",
-		ExtensionID: 1,
-		Typecode:    20001,
-	}
-
-	var responseItem ResponseItem
-	getResponse(resp, &responseItem, t)
-	checkResponseValues(responseItem, expectedValues, t)
 
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
@@ -853,5 +761,205 @@ func TestReadExtension(t *testing.T) {
 		mockReadAllExtensionsQuery(mock, "", nil)
 		mockHTTPGetRequest(app, t, "/extensions", http.StatusInternalServerError)
 		checkExpectations(t, mock)
+	})
+}
+
+func TestCreateExtension(t *testing.T) {
+	_, _, app := setupMockAndApp(t)
+
+	extensionRequest := ExtensionRequest{
+		Name:  "Test",
+		Scope: "Shared",
+	}
+
+	jsonData, err := json.Marshal(extensionRequest)
+	if err != nil {
+		t.Fatalf("error marshalling data: %v", err)
+	}
+
+	t.Run("BadRequestWithInvalidRoute", func(t *testing.T) {
+		req, _ := http.NewRequest(http.MethodPost, "/extensions/invalid", bytes.NewBuffer(jsonData))
+		resp := httptest.NewRecorder()
+
+		app.createExtension(resp, req)
+
+		assert.Equal(t, http.StatusBadRequest, resp.Code)
+	})
+
+	t.Run("BadRequestWithNilBody", func(t *testing.T) {
+		req, _ := http.NewRequest(http.MethodPost, "/extensions", nil)
+		resp := httptest.NewRecorder()
+
+		app.createExtension(resp, req)
+
+		assert.Equal(t, http.StatusBadRequest, resp.Code)
+	})
+}
+
+func TestCreateItem(t *testing.T) {
+	testExtensionForProject := data.Extension{
+		ID:           1,
+		ProjectID:    data.NullInt64{NullInt64: sql.NullInt64{Int64: 1}},
+		Name:         "Test-Extension",
+		Description:  "Test-Description",
+		Scope:        "Project",
+		CreationDate: time.Now(),
+		ItemCount:    1,
+	}
+
+	testExtensionForShared := data.Extension{
+		ID:           1,
+		ProjectID:    data.NullInt64{NullInt64: sql.NullInt64{Valid: false}},
+		Name:         "Test-Extension",
+		Description:  "Test-Description",
+		Scope:        "Shared",
+		CreationDate: time.Now(),
+		ItemCount:    1,
+	}
+
+	itemRequest := ItemRequest{
+		Name:        "Test-Item",
+		TableName:   "Test-Item-Table",
+		ExtensionId: 1,
+	}
+
+	testProject := data.Project{
+		ID:           1,
+		Name:         "Test-Project",
+		Description:  "Test-Description",
+		CreationDate: time.Now(),
+	}
+
+	t.Run("BadRequestWithNilBody", func(t *testing.T) {
+		_, _, app := setupMockAndApp(t)
+		req, _ := http.NewRequest(http.MethodPost, "/items", nil)
+		resp := httptest.NewRecorder()
+
+		app.createItem(resp, req)
+
+		assert.Equal(t, http.StatusBadRequest, resp.Code)
+	})
+
+	t.Run("StatusInternalServerErrorWhenReadingProjectNameFails", func(t *testing.T) {
+		_, mock, app := setupMockAndApp(t)
+		req, _ := http.NewRequest(http.MethodPost, "/items", bytes.NewBuffer([]byte(`{"name": "Test-Item", "table_name": "Test-Item-Table", "extension_id": 1}`)))
+		resp := httptest.NewRecorder()
+
+		setupExtensionMock(mock, testExtensionForProject.ID, sql.NullInt64{Int64: testExtensionForProject.ProjectID.Int64, Valid: true}, testExtensionForProject.Scope, testExtensionForProject.Name, testExtensionForProject.Description, testExtensionForProject.ItemCount, true)
+		setupNextFreeTypecodeMock(mock, testExtensionForProject.ProjectID.Int64, data.ScopeRanges[data.ScopeProject].Start, data.ScopeRanges[data.ScopeProject].End, 14000)
+		mock.ExpectBegin()
+		setupInsertItemMock(mock, itemRequest.Name, itemRequest.ExtensionId, itemRequest.TableName, 14000)
+		mockReadProjectNameReturnsError(mock, testProject.ID)
+		mock.ExpectRollback()
+
+		app.createItem(resp, req)
+
+		assert.Equal(t, http.StatusInternalServerError, resp.Code)
+	})
+
+	t.Run("CreatingItemForSharedExtensionSucceeds", func(t *testing.T) {
+		_, mock, app := setupMockAndApp(t)
+		setupExtensionMock(mock, 1, sql.NullInt64{}, "Shared", "Test-Extension", "Test-Description", 1, true)
+		setupTypecodeMock(mock, "Shared", 20000, 20001)
+		mock.ExpectBegin()
+		setupInsertItemMock(mock, "Test-Item", 1, "Test-Item-Table-Name", 20001)
+		mock.ExpectCommit()
+
+		server := setupHTTPServer(app)
+		defer server.Close()
+
+		resp := sendMockHTTPRequest(
+			server.URL,
+			"/items",
+			ItemRequest{Name: "Test-Item", TableName: "Test-Item-Table-Name", ExtensionId: 1},
+			t)
+
+		checkHTTPResponse(resp, http.StatusCreated, t)
+
+		expectedValues := ExpectedItemValues{
+			Name:        "Test-Item",
+			TableName:   "Test-Item-Table-Name",
+			ExtensionID: 1,
+			Typecode:    20001,
+		}
+
+		var responseItem ResponseItem
+		getResponse(resp, &responseItem, t)
+		checkResponseValues(responseItem, expectedValues, t)
+
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("there were unfulfilled expectations: %s", err)
+		}
+	})
+
+	t.Run("CreateItemRequestReturnsInternalServerErrorWhenErrorInDatabaseOccurs", func(t *testing.T) {
+		_, mock, app := setupMockAndApp(t)
+
+		setupExtensionMock(mock, itemRequest.ExtensionId, testExtensionForShared.ProjectID.NullInt64, testExtensionForShared.Scope, testExtensionForShared.Name, testExtensionForShared.Description, 1, true)
+		setupTypecodeMock(mock, testExtensionForShared.Scope, data.ScopeRanges[data.ScopeShared].Start, data.ScopeRanges[data.ScopeShared].Start)
+
+		insertArgs := []driver.Value{
+			itemRequest.Name,
+			itemRequest.ExtensionId,
+			itemRequest.TableName,
+			20000,
+		}
+
+		mock.ExpectBegin()
+		mockInsertItemQueryToReturnError(mock, insertArgs)
+		mock.ExpectRollback()
+
+		// Mock HTTP Request
+		server := setupHTTPServer(app)
+		defer server.Close()
+
+		resp := sendMockHTTPRequest(server.URL, "/items", itemRequest, t)
+
+		checkHTTPResponse(resp, http.StatusInternalServerError, t)
+
+		var responseItem ResponseItem
+		getResponse(resp, &responseItem, t)
+		expectedResponseItem := ResponseItem{}
+		if responseItem != expectedResponseItem {
+			t.Fatalf("Expected nil response item, got %v", responseItem)
+		}
+
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("there were unfulfilled expectations: %s", err)
+		}
+	})
+
+	t.Run("CreatingItemForProjectExtensionSucceeds", func(t *testing.T) {
+		_, mock, app := setupMockAndApp(t)
+
+		setupExtensionMock(mock, testExtensionForProject.ID, sql.NullInt64{Int64: testExtensionForProject.ProjectID.Int64, Valid: true}, testExtensionForProject.Scope, testExtensionForProject.Name, testExtensionForProject.Description, testExtensionForProject.ItemCount, true)
+		setupNextFreeTypecodeMock(mock, testExtensionForProject.ProjectID.Int64, data.ScopeRanges[data.ScopeProject].Start, data.ScopeRanges[data.ScopeProject].End, 14000)
+		mock.ExpectBegin()
+		setupInsertItemMock(mock, itemRequest.Name, testExtensionForProject.ID, itemRequest.TableName, 14000)
+		setupReadProjectNameMock(mock, int64(testExtensionForProject.ProjectID.Int64), testProject.Name)
+		mock.ExpectCommit()
+
+		// Mock HTTP Request
+		server := setupHTTPServer(app)
+		defer server.Close()
+
+		resp := sendMockHTTPRequest(server.URL, "/items", itemRequest, t)
+
+		checkHTTPResponse(resp, http.StatusCreated, t)
+
+		expectedValues := ExpectedItemValues{
+			Name:        "Test-Item",
+			TableName:   "Test-Item-Table",
+			ExtensionID: 1,
+			Typecode:    14000,
+		}
+
+		var responseItem ResponseItem
+		getResponse(resp, &responseItem, t)
+		checkResponseValues(responseItem, expectedValues, t)
+
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("there were unfulfilled expectations: %s", err)
+		}
 	})
 }

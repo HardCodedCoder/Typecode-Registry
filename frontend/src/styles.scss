@@ -1,8 +1,8 @@
+// General Styles:
 * {
   padding: 0;
   box-sizing: border-box;
-  font-family: Roboto !important;
-  font-size: 1rem;
+  font-family: Roboto, Arial, sans-serif !important;
 }
 
 h1 {
@@ -22,11 +22,129 @@ a {
   cursor: pointer;
 }
 
-.add-button {
-  margin-bottom: 5px;
+pre {
+  margin: 0;
 }
 
 app-extension-editor {
   display: flex;
   height: 100%;
+}
+
+.font-size-09 {
+  font-size: 0.9rem !important;
+}
+
+.border-radius {
+  border-radius: 10px;
+}
+
+.text-align-start {
+  text-align: start;
+}
+
+.no-wrap {
+  white-space: nowrap;
+}
+
+tui-scrollbar {
+  height: 100%;
+}
+
+tui-notification {
+  width: fit-content;
+  font-size: 1rem !important;
+}
+
+.code {
+  font-family: monospace, courier, Arial !important;
+  font-size: 0.9rem;
+  background-color: #f6f6f6;
+  color: rgba(27, 31, 59, 0.65);
+  border: 1px solid #d7d7d7;
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.outer-container {
+  display: flex;
+  height: 75%;
+}
+
+.shadow {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+.text-shadow {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+// Table Styles:
+[_nghost-ng-c1783503476] {
+  // table header
+  font-size: 0.9rem !important;
+  border: none !important;
+}
+
+[_nghost-ng-c2547322422] {
+  // table
+  font-size: 0.9rem !important;
+  background: none !important;
+  line-break: anywhere;
+}
+
+[_ngcontent-ng-c2674606483] {
+  // tag (first column)
+  font-size: 0.9rem;
+}
+
+.table-container thead,
+.table-container thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.table-container tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.table-container th,
+.table-container td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+  border-color: transparent !important;
+}
+
+tbody tr {
+  background-color: #f1f1f1;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #ffffff;
+}
+
+.table-menu {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-bottom: 0.75rem;
+
+  tui-input {
+    width: 250px;
+  }
+
+  button {
+    height: 44px;
+    width: 44px;
+    border-radius: 100%;
+    margin-left: 0.75rem;
+  }
+
+  button:last-child {
+    margin-right: 0.5rem;
+  }
 }

@@ -581,7 +581,7 @@ Figure~\ref{fig:frontend_architecture} provides a visual representation of the f
 \end{figure}
 
 The \texttt{AppModule} serves as the root module of the Angular application, which bootstraps the \texttt{AppComponent} — the top-level component container.
-Within \texttt{AppModule}, several feature components are declared, such as \\\texttt{SidebarMenuComponent} and \texttt{ItemEditorComponent}.
+Within \texttt{AppModule}, several feature components are declared, such as \\\texttt{HeaderComponent} and \texttt{ItemEditorComponent}.
 
 The \texttt{ItemEditorComponent} is particularly interactive, featuring a button that, when clicked by the user, triggers the display of the \texttt{AddItemComponent}.
 This component presents a form that users can use to input the details required to create a new item in the system.
@@ -751,23 +751,21 @@ The \texttt{BackendService}'s design follows best practices for modern web devel
 \headingFive{State Management with StoreService}
 TODO
 
-\headingFive{Sidebar Menu Component}
-The \texttt{SidebarMenuComponent} is a navigational element that provides users with quick access to different sections of the application.
-It features a collapsible menu structure that expands upon user interaction, revealing links to various pages and functionalities within the application.
+\headingFive{Header Component}
+The \texttt{HeaderComponent} is a navigational element that provides users with quick access to different sections of the application.
+It features a comprehensible menu structure, revealing links to various pages and functionalities within the application.
 Those links are:
 
 \begin{itemize}
-    \item \textbf{Home}: Navigates users to the landing page of the application.
+    \item \textbf{Items (Logo Section)}: Navigates users to the items page of the application.
     \item \textbf{Items}: Directs users to the \texttt{ItemEditorComponent}, where they can view, create, update, and delete items.
     \item \textbf{Projects}: Leads users to a page displaying all projects in the system.
-    \item \textbf{Extensions}: Redirects users to a page listing all extensions based on their scope.
+    \item \textbf{Extensions}: Redirects users to the \texttt{ExtensionEditorComponent}, which lists all extensions based on their scope.
     \item \textbf{Settings}: Provides access to user settings.
     \item \textbf{Logout}: Logs users out of the application, terminating the current session.
 \end{itemize}
 
-The \texttt{SidebarMenuComponent} is designed to enhance user navigation and streamline access to key features, ensuring a user-friendly and intuitive experience.
-
-The \texttt{SidebarMenuComponent} is designed to enhance user navigation and streamline access to key features, ensuring a user-friendly and intuitive experience.
+The \texttt{HeaderComponent} is designed to enhance user navigation and streamline access to key features, ensuring a user-friendly and intuitive experience.
 
 \headingFive{Error Display Component}
 

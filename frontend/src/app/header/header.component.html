@@ -1,15 +1,10 @@
-<header>
-  <a class="flex" href="/">
-    <img
-      class="logo"
-      src="./assets/img/logo_header.png"
-      alt="NETCONOMY"
-      title="Home"
-    />
-    <h2>Typecode Registry</h2>
+<header class="shadow">
+  <a class="logo-section" href="/" title="Home">
+    <img class="logo" src="./assets/img/logo_header.png" alt="NETCONOMY" />
+    <h2 class="text-shadow">Typecode Registry</h2>
   </a>
   <nav>
-    <a [routerLink]="['/typecodes']" routerLinkActive="active-link">Items</a>
+    <a [routerLink]="['/items']" routerLinkActive="active-link">Items</a>
     <a [routerLink]="['/extensions']" routerLinkActive="active-link"
       >Extensions</a
     >

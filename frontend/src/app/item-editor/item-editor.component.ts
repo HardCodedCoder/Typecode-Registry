@@ -10,6 +10,7 @@ import { ItemResponse } from '../services/interfaces/items';
 import { TUI_PROMPT, TuiPromptData } from '@taiga-ui/kit';
 import { Router } from '@angular/router';
 import { UpdateItemComponent } from '../update-item/update-item.component';
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-item-editor',
@@ -26,6 +27,10 @@ export class ItemEditorComponent implements OnInit {
     'Typecode',
     'Action',
   ];
+  searchForm = new FormGroup({
+    search: new FormControl(''),
+  });
+  selectedItem!: ItemResponse | null;
 
   constructor(
     @Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
@@ -45,17 +50,17 @@ export class ItemEditorComponent implements OnInit {
         if (response.items === null) {
           console.warn('NULL response: /items');
 
-          if (this.store.hasShown204Error) {
+          if (this.store.hasShown204ErrorItems) {
             this.showInformationNotification();
           }
 
-          if (!this.store.hasShown204Error) {
+          if (!this.store.hasShown204ErrorItems) {
             this.router.navigate(['/error/204'], {
               state: {
                 errorOrigin: '/items',
               },
             });
-            this.store.hasShown204Error = true;
+            this.store.hasShown204ErrorItems = true;
           }
         }
       },
@@ -79,6 +84,15 @@ export class ItemEditorComponent implements OnInit {
       },
       error: error => {
         console.error('Could not fetch project extensions:', error);
+      },
+    });
+
+    this.backendService.getProjects().subscribe({
+      next: response => {
+        this.store.projects = response.projects;
+      },
+      error: error => {
+        console.error('Could not fetch projects:', error);
       },
     });
   }
@@ -180,14 +194,14 @@ export class ItemEditorComponent implements OnInit {
    */
   onDeleteItem(item: ItemResponse): void {
     const data: TuiPromptData = {
-      content: `Item ${item.name} in table ${item.table_name} with typecode ${item.typecode}.`,
-      yes: 'REMOVE',
+      content: `This will delete Item <b>${item.name}</b> in Table <b>${item.table_name}</b> with Typecode <b>${item.typecode}</b>.`,
+      yes: 'Remove',
       no: 'Cancel',
     };
 
     this.dialogs
       .open<boolean>(TUI_PROMPT, {
-        label: 'Do you really want to delete this item?',
+        label: 'Do you really want to delete this Item?',
         size: 'm',
         data,
       })
@@ -225,7 +239,7 @@ export class ItemEditorComponent implements OnInit {
    * @returns {void}
    */
   showSuccessMessage(action: string, itemId: number): void {
-    const message = `Item with id: ${itemId} ${action}!`;
+    const message = `Item with ID: ${itemId} ${action}!`;
     this.alertService
       .open(message, {
         label: '🎉 Success 🎉',
@@ -329,5 +343,46 @@ export class ItemEditorComponent implements OnInit {
         }
       },
     });
+  }
+
+  selectItem(item: ItemResponse) {
+    this.selectedItem = item;
+  }
+
+  copyText(text: string): void {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+
+    this.alertService
+      .open('Snippet copied successfully!', {
+        label: '🎉 Success 🎉',
+        status: 'success',
+      })
+      .subscribe();
+  }
+
+  getItemSnippet(item: any): string {
+    return [
+      `<itemtype code="${item.name}">`,
+      `    <deployment table="${item.table_name}" typecode="${item.typecode}"/>`,
+      `    <attributes>`,
+      `        <!-- attributes -->`,
+      `    </attributes>`,
+      `</itemtype>`,
+    ].join('\n');
+  }
+
+  getRelationSnippet(item: any): string {
+    return [
+      `<relation code="${item.name}" localized="false">`,
+      `    <deployment table="${item.table_name}" typecode="${item.typecode}"/>`,
+      `    <sourceElement type="" cardinality="" ordered="" qualifier=""/>`,
+      `    <targetElement type="" cardinality="" navigable=""/>`,
+      `</relation>`,
+    ].join('\n');
   }
 }

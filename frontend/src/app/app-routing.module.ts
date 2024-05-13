@@ -5,8 +5,8 @@ import { ErrorDisplayComponent } from './error-display/error-display.component';
 import { ExtensionEditorComponent } from './extension-editor/extension-editor.component';
 
 const routes: Routes = [
-  { path: '', component: ItemEditorComponent },
-  { path: 'typecodes', component: ItemEditorComponent },
+  { path: '', redirectTo: '/items', pathMatch: 'full' },
+  { path: 'items', component: ItemEditorComponent },
   { path: 'extensions', component: ExtensionEditorComponent },
   { path: 'error/:code', component: ErrorDisplayComponent },
   { path: '**', redirectTo: '/error/404' },

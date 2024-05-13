@@ -23,17 +23,22 @@ type Item struct {
 // ItemModel wraps the database connection pool.
 type ItemModel struct {
 	DB *sql.DB
+	Tx *sql.Tx
 }
 
 // Insert adds a new item to the database.
 // It returns an error if the SQL query or scan fails.
-func (i ItemModel) Insert(item *Item) error {
-	query := `
-		INSERT INTO item (name, extension_id, table_name, typecode)
+func (i *ItemModel) Insert(item *Item) error {
+	query := `INSERT INTO item (name, extension_id, table_name, typecode)
 		VALUES ($1, $2, $3, $4)
 		RETURNING id, creation_date`
 
 	args := []interface{}{item.Name, item.ExtensionID, item.TableName, item.Typecode}
+
+	if i.Tx != nil {
+		return i.Tx.QueryRow(query, args...).Scan(&item.ID, &item.CreationDate)
+	}
+
 	return i.DB.QueryRow(query, args...).Scan(&item.ID, &item.CreationDate)
 }
 
@@ -43,7 +48,7 @@ func (i ItemModel) Insert(item *Item) error {
 // the type code of the item. The method returns a slice of ItemDetail and an error.
 // On success, the slice contains the queried item details. If an error occurs during
 // the query execution or while reading the results, the corresponding error is returned.
-func (i ItemModel) ReadItems() ([]Item, error) {
+func (i *ItemModel) ReadItems() ([]Item, error) {
 	query := `SELECT item.id,
 	    extension.scope, 
        COALESCE(project.name, '-') AS project_name,
@@ -81,7 +86,7 @@ func (i ItemModel) ReadItems() ([]Item, error) {
 // GetNextSharedFreeTypecode returns the next available typecode for a given scope within a specified range.
 // It returns a sql.NullInt32 and an error.
 // If an error occurs during the database query or while scanning the row, it will return the error.
-func (i ItemModel) GetNextSharedFreeTypecode(scope string, rangeStart int32, rangeEnd int32) (sql.NullInt32, error) {
+func (i *ItemModel) GetNextSharedFreeTypecode(scope string, rangeStart int32, rangeEnd int32) (sql.NullInt32, error) {
 	query := `
        SELECT MIN(e.min_typecode + 1)
 		FROM (
@@ -108,7 +113,7 @@ func (i ItemModel) GetNextSharedFreeTypecode(scope string, rangeStart int32, ran
 // GetNextProjectFreeTypeCode returns the next available typecode for a given project within a specified range.
 // It returns a sql.NullInt32 and an error.
 // If an error occurs during the database query or while scanning the row, it will return the error.
-func (i ItemModel) GetNextProjectFreeTypeCode(projectId int32, rangeStart, rangeEnd int32) (sql.NullInt32, error) {
+func (i *ItemModel) GetNextProjectFreeTypeCode(projectId int64, rangeStart, rangeEnd int32) (sql.NullInt32, error) {
 	query := `
 		WITH
 		typecode_range AS (
@@ -140,7 +145,7 @@ func (i ItemModel) GetNextProjectFreeTypeCode(projectId int32, rangeStart, range
 	return nextFreeTypecode, err
 }
 
-func (i ItemModel) ReadItem(id int64) (Item, error) {
+func (i *ItemModel) ReadItem(id int64) (Item, error) {
 	query := `SELECT item.id,
 	    extension.scope, 
        COALESCE(project.name, '-') AS project_name,
@@ -159,7 +164,7 @@ func (i ItemModel) ReadItem(id int64) (Item, error) {
 	return item, err
 }
 
-func (i ItemModel) DeleteItem(id int64) error {
+func (i *ItemModel) DeleteItem(id int64) error {
 	query := `DELETE FROM item WHERE id = $1`
 	result, err := i.DB.Exec(query, id)
 	if err != nil {
@@ -180,11 +185,42 @@ func (i ItemModel) DeleteItem(id int64) error {
 
 // UpdateItem updates an existing item in the database.
 // It returns an error if the SQL query fails.
-func (i ItemModel) UpdateItem(d *Item) error {
+func (i *ItemModel) UpdateItem(d *Item) error {
 	query := `UPDATE item
 	SET name = $1, table_name = $2
 	WHERE id = $3
 	AND (name != $1 OR table_name != $2)`
 	_, err := i.DB.Exec(query, d.Name, d.TableName, d.ID)
 	return err
+}
+
+func (i *ItemModel) BeginTransaction() error {
+	tx, err := i.DB.Begin()
+	if err != nil {
+		return err
+	}
+	i.Tx = tx
+	return nil
+}
+
+func (i *ItemModel) Rollback() error {
+	if i.Tx != nil {
+		err := i.Tx.Rollback()
+		if err != nil {
+			return err
+		}
+		i.Tx = nil
+	}
+	return nil
+}
+
+func (i *ItemModel) CommitTransaction() error {
+	if i.Tx != nil {
+		err := i.Tx.Commit()
+		if err != nil {
+			return err
+		}
+		i.Tx = nil
+	}
+	return nil
 }
