@@ -7,9 +7,9 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { StoreService } from '../services/store.service';
-import { BackendService } from '../services/backend.service';
-import { ExtensionResponse } from '../services/interfaces/extension';
+import { StoreService } from '../../services/store.service';
+import { BackendService } from '../../services/backend.service';
+import { ExtensionResponse } from '../../services/interfaces/extension';
 import { Subject, takeUntil } from 'rxjs';
 import { TuiValidationError } from '@taiga-ui/cdk';
 import { TuiDialogContext } from '@taiga-ui/core';

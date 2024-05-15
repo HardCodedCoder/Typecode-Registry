@@ -33,13 +33,13 @@
       <table tuiTable [columns]="columns">
         <thead>
           <tr tuiThGroup>
-            <th *tuiHead="'Name'" tuiTh>Name</th>
-            <th *tuiHead="'Description'" tuiTh>Description</th>
-            <th *tuiHead="'Project'" tuiTh>Project</th>
-            <th *tuiHead="'Scope'" tuiTh>Scope</th>
-            <th *tuiHead="'Item Count'" tuiTh>Number of Items</th>
-            <th *tuiHead="'Creation Date'" tuiTh>Creation Date</th>
-            <th *tuiHead="'Actions'" tuiTh [sorter]="null">Actions</th>
+            <th *tuiHead="'Name'" [sticky]="true" tuiTh>Name</th>
+            <th *tuiHead="'Description'" [sticky]="true" tuiTh>Description</th>
+            <th *tuiHead="'Project'" [sticky]="true" tuiTh>Project</th>
+            <th *tuiHead="'Scope'" [sticky]="true" tuiTh>Scope</th>
+            <th *tuiHead="'Item Count'" [sticky]="true" tuiTh>Number of Items</th>
+            <th *tuiHead="'Creation Date'" [sticky]="true" tuiTh>Creation Date</th>
+            <th *tuiHead="'Actions'" tuiTh [sticky]="true" [sorter]="null">Actions</th>
           </tr>
         </thead>
 

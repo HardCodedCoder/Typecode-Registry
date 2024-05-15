@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
 import { TuiDialogContext } from '@taiga-ui/core';
-import { UpdateItemFormData } from '../services/interfaces/formdata';
+import { UpdateItemFormData } from '../../services/interfaces/formdata';
 
 @Component({
   selector: 'app-update-item',

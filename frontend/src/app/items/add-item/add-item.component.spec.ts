@@ -24,11 +24,11 @@ import { TuiValueChangesModule } from '@taiga-ui/cdk';
 import { NgDompurifySanitizer } from '@tinkoff/ng-dompurify';
 import { TUI_SANITIZER } from '@taiga-ui/core';
 import { AddItemComponent } from './add-item.component';
-import { StoreService } from '../services/store.service';
-import { BackendService } from '../services/backend.service';
+import { StoreService } from '../../services/store.service';
+import { BackendService } from '../../services/backend.service';
 import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
-import { ExtensionResponse } from '../services/interfaces/extension';
-import { ProjectResponse } from '../services/interfaces/project';
+import { ExtensionResponse } from '../../services/interfaces/extension';
+import { ProjectResponse } from '../../services/interfaces/project';
 import { of } from 'rxjs';
 import { Renderer2 } from '@angular/core';
 
