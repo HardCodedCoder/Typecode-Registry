@@ -30,6 +30,7 @@ export class ItemEditorComponent implements OnInit {
   searchForm = new FormGroup({
     search: new FormControl(''),
   });
+  selectedItem!: ItemResponse | null;
 
   constructor(
     @Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
@@ -83,6 +84,15 @@ export class ItemEditorComponent implements OnInit {
       },
       error: error => {
         console.error('Could not fetch project extensions:', error);
+      },
+    });
+
+    this.backendService.getProjects().subscribe({
+      next: response => {
+        this.store.projects = response.projects;
+      },
+      error: error => {
+        console.error('Could not fetch projects:', error);
       },
     });
   }
@@ -333,5 +343,46 @@ export class ItemEditorComponent implements OnInit {
         }
       },
     });
+  }
+
+  selectItem(item: ItemResponse) {
+    this.selectedItem = item;
+  }
+
+  copyText(text: string): void {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+
+    this.alertService
+      .open('Snippet copied successfully!', {
+        label: '🎉 Success 🎉',
+        status: 'success',
+      })
+      .subscribe();
+  }
+
+  getItemSnippet(item: any): string {
+    return [
+      `<itemtype code="${item.name}">`,
+      `    <deployment table="${item.table_name}" typecode="${item.typecode}"/>`,
+      `    <attributes>`,
+      `        <!-- attributes -->`,
+      `    </attributes>`,
+      `</itemtype>`,
+    ].join('\n');
+  }
+
+  getRelationSnippet(item: any): string {
+    return [
+      `<relation code="${item.name}" localized="false">`,
+      `    <deployment table="${item.table_name}" typecode="${item.typecode}"/>`,
+      `    <sourceElement type="" cardinality="" ordered="" qualifier=""/>`,
+      `    <targetElement type="" cardinality="" navigable=""/>`,
+      `</relation>`,
+    ].join('\n');
   }
 }

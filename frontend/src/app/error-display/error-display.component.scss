@@ -22,7 +22,6 @@ i {
 
 @mixin float-animation {
   @keyframes float {
-
     0%,
     100% {
       transform: translateY(0) rotate(-3deg);
