@@ -1,9 +1,16 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { StoreService } from '../services/store.service';
 import { BackendService } from '../services/backend.service';
-import { TuiAlertService } from '@taiga-ui/core';
+import { TuiAlertService, TuiDialogService } from '@taiga-ui/core';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup } from '@angular/forms';
+import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
+import { ExtensionFormData } from '../services/interfaces/formdata';
+import { AddExtensionComponent } from '../add-extension/add-extension.component';
+import { Injector } from '@angular/core';
+import { catchError, throwError } from 'rxjs';
+import { ExtensionRequest } from '../services/interfaces/extensionRequest';
+import { MessageService } from '../services/message.service';
 
 @Component({
   selector: 'app-extension-editor',
@@ -28,9 +35,12 @@ export class ExtensionEditorComponent implements OnInit {
   ];
 
   constructor(
+    @Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
+    @Inject(Injector) private readonly injector: Injector,
     @Inject(StoreService) public readonly storeService: StoreService,
     @Inject(BackendService) public readonly backendService: BackendService,
     @Inject(TuiAlertService) private readonly alertService: TuiAlertService,
+    @Inject(MessageService) private readonly messageService: MessageService,
     @Inject(Router) private readonly router: Router
   ) {}
 
@@ -74,6 +84,65 @@ export class ExtensionEditorComponent implements OnInit {
       },
       error: error => {
         console.error('Could not fetch projects', error);
+      },
+    });
+  }
+
+  showDialog(): void {
+    const dialog$ = this.dialogs
+      .open<ExtensionFormData>(
+        new PolymorpheusComponent(AddExtensionComponent, this.injector),
+        {
+          dismissible: true,
+          label: 'Add Extension',
+        }
+      )
+      .pipe(
+        catchError(err => {
+          console.error('extension-editor: Error opening dialog:', err);
+          return throwError(err);
+        })
+      );
+
+    dialog$.subscribe({
+      next: (data: ExtensionFormData) => {
+        console.log('extension-editor: Dialog closed with data: ', data);
+        const project_id = this.storeService.projects.find(
+          project => project.name === data.projectComboBox
+        )?.id;
+        if (project_id === undefined) {
+          // TODO: What to do if the project does not exist?
+          throwError('Project not found!');
+          return;
+        }
+
+        const requestData: ExtensionRequest = {
+          project_id: project_id,
+          name: data.extensionName,
+          scope: data.extensionScope,
+          description: data.extensionDescription,
+        };
+        this.sendCreateExtensionRequest(requestData);
+      },
+    });
+  }
+
+  sendCreateExtensionRequest(data: ExtensionRequest): void {
+    this.backendService.sendCreateExtensionRequest(data).subscribe({
+      next: response => {
+        console.log(response);
+        this.messageService.showSuccessMessage(
+          'created',
+          'Extension',
+          response.extension.id
+        );
+        if (response.extension.project_id > 0)
+          this.storeService.projectExtensions.push(response.extension);
+        else this.storeService.sharedExtensions.push(response.extension);
+        this.storeService.allExtensions?.push(response.extension);
+      },
+      error: error => {
+        console.error('Could not create extension', error);
       },
     });
   }

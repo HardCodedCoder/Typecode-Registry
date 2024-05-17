@@ -17,6 +17,13 @@ export interface FormData {
   projectComboBox: string;
 }
 
+export interface ExtensionFormData {
+  extensionName: string;
+  extensionDescription: string;
+  extensionScope: string;
+  projectComboBox: string;
+}
+
 /**
  * Represents the form data for the update item form.
  * @interface UpdateItemFormData

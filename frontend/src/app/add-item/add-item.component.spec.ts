@@ -27,7 +27,7 @@ import { AddItemComponent } from './add-item.component';
 import { StoreService } from '../services/store.service';
 import { BackendService } from '../services/backend.service';
 import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
-import { ExtensionResponse } from '../services/interfaces/extension';
+import { ExtensionResponse } from '../services/interfaces/extensionRequest';
 import { ProjectResponse } from '../services/interfaces/project';
 import { of } from 'rxjs';
 import { Renderer2 } from '@angular/core';
