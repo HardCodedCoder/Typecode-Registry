@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { StoreService } from '../services/store.service';
 import { BackendService } from '../services/backend.service';
 import { TuiAlertService, TuiDialogService } from '@taiga-ui/core';
@@ -41,7 +41,9 @@ export class ExtensionEditorComponent implements OnInit {
     @Inject(BackendService) public readonly backendService: BackendService,
     @Inject(TuiAlertService) private readonly alertService: TuiAlertService,
     @Inject(MessageService) private readonly messageService: MessageService,
-    @Inject(Router) private readonly router: Router
+    @Inject(Router) private readonly router: Router,
+    @Inject(ChangeDetectorRef)
+    private changeDetectorRef: ChangeDetectorRef
   ) {}
 
   getProjectName(project_id: number): string | undefined {
@@ -110,18 +112,28 @@ export class ExtensionEditorComponent implements OnInit {
         const project_id = this.storeService.projects.find(
           project => project.name === data.projectComboBox
         )?.id;
-        if (project_id === undefined) {
-          // TODO: What to do if the project does not exist?
+        let requestData: ExtensionRequest;
+
+        if (project_id === undefined && data.extensionScope === 'Project') {
           throwError('Project not found!');
           return;
+        } else if (
+          project_id !== undefined &&
+          data.extensionScope === 'Shared'
+        ) {
+          requestData = {
+            name: data.extensionName,
+            scope: data.extensionScope,
+            description: data.extensionDescription,
+          };
+        } else {
+          requestData = {
+            project_id: project_id,
+            name: data.extensionName,
+            scope: data.extensionScope,
+            description: data.extensionDescription,
+          };
         }
-
-        const requestData: ExtensionRequest = {
-          project_id: project_id,
-          name: data.extensionName,
-          scope: data.extensionScope,
-          description: data.extensionDescription,
-        };
         this.sendCreateExtensionRequest(requestData);
       },
     });
@@ -136,12 +148,29 @@ export class ExtensionEditorComponent implements OnInit {
           'Extension',
           response.extension.id
         );
-        if (response.extension.project_id > 0)
-          this.storeService.projectExtensions.push(response.extension);
-        else this.storeService.sharedExtensions.push(response.extension);
-        this.storeService.allExtensions?.push(response.extension);
+        if (response.extension.project_id > 0) {
+          this.storeService.projectExtensions = [
+            ...this.storeService.projectExtensions,
+            response.extension,
+          ];
+        } else {
+          this.storeService.sharedExtensions = [
+            ...this.storeService.sharedExtensions,
+            response.extension,
+          ];
+        }
+        if (this.storeService.allExtensions !== null) {
+          this.storeService.allExtensions = [
+            ...this.storeService.allExtensions,
+            response.extension,
+          ];
+        }
       },
       error: error => {
+        this.messageService.showFailureMessage(
+          `An error occurred while creating the extension. Please try again.
+          ${error.message}`
+        );
         console.error('Could not create extension', error);
       },
     });

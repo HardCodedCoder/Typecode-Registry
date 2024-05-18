@@ -38,7 +38,7 @@ export class ItemEditorComponent implements OnInit {
     @Inject(Injector) private readonly injector: Injector,
     @Inject(BackendService) private readonly backendService: BackendService,
     @Inject(StoreService) public readonly store: StoreService,
-    @Inject(MessageService) private readonly messageService: MessageService,
+    @Inject(MessageService) public readonly messageService: MessageService,
     @Inject(Router) private readonly router: Router
   ) {}
 

@@ -17,7 +17,7 @@ export interface ExtensionResponse {
 }
 
 export interface ExtensionRequest {
-  project_id: number;
+  project_id?: number;
   name: string;
   scope: string;
   description: string;
