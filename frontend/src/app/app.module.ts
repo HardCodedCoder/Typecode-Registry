@@ -50,6 +50,7 @@ import {
   TuiTextfieldControllerModule,
   TuiLinkModule,
 } from '@taiga-ui/core';
+import { AddExtensionComponent } from './add-extension/add-extension.component';
 
 @NgModule({
   declarations: [
@@ -60,6 +61,7 @@ import {
     UpdateItemComponent,
     HeaderComponent,
     ExtensionEditorComponent,
+    AddExtensionComponent,
   ],
   imports: [
     BrowserAnimationsModule,

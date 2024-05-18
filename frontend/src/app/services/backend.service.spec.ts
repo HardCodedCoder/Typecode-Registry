@@ -4,7 +4,7 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { BackendService } from './backend.service';
-import { ExtensionsAPIResponse } from './interfaces/extension';
+import { ExtensionsAPIResponse } from './interfaces/extensionRequest';
 import { ItemRequest } from './interfaces/requests';
 import { ItemAPIResponse } from './interfaces/items';
 import { ProjectsAPIResponse } from './interfaces/project';

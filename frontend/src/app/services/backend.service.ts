@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, Observable, of, tap } from 'rxjs';
-import { ExtensionsAPIResponse } from './interfaces/extension';
+import {
+  ExtensionAPIResponse,
+  ExtensionRequest,
+  ExtensionsAPIResponse,
+} from './interfaces/extensionRequest';
 import { ProjectsAPIResponse } from './interfaces/project';
 import { ItemAPIResponse, ItemsAPIResponse } from './interfaces/items';
 import { ItemRequest, UpdateItemRequest } from './interfaces/requests';
@@ -74,6 +78,27 @@ export class BackendService {
               typecode: 0,
               table_name: '',
               extension_id: 0,
+              creation_date: new Date(),
+            },
+          })
+        )
+      );
+  }
+
+  sendCreateExtensionRequest(
+    extensionRequest: ExtensionRequest
+  ): Observable<ExtensionAPIResponse> {
+    return this.http
+      .post<ExtensionAPIResponse>(`${this.apiUrl}/extensions`, extensionRequest)
+      .pipe(
+        catchError(
+          this.handleError<ExtensionAPIResponse>('sendCreateExtensionRequest', {
+            extension: {
+              id: 0,
+              project_id: 0,
+              name: '',
+              scope: '',
+              description: '',
               creation_date: new Date(),
             },
           })

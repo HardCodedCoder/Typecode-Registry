@@ -1,5 +1,5 @@
 import { Component, Inject, Injector, OnInit } from '@angular/core';
-import { TuiAlertService, TuiDialogService } from '@taiga-ui/core';
+import { TuiDialogService } from '@taiga-ui/core';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { AddItemComponent } from '../add-item/add-item.component';
 import { BackendService } from '../services/backend.service';
@@ -11,6 +11,7 @@ import { TUI_PROMPT, TuiPromptData } from '@taiga-ui/kit';
 import { Router } from '@angular/router';
 import { UpdateItemComponent } from '../update-item/update-item.component';
 import { FormControl, FormGroup } from '@angular/forms';
+import { MessageService } from '../services/message.service';
 
 @Component({
   selector: 'app-item-editor',
@@ -37,7 +38,7 @@ export class ItemEditorComponent implements OnInit {
     @Inject(Injector) private readonly injector: Injector,
     @Inject(BackendService) private readonly backendService: BackendService,
     @Inject(StoreService) public readonly store: StoreService,
-    @Inject(TuiAlertService) private readonly alertService: TuiAlertService,
+    @Inject(MessageService) public readonly messageService: MessageService,
     @Inject(Router) private readonly router: Router
   ) {}
 
@@ -51,7 +52,7 @@ export class ItemEditorComponent implements OnInit {
           console.warn('NULL response: /items');
 
           if (this.store.hasShown204ErrorItems) {
-            this.showInformationNotification();
+            this.messageService.showInformationNotification();
           }
 
           if (!this.store.hasShown204ErrorItems) {
@@ -183,7 +184,11 @@ export class ItemEditorComponent implements OnInit {
           },
         });
 
-        this.showSuccessMessage('created', response.item.id);
+        this.messageService.showSuccessMessage(
+          'created',
+          'Item',
+          response.item.id
+        );
       });
   }
 
@@ -211,67 +216,29 @@ export class ItemEditorComponent implements OnInit {
             next: response => {
               if (response.status === 204) {
                 console.log('Received response 204 from backend');
-                this.showSuccessMessage('deleted', item.id);
+                this.messageService.showSuccessMessage(
+                  'deleted',
+                  'Item',
+                  item.id
+                );
                 if (this.store.items != null) {
                   this.store.items = this.store.items.filter(
                     i => i.id !== item.id
                   );
                 }
               } else {
-                this.showFailureMessage(
+                this.messageService.showFailureMessage(
                   `Could not delete item: ${item.id}! Received status code: ${response.status}`
                 );
               }
             },
             error: error =>
-              this.showFailureMessage(
+              this.messageService.showFailureMessage(
                 `Could not delete item: ${item.id}! Error: ${error}`
               ),
           });
         }
       });
-  }
-
-  /**
-   * Displays a success notification for various actions.
-   * @param {string} action - The action performed ('created' or 'deleted').
-   * @param {number} itemId - The ID of the item affected.
-   * @returns {void}
-   */
-  showSuccessMessage(action: string, itemId: number): void {
-    const message = `Item with ID: ${itemId} ${action}!`;
-    this.alertService
-      .open(message, {
-        label: '🎉 Success 🎉',
-        status: 'success',
-      })
-      .subscribe();
-  }
-
-  /**
-   * Displays a failure notification for various actions.
-   * @param {string} errorMessage - The custom error message to display.
-   * @returns {void}
-   */
-  showFailureMessage(errorMessage: string): void {
-    this.alertService
-      .open(errorMessage, {
-        label: '❌ Failure ❌',
-        status: 'error',
-      })
-      .subscribe();
-  }
-
-  /**
-   * Shows an information notification.
-   */
-  private showInformationNotification(): void {
-    this.alertService
-      .open('Please populate the database.', {
-        label: '💡 Information 💡',
-        status: 'info',
-      })
-      .subscribe();
   }
 
   /**
@@ -283,7 +250,7 @@ export class ItemEditorComponent implements OnInit {
    */
   onEditItem(item: ItemResponse): void {
     if (item.id === 0) {
-      this.showFailureMessage(
+      this.messageService.showFailureMessage(
         'Error: Unexpected internal error! Please restart application!'
       );
       return;
@@ -315,7 +282,7 @@ export class ItemEditorComponent implements OnInit {
       next: (data: UpdateItemFormData) => {
         console.log('item-editor: Dialog closed with data:', data);
         if (data.error?.error === true) {
-          this.showFailureMessage(data.error.message);
+          this.messageService.showFailureMessage(data.error.message);
         } else {
           this.backendService
             .updateItem(item.id, {
@@ -326,17 +293,21 @@ export class ItemEditorComponent implements OnInit {
               next: response => {
                 if (response.status === 204) {
                   console.log('Received response 204 from backend');
-                  this.showSuccessMessage('updated', item.id);
+                  this.messageService.showSuccessMessage(
+                    'updated',
+                    'Item',
+                    item.id
+                  );
                   item.table_name = data.new_table_name;
                   item.name = data.new_item_name;
                 } else {
-                  this.showFailureMessage(
+                  this.messageService.showFailureMessage(
                     `Could not update item: ${item.id}! Received status code: ${response.status}`
                   );
                 }
               },
               error: error =>
-                this.showFailureMessage(
+                this.messageService.showFailureMessage(
                   `Could not update item: ${item.id}! Error: ${error}`
                 ),
             });
@@ -357,12 +328,11 @@ export class ItemEditorComponent implements OnInit {
     document.execCommand('copy');
     document.body.removeChild(textarea);
 
-    this.alertService
-      .open('Snippet copied successfully!', {
-        label: '🎉 Success 🎉',
-        status: 'success',
-      })
-      .subscribe();
+    this.messageService.showSuccessMessage(
+      'Snippet copied successfully!',
+      '',
+      undefined
+    );
   }
 
   getItemSnippet(item: any): string {

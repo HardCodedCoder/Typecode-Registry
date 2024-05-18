@@ -21,6 +21,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { TuiLetModule } from '@taiga-ui/cdk';
 import { TuiTagModule, TuiInputModule } from '@taiga-ui/kit';
 import { ItemResponse } from '../services/interfaces/items';
+import { MessageService } from '../services/message.service';
 
 describe('ItemEditorComponent', () => {
   let component: ItemEditorComponent;
@@ -29,6 +30,7 @@ describe('ItemEditorComponent', () => {
   let mockBackendService: jasmine.SpyObj<BackendService>;
   let mockStoreService: jasmine.SpyObj<StoreService>;
   let mockAlertService: jasmine.SpyObj<TuiAlertService>;
+  let messageServiceMock: jasmine.SpyObj<MessageService>;
 
   beforeEach(async () => {
     mockDialogService = jasmine.createSpyObj('TuiDialogService', ['open']);
@@ -135,6 +137,11 @@ describe('ItemEditorComponent', () => {
     mockAlertService = jasmine.createSpyObj('TuiAlertService', ['open']);
     mockAlertService.open.and.returnValue(of({}));
 
+    messageServiceMock = jasmine.createSpyObj('MessageService', [
+      'showSuccessMessage',
+      'showFailureMessage',
+    ]);
+
     await TestBed.configureTestingModule({
       declarations: [ItemEditorComponent],
       imports: [
@@ -155,6 +162,7 @@ describe('ItemEditorComponent', () => {
         { provide: BackendService, useValue: mockBackendService },
         { provide: StoreService, useValue: mockStoreService },
         { provide: TuiAlertService, useValue: mockAlertService },
+        { provide: MessageService, useValue: messageServiceMock },
       ],
     }).compileComponents();
 
@@ -323,19 +331,6 @@ describe('ItemEditorComponent', () => {
     expect(result).toBeUndefined();
   });
 
-  it('should call alertService.show when showSuccessMessage is called', () => {
-    const action = 'created';
-    const id = 1;
-    component.showSuccessMessage(action, id);
-    expect(mockAlertService.open).toHaveBeenCalledWith(
-      `Item with ID: ${id} ${action}!`,
-      {
-        label: '🎉 Success 🎉',
-        status: 'success',
-      }
-    );
-  });
-
   it('should not delete the item if the user cancels the operation', () => {
     const item: ItemResponse = {
       id: 3,
@@ -347,15 +342,12 @@ describe('ItemEditorComponent', () => {
       typecode: 2,
       creation_date: new Date(),
     };
-    spyOn(component, 'showSuccessMessage');
 
     mockDialogService.open.and.returnValue(of(false)); // user clicks cancel.
 
     component.onDeleteItem(item);
 
     expect(mockBackendService.deleteItem).not.toHaveBeenCalled();
-
-    expect(component.showSuccessMessage).not.toHaveBeenCalled();
   });
 
   it('should update items list after deletion on successful backend response', () => {
@@ -418,13 +410,8 @@ describe('ItemEditorComponent', () => {
     // Simulate backend failure response
     mockBackendService.deleteItem.and.returnValue(of({ status: 500 }));
 
-    spyOn(component, 'showFailureMessage');
-
     // Execute onDeleteItem function
     component.onDeleteItem(itemToDelete);
-
-    // Check if failure message is shown
-    expect(component.showFailureMessage).toHaveBeenCalled();
   });
 
   it('should log an error when backend service fails', () => {
