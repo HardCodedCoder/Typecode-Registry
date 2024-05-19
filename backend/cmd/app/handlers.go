@@ -18,11 +18,18 @@ type ItemRequest struct {
 	ExtensionId int64  `json:"extension_id"`
 }
 
+// ExtensionRequest is the request object for creating a new extension.
 type ExtensionRequest struct {
 	Name        string `json:"name"`
 	Scope       string `json:"scope"`
 	Description string `json:"description,omitempty"`
 	ProjectID   int64  `json:"project_id,omitempty"`
+}
+
+// ExtensionUpdateRequest is the request object for updating an existing extension.
+type ExtensionUpdateRequest struct {
+	Name        string `json:"name,omitempty"`
+	Description string `json:"description,omitempty"`
 }
 
 // healthcheck is a simple handler to check if the service is up and running.
@@ -325,7 +332,11 @@ func (app *application) createItem(w http.ResponseWriter, r *http.Request) {
 }
 
 // getExtensionsHandler handles the /extensions route and calls the appropriate handler based on the request method.
-// It handles GET requests. Other requests will return a 405 Method Not Allowed.
+// It supports GET and POST requests. Other requests will return a 405 Method Not Allowed.
+//
+// Parameters:
+//   - w: The http.ResponseWriter to write the response to.
+//   - r: The http.Request containing the request details.
 func (app *application) getExtensionsHandler(w http.ResponseWriter, r *http.Request) {
 	app.logger.Debug().Msg(fmt.Sprintf("Handling %s %s route", r.Method, r.URL.Path))
 	switch r.Method {
@@ -333,9 +344,77 @@ func (app *application) getExtensionsHandler(w http.ResponseWriter, r *http.Requ
 		app.getExtensions(w, r)
 	case http.MethodPost:
 		app.createExtension(w, r)
+	case http.MethodPut:
+		if strings.Contains(r.URL.Path, "/extensions/") {
+			app.updateExtension(w, r)
+		} else {
+			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		}
 	default:
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 	}
+}
+
+// updateExtension handles the PUT request to update an existing extension.
+// It reads the extension ID from the URL, parses the request body to get the updated extension details,
+// and updates the extension in the database.
+//
+// Parameters:
+//   - w: The http.ResponseWriter to write the response to.
+//   - r: The http.Request containing the request details.
+//
+// If the extension ID is not a valid integer, it returns a 400 Bad Request.
+// If the request body is empty or invalid, it returns a 400 Bad Request.
+// If there is an error while updating the extension in the database, it returns a 500 Internal Server Error.
+func (app *application) updateExtension(w http.ResponseWriter, r *http.Request) {
+	app.logger.Debug().Msg("reading extension id from url")
+	id := r.URL.Path[len("/extensions/"):]
+	idInt, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		app.logger.Warn().Msg(fmt.Sprintf("Bad Request in %s using id %s",
+			GetFunctionName(),
+			id))
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+	}
+
+	if r.Body == nil {
+		app.logger.Error().Msg("Bad Request: Empty request body")
+		http.Error(w, "Bad Request: Empty request body", http.StatusBadRequest)
+		return
+	}
+
+	app.logger.Debug().Msg("reading extension from database")
+	extension, err := app.models.Extensions.Read(idInt)
+	if err != nil {
+		app.logger.Error().Msg(fmt.Sprintf("Error while reading extension with id %d: %v", idInt, err))
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	app.logger.Debug().Msg(fmt.Sprintf("Found extension with id %d", idInt))
+	app.logger.Debug().Msg("parsing request body")
+
+	var extensionUpdateRequest ExtensionUpdateRequest
+	err = app.readJSON(w, r, &extensionUpdateRequest)
+	if err != nil {
+		app.logger.Error().Msg(fmt.Sprintf("Bad Request: Invalid JSON request: %v", r.Body))
+		http.Error(w, "could not read extension update request content from request body", http.StatusBadRequest)
+		return
+	}
+
+	app.logger.Debug().Msg(fmt.Sprintf("Updating extension with id %d", idInt))
+	err = app.models.Extensions.Update(extension, extensionUpdateRequest.Name, extensionUpdateRequest.Description)
+	if err != nil {
+		app.logger.Error().Msg(fmt.Sprintf("Error while updating extension with id %d: %v", idInt, err))
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	app.logger.Debug().Msg(fmt.Sprintf("Sending confirmation to client"))
+	headers := make(http.Header)
+	headers.Set("Location", fmt.Sprintf("/extensions/%d", extension.ID))
+
+	err = app.writeJSON(w, http.StatusNoContent, nil, headers)
 }
 
 func (app *application) createExtension(w http.ResponseWriter, r *http.Request) {
