@@ -50,8 +50,44 @@
                 <tr *ngFor="let project of sortedProjects">
                     <td tuiTd>{{ project.name }}</td>
                     <td tuiTd>{{ project.description }}</td>
-                    <td tuiTd>{{ project.creation_date }}</td>
-                    <td tuiTd>Button</td>
+                    <td tuiTd>{{ formatDate(project.creation_date) }}</td>
+                    <td tuiTd>
+                        <tui-hosted-dropdown [content]="dropdownContent">
+                            <button
+                                    tuiIconButton
+                                    type="button"
+                                    icon="tuiIconMoreVertical"
+                                    appearance="flat"
+                                    shape="rounded"
+                                    size="s"
+                                    class="options"
+                            ></button>
+                        </tui-hosted-dropdown>
+
+                        <ng-template
+                            #dropdownContent
+                            let-closeDropdown="closeDropdown"
+                        >
+                            <button
+                                    tuiIconButton
+                                    type="button"
+                                    (click)="onEditProject(project)"
+                                    icon="tuiIconEdit3"
+                                    appearance="flat"
+                                    shape="rounded"
+                                    size="s"
+                            ></button>
+                            <button
+                                    tuiIconButton
+                                    type="button"
+                                    (click)="onDeleteProject(project)"
+                                    icon="tuiIconTrash"
+                                    appearance="flat"
+                                    shape="rounded"
+                                    size="s"
+                            ></button>
+                        </ng-template>
+                    </td>
                 </tr>
                 </tbody>
             </table>

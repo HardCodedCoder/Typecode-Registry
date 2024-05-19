@@ -3,7 +3,8 @@ import { StoreService } from '../../services/store.service';
 import { BackendService } from '../../services/backend.service';
 import { TuiAlertService } from '@taiga-ui/core';
 import { Router } from '@angular/router';
-import {FormControl, FormGroup} from "@angular/forms";
+import { FormControl, FormGroup } from '@angular/forms';
+import { ProjectResponse } from '../../services/interfaces/project';
 
 @Component({
   selector: 'app-project-editor',
@@ -38,7 +39,30 @@ export class ProjectEditorComponent implements OnInit {
     });
   }
 
-  showDialog() {
+  showDialog() {}
 
+  formatDate(dateString: Date): string {
+    const date = new Date(dateString);
+
+    const dateOptions: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    };
+
+    const timeOptions: Intl.DateTimeFormatOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    };
+
+    const formattedDate = date.toLocaleDateString('de-DE', dateOptions);
+    const formattedTime = date.toLocaleTimeString('de-DE', timeOptions);
+
+    return `${formattedDate} - ${formattedTime} Uhr`;
   }
+
+  onEditProject(project: ProjectResponse) {}
+
+  onDeleteProject(project: ProjectResponse) {}
 }
