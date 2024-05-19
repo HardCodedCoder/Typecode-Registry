@@ -107,7 +107,17 @@ export class AddExtensionComponent implements OnInit {
       : { invalidProject: true };
   }
 
+  /**
+   * Submits the form data.
+   */
   submit() {
     this.context.completeWith(this.form.value);
+  }
+
+  /*
+   * Closes the dialog box.
+   */
+  closeDialog(): void {
+    this.context.completeWith(this.form);
   }
 }

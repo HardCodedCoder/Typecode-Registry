@@ -140,6 +140,9 @@ export class ExtensionEditorComponent implements OnInit {
   }
 
   sendCreateExtensionRequest(data: ExtensionRequest): void {
+    if (data.name === undefined) {
+      return;
+    }
     this.backendService.sendCreateExtensionRequest(data).subscribe({
       next: response => {
         console.log(response);

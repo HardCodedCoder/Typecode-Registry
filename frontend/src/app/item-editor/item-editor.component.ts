@@ -121,6 +121,9 @@ export class ItemEditorComponent implements OnInit {
 
     dialog$.subscribe({
       next: (data: FormData) => {
+        if (data.itemName === undefined) {
+          return;
+        }
         console.log('item-editor: Dialog closed with data:', data);
         let extension_id: number | undefined;
         if (data.extensionScope === 'Shared') {
