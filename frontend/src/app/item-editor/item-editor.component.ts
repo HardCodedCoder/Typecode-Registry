@@ -109,7 +109,7 @@ export class ItemEditorComponent implements OnInit {
         new PolymorpheusComponent(AddItemComponent, this.injector),
         {
           dismissible: true,
-          label: 'Create Item',
+          label: 'Add Item',
         }
       )
       .pipe(
@@ -185,7 +185,7 @@ export class ItemEditorComponent implements OnInit {
         });
 
         this.messageService.showSuccessMessage(
-          'created',
+          'added',
           'Item',
           response.item.id
         );

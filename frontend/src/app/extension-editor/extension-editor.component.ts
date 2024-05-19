@@ -144,7 +144,7 @@ export class ExtensionEditorComponent implements OnInit {
       next: response => {
         console.log(response);
         this.messageService.showSuccessMessage(
-          'created',
+          'added',
           'Extension',
           response.extension.id
         );
