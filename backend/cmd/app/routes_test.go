@@ -15,6 +15,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"regexp"
 	"testing"
 	"time"
 )
@@ -961,5 +962,44 @@ func TestCreateItem(t *testing.T) {
 		if err := mock.ExpectationsWereMet(); err != nil {
 			t.Errorf("there were unfulfilled expectations: %s", err)
 		}
+	})
+}
+
+func TestUpdateExtension(t *testing.T) {
+	_, mock, app := setupMockAndApp(t)
+
+	t.Run("BadRequestWithInvalidID", func(t *testing.T) {
+		req, _ := http.NewRequest(http.MethodPut, "/extensions/invalid", nil)
+		resp := httptest.NewRecorder()
+
+		app.updateExtension(resp, req)
+
+		assert.Equal(t, http.StatusBadRequest, resp.Code)
+	})
+
+	t.Run("BadRequestWithNilBody", func(t *testing.T) {
+		req, _ := http.NewRequest(http.MethodPut, "/extensions/38", nil)
+		resp := httptest.NewRecorder()
+
+		app.updateExtension(resp, req)
+
+		assert.Equal(t, http.StatusBadRequest, resp.Code)
+	})
+
+	t.Run("InternalServerErrorOnFailingRead", func(t *testing.T) {
+		mock.ExpectQuery(regexp.QuoteMeta(`SELECT e.id, e.project_id, e.name, e.description, e.scope, e.creation_date, COUNT(i.id) AS item_count
+		FROM extension e
+		LEFT JOIN item i ON e.id = i.extension_id
+		WHERE e.id = $1
+		GROUP BY e.id`)).
+			WithArgs(int64(38)).
+			WillReturnError(errors.New("mock error"))
+
+		req, _ := http.NewRequest(http.MethodPut, "/extensions/38", bytes.NewBuffer([]byte(`{"name": "Updated Name"}`)))
+		resp := httptest.NewRecorder()
+
+		app.updateExtension(resp, req)
+
+		assert.Equal(t, http.StatusInternalServerError, resp.Code)
 	})
 }
