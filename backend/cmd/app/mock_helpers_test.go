@@ -279,11 +279,16 @@ func mockGetNextProjectFreeTypecodeQuery(mock sqlmock.Sqlmock, args []driver.Val
 	mock.ExpectQuery(query).WithArgs(args...).WillReturnRows(returnRows)
 }
 
-func mockReadProjectNameReturnsProjectName(mock sqlmock.Sqlmock, id int64) {
-	query := regexp.QuoteMeta(`SELECT name FROM project WHERE id = $1`)
-	mock.ExpectQuery(query).WithArgs(id).WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow("Test-Project"))
-}
 func mockReadProjectNameReturnsError(mock sqlmock.Sqlmock, id int64) {
 	query := regexp.QuoteMeta(`SELECT name FROM project WHERE id = $1`)
 	mock.ExpectQuery(query).WithArgs(id).WillReturnError(errors.New("mock error"))
+}
+
+func mockUpdateExtensionQuery(mock sqlmock.Sqlmock, name, description string, id int64) {
+	query := regexp.QuoteMeta(`
+        UPDATE extension
+        SET name = COALESCE(NULLIF($1, ''), name), 
+            description = $2
+        WHERE id = $3`)
+	mock.ExpectExec(query).WithArgs(name, description, id).WillReturnResult(sqlmock.NewResult(1, 1))
 }

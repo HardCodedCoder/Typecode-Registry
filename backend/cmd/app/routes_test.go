@@ -1002,4 +1002,28 @@ func TestUpdateExtension(t *testing.T) {
 
 		assert.Equal(t, http.StatusInternalServerError, resp.Code)
 	})
+
+	t.Run("BadRequestWithInvalidJSON", func(t *testing.T) {
+		setupExtensionMock(mock, 38, sql.NullInt64{}, "Shared", "Test-Extension", "Test-Description", 1, true)
+
+		req, _ := http.NewRequest(http.MethodPut, "/extensions/38", bytes.NewBuffer([]byte(`{"name":`)))
+		resp := httptest.NewRecorder()
+
+		app.updateExtension(resp, req)
+
+		assert.Equal(t, http.StatusBadRequest, resp.Code)
+	})
+
+	t.Run("SuccessfulUpdate", func(t *testing.T) {
+		setupExtensionMock(mock, 38, sql.NullInt64{}, "Shared", "Test-Extension", "Test-Description", 1, true)
+		mockUpdateExtensionQuery(mock, "Updated Name", "Updated Description", int64(38))
+
+		req, _ := http.NewRequest(http.MethodPut, "/extensions/38", bytes.NewBuffer([]byte(`{"name": "Updated Name", "description": "Updated Description"}`)))
+		resp := httptest.NewRecorder()
+
+		app.updateExtension(resp, req)
+
+		assert.Equal(t, http.StatusNoContent, resp.Code)
+	})
+
 }
