@@ -169,7 +169,11 @@ This approach allows us to directly use the powerful concurrency features of Go 
     \hline
     /items/ & GET, PUT, DELETE & Gets, updates, or deletes an item by its ID. Updating an item is idempotent \\
     \hline
-    /projects & GET & Returns all projects created. \\
+    /projects & GET, POST & GET Returns all projects created.
+
+    \newline\newline POST Creates a new Project. The following values must be provided:
+    \newline\newline - \textbf{name}: The name of the new project to create
+    \newline\newline - \textbf{description}: (optional) The description of the project to create.\\
     \hline
     /extensions & GET & Returns all extensions created). \\
     \hline
@@ -404,6 +408,39 @@ Content-Type: application/json
             "creation_date": "2023-01-02T00:00:00Z"
         }
     ]
+}
+\end{lstlisting}
+
+\headingSix{POST /projects}
+
+The \texttt{POST /projects} endpoint allows clients to create a new project.
+When a client makes a \texttt{POST} request to the \texttt{/projects} endpoint, the backend service will create a new project depending on the data send via the request.
+The backend will respond via Status Create Message (201) when the project was successfully created.
+
+\begin{lstlisting}[language=json,label={lst:lstlisting31}]
+POST /projects HTTP/1.1
+Host: example.com
+Content-Type: application/json
+
+{
+  "name": "Project F",
+  "description": "This is project F"
+}
+\end{lstlisting}
+
+Response:
+
+\begin{lstlisting}[language=json,label={lst:lstlisting32}]
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+  "project": {
+    "id": 7,
+    "name": "Project F",
+    "description": "This is project F",
+    "creation_date": "2024-05-20T14:49:31.663586Z"
+  }
 }
 \end{lstlisting}
 

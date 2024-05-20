@@ -25,6 +25,13 @@ type ExtensionRequest struct {
 	ProjectID   int64  `json:"project_id,omitempty"`
 }
 
+// ProjectRequest is the request object for creating a new project
+// Helper struct to parse the JSON request body
+type ProjectRequest struct {
+	Name        string `json:"name"`
+	Description string `json:"description,omitempty"`
+}
+
 // healthcheck is a simple handler to check if the service is up and running.
 // TODO: Add more checks to ensure the service is healthy.
 func (app *application) healthcheck(w http.ResponseWriter, r *http.Request) {
@@ -48,9 +55,61 @@ func (app *application) getProjectsHandler(w http.ResponseWriter, r *http.Reques
 	switch r.Method {
 	case http.MethodGet:
 		app.getProjects(w)
+	case http.MethodPost:
+		app.createProject(w, r)
 	default:
 		app.logger.Error().Msg(fmt.Sprintf("%s not allowed on route %s ", r.Method, r.URL.Path))
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+	}
+}
+
+func (app *application) createProject(w http.ResponseWriter, r *http.Request) {
+	if r.Body == nil {
+		app.logger.Error().Msg("Bad Request: Empty request body")
+		http.Error(w, "Bad Request: Empty request body", http.StatusBadRequest)
+		return
+	}
+
+	app.logger.Debug().Msg("Parsing request body")
+	var projectRequest ProjectRequest
+
+	err := app.readJSON(w, r, &projectRequest)
+	if err != nil {
+		app.logger.Error().Msg(fmt.Sprintf("Bad Request: Invalid JSON request: %v", r.Body))
+		http.Error(w, "could not read project creation request content from body", http.StatusBadRequest)
+		return
+	}
+
+	app.logger.Debug().Msg("validating request")
+	if projectRequest.Name == "" {
+		app.logger.Error().Msg(fmt.Sprintf("project request name mustn't be empty at the same time!"))
+		http.Error(w, "project name mustn't be empty!", http.StatusBadRequest)
+		return
+	}
+	app.logger.Debug().Msg("request valid!")
+
+	app.logger.Debug().Msg("creating project")
+
+	project := data.Project{
+		Name:        projectRequest.Name,
+		Description: projectRequest.Description,
+	}
+
+	err = app.models.Projects.Insert(&project)
+	if err != nil {
+		app.logger.Err(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	headers := make(http.Header)
+	headers.Set("Location", fmt.Sprintf("/projects/%d", project.ID))
+
+	err = app.writeJSON(w, http.StatusCreated, envelope{"project": project}, headers)
+	if err != nil {
+		app.logger.Err(err)
+		http.Error(w, "error while trying to write item to http response", http.StatusInternalServerError)
+		return
 	}
 }
 

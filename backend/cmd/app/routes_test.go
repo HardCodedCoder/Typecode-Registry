@@ -963,3 +963,16 @@ func TestCreateItem(t *testing.T) {
 		}
 	})
 }
+
+func TestCreateProject(t *testing.T) {
+	_, _, app := setupMockAndApp(t)
+
+	t.Run("BadRequestWithNilBody", func(t *testing.T) {
+		req, _ := http.NewRequest(http.MethodPost, "/items", nil)
+		resp := httptest.NewRecorder()
+
+		app.createProject(resp, req)
+
+		assert.Equal(t, http.StatusBadRequest, resp.Code)
+	})
+}
