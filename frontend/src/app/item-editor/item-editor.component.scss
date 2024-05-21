@@ -68,11 +68,11 @@
         width: 100%;
         display: flex;
 
-        > div:first-child {
+        >div:first-child {
           padding: 0 0.5rem 0 0.75rem;
         }
 
-        > div:last-child {
+        >div:last-child {
           padding: 0 0.75rem 0 0.5rem;
         }
 
@@ -91,6 +91,7 @@
             width: 100%;
             display: flex;
             flex-direction: column;
+            transition: 200ms ease;
 
             div {
               width: 100%;
@@ -104,6 +105,12 @@
       }
     }
   }
+}
+
+.change-colors {
+  color: #ff7043;
+  border: 1px solid #ff7043 !important;
+  transition: 200ms ease;
 }
 
 .project-card-container {

@@ -1,4 +1,12 @@
-import { Component, Inject, Injector, OnInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Inject,
+  Injector,
+  OnInit,
+  QueryList,
+  ViewChildren,
+} from '@angular/core';
 import { TuiDialogService } from '@taiga-ui/core';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { AddItemComponent } from '../add-item/add-item.component';
@@ -19,6 +27,9 @@ import { MessageService } from '../services/message.service';
   styleUrl: './item-editor.component.scss',
 })
 export class ItemEditorComponent implements OnInit {
+  @ViewChildren('codeElements') codeElements!: QueryList<
+    ElementRef<HTMLDivElement>
+  >;
   readonly columns: string[] = [
     'Scope',
     'Project',
@@ -121,6 +132,7 @@ export class ItemEditorComponent implements OnInit {
 
     dialog$.subscribe({
       next: (data: FormData) => {
+        // necessary for cancel button in add-item dialog
         if (data.itemName === undefined) {
           return;
         }
@@ -149,6 +161,11 @@ export class ItemEditorComponent implements OnInit {
     });
   }
 
+  /**
+   * Returns the name of the extension with the given ID.
+   * @param {number} extension_id - The ID of the extension to get the name for.
+   * @returns {string | undefined} The name of the extension or undefined if the extension was not found.
+   */
   getExtensionName(extension_id: number): string | undefined {
     let extension = this.store.projectExtensions.find(
       ext => ext.id === extension_id
@@ -203,6 +220,7 @@ export class ItemEditorComponent implements OnInit {
   onDeleteItem(item: ItemResponse): void {
     const data: TuiPromptData = {
       content: `This will delete Item <b>${item.name}</b> in Table <b>${item.table_name}</b> with Typecode <b>${item.typecode}</b>.`,
+      // The order of the "Yes" and "No" buttons is reversed in styles.scss (attribute selector _ngcontent-ng-c77178733)
       yes: 'Remove',
       no: 'Cancel',
     };
@@ -319,13 +337,29 @@ export class ItemEditorComponent implements OnInit {
     });
   }
 
+  /**
+   * Allows the user to select an item. The selected item is highlighted.
+   * @param {ItemResponse} item - The item to select.
+   */
   selectItem(item: ItemResponse) {
     this.selectedItem = item;
+    if (this.codeElements) {
+      this.codeElements.forEach(element => {
+        element.nativeElement.classList.add('change-colors');
+        setTimeout(() => {
+          element.nativeElement.classList.remove('change-colors');
+        }, 500);
+      });
+    }
   }
 
-  copyText(text: string): void {
+  /**
+   * Copies the given text to the clipboard.
+   * @param {code} text - The code text to copy.
+   */
+  copyText(code: string): void {
     const textarea = document.createElement('textarea');
-    textarea.value = text;
+    textarea.value = code;
     document.body.appendChild(textarea);
     textarea.select();
     document.execCommand('copy');
@@ -338,6 +372,11 @@ export class ItemEditorComponent implements OnInit {
     );
   }
 
+  /**
+   * Returns the snippet for the given item.
+   * @param {any} item - The item to get the snippet for.
+   * @returns {string} The snippet for the item.
+   */
   getItemSnippet(item: any): string {
     return [
       `<itemtype code="${item.name}">`,
@@ -349,6 +388,11 @@ export class ItemEditorComponent implements OnInit {
     ].join('\n');
   }
 
+  /**
+   * Returns the snippet for the given item relation.
+   * @param {any} item - The item to get the relation snippet for.
+   * @returns {string} The relation snippet for the item.
+   */
   getRelationSnippet(item: any): string {
     return [
       `<relation code="${item.name}" localized="false">`,
