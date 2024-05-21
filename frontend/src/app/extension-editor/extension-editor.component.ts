@@ -140,6 +140,7 @@ export class ExtensionEditorComponent implements OnInit {
   }
 
   sendCreateExtensionRequest(data: ExtensionRequest): void {
+    // necessary for cancel button in add-extension dialog
     if (data.name === undefined) {
       return;
     }
