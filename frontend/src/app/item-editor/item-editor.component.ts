@@ -42,7 +42,7 @@ export class ItemEditorComponent implements OnInit {
   searchForm = new FormGroup({
     search: new FormControl(''),
   });
-  selectedItem!: ItemResponse | null;
+  selectedItem: ItemResponse | null = null;
 
   constructor(
     @Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
