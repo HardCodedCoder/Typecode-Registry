@@ -645,6 +645,7 @@ The component offers following functionalities:
     \item \textbf{Delete Items}: Users have the ability to delete items directly from the displayed list.
     Upon selecting an item and triggering the delete action, a confirmation prompt is displayed, and upon confirmation, the item is removed from the list and deleted from the backend server via the appropriate API endpoint.
      When a deletion is successful, a success notification is displayed.
+    \item \textbf{Update Items}: Users can modify existing items by selecting an item from the list and clicking the edit icon.
 \end{itemize}
 
 This design ensures that the \texttt{ItemEditorComponent} not only serves as a data presentation layer but also as an interactive interface, facilitating the creation of new items.
@@ -734,6 +735,69 @@ The following key fields constitute the modification form:
 
 Validation procedures, including built-in \texttt{FormGroup} validators are employed to verify user selections against available data retrieved from the \texttt{StoreService}.
 The 'Update' button remains inactive until all form controls are valid and accurately filled, ensuring adherence to input requirements and safeguarding data consistency during the modification process.
+
+\headingFive{Extension Editor Component}
+The \texttt{ExtensionEditorComponent} is a central component that allows users to view, create, update, and delete extensions in the system. It renders a comprehensive table that lists all extensions created, providing users with a quick overview and access to the data they need. The component offers the following functionalities:
+
+\begin{itemize}
+    \item \textbf{Display of Data}: The component utilizes a tabular format to present the extension data effectively, allowing for sorting and filtering capabilities to navigate through the extensions conveniently.
+    \item \textbf{Interaction with Backend}: It interacts with the backend via the RESTful API to fetch and display the latest extension data.
+    \item \textbf{Create New Extensions}: An integral feature of this component is a button that, upon interaction, launches the \texttt{AddExtensionComponent}. This sub-component is a form that captures user input required to create a new extension. When a new extension is created, a success notification is displayed.
+    \item \textbf{Delete Extensions}: Users have the ability to delete extensions directly from the displayed list. Upon selecting an extension and triggering the delete action, a confirmation prompt is displayed, and upon confirmation, the extension is removed from the list and deleted from the backend server via the appropriate API endpoint. When a deletion is successful, a success notification is displayed.
+    \item \textbf{Update Extensions}: Users can modify existing extensions by selecting an extension from the list and clicking the edit icon.
+\end{itemize}
+
+This design ensures that the \texttt{ExtensionEditorComponent} not only serves as a data presentation layer but also as an interactive interface, facilitating the creation and management of extensions.
+
+\begin{figure}[H]
+\centering
+    \includegraphics[width=\textwidth]{./images/frontend/extension-editor-component}
+    \caption{An Illustration of the ExtensionEditorComponent.}
+    \label{fig:extensioneditor_component}
+\end{figure}
+
+\headingFive{Add Extension Component}
+
+This component provides fields for extension details and dynamically adjusts the available input options based on user selections.
+It interfaces with services to fetch necessary data for dropdown selections and enforces validation rules to ensure data integrity prior to submission.
+
+Figure~\ref{fig:add_extension_component} presents a schematic view of the \texttt{AddExtensionComponent}'s architecture, delineating its form structure, the integration with backend services for data fetching, the logic for dynamic display based on scope selection, and the validation mechanisms that underpin its operation.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{./images/frontend/add-extension-component}
+    \caption{The architecture and interaction flow within the AddExtensionComponent.}
+    \label{fig:add_extension_component}
+\end{figure}
+
+\headingSix{Form Structure and User Interaction}
+Constructed using Angular's reactive forms, the \texttt{AddExtensionComponent} orchestrates user interactions through a series of input controls.
+Validators attached to these inputs ensure the user-submitted data adheres to the expected formats and business rules.
+Upon triggering the submission process, the form data is either emitted to parent components or sent directly to the backend, depending on the configured data flow strategy.
+
+\headingSix{Service Integration}
+The component leverages the \texttt{BackendService} to retrieve metadata such as project names.
+This data populates the respective form controls, enabling a cohesive and guided user experience.
+Through the \texttt{StoreService}, the component accesses a centralized state management pattern, ensuring consistency and reactivity to state changes across the application.
+
+\headingSix{User Input Validation and Error Feedback}
+The \texttt{AddExtensionComponent} is designed with validation functions to ensure that all user inputs meet the necessary criteria before a backend request is initiated to create a new extension.
+The following fields constitute the user input form:
+
+\begin{itemize}
+    \item \textbf{Extension Name}: A required field for the name of the extension to be created. An error message is prompted when the field is not populated upon form submission attempt.
+    \item \textbf{Description}: An optional field where users can enter a description for the extension.
+    \item \textbf{Scope of Extension}: The user must specify the scope—either 'Project' or 'Shared'—for the new extension. This selection influences the visibility and content of subsequent dropdowns for 'Project'.
+    \item \textbf{Project}: If the 'Project' scope is selected, this mandatory dropdown field allows for the selection of a project from a list populated via the backend.
+\end{itemize}
+
+Input validation is enforced by the \texttt{FormGroup}'s built-in validators and custom validator functions such as \texttt{validProjectValidator}, which performs checks against the available data retrieved from the \texttt{StoreService}. The 'Add' button remains inactive as long as any form control remains invalid or unfilled. The component is structured to prevent form submission if any validation errors persist, ensuring data integrity and user adherence to input requirements.
+
+\headingSix{Dynamic Scope Handling}
+The component handles scope changes dynamically through the \texttt{scopeChanged} method. This method updates the form's validation state based on the selected scope and ensures the appropriate form controls are validated or cleared as necessary. For instance, when the scope changes from 'Project' to 'Shared', the 'Project' dropdown validators are cleared and the field is reset.
+
+\headingSix{Project Validation}
+A custom validator, \texttt{validProjectValidator}, checks the validity of the selected project against the list of projects stored in the \texttt{StoreService}. If the entered project does not exist, a validation error is returned, ensuring that only valid projects can be selected.
 
 \headingFive{Backend Service}
 The \texttt{BackendService} acts as the intermediary between the frontend and backend, facilitating data exchange and API calls.
