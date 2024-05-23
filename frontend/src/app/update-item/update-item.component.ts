@@ -66,4 +66,11 @@ export class UpdateItemComponent implements OnDestroy {
     this.updateItemData.new_table_name = this.form.value.itemTable;
     this.context.completeWith(this.updateItemData);
   }
+
+  /*
+   * Closes the dialog box.
+   */
+  closeDialog(): void {
+    this.context.completeWith(this.updateItemData);
+  }
 }

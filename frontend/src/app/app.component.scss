@@ -2,6 +2,8 @@
   height: calc(100vh - 7vh); // header height
   padding: 2rem 4rem;
   background-image: linear-gradient(45deg, #96caff, #cbd9ff) !important;
+  /* Doesn't work well with filter buttons
+    background-image: linear-gradient(45deg, #2c2c2c, #63b0da) !important; */
 }
 
 app-header {

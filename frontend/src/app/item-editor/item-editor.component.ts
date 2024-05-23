@@ -302,6 +302,10 @@ export class ItemEditorComponent implements OnInit {
     dialog$.subscribe({
       next: (data: UpdateItemFormData) => {
         console.log('item-editor: Dialog closed with data:', data);
+        // necessary for cancel button in update-item dialog
+        if (data.new_item_name === '') {
+          return;
+        }
         if (data.error?.error === true) {
           this.messageService.showFailureMessage(data.error.message);
         } else {
