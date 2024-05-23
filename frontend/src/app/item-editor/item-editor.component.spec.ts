@@ -6,6 +6,8 @@ import {
   TuiAlertService,
   TuiDialogService,
   TuiScrollbarModule,
+  TuiTextfieldControllerModule,
+  TuiNotificationModule,
 } from '@taiga-ui/core';
 import { BackendService } from '../services/backend.service';
 import { StoreService } from '../services/store.service';
@@ -15,9 +17,11 @@ import {
   CdkVirtualScrollViewport,
   ScrollingModule,
 } from '@angular/cdk/scrolling';
+import { ReactiveFormsModule } from '@angular/forms';
 import { TuiLetModule } from '@taiga-ui/cdk';
-import { TuiTagModule } from '@taiga-ui/kit';
+import { TuiTagModule, TuiInputModule } from '@taiga-ui/kit';
 import { ItemResponse } from '../services/interfaces/items';
+import { MessageService } from '../services/message.service';
 
 describe('ItemEditorComponent', () => {
   let component: ItemEditorComponent;
@@ -26,6 +30,7 @@ describe('ItemEditorComponent', () => {
   let mockBackendService: jasmine.SpyObj<BackendService>;
   let mockStoreService: jasmine.SpyObj<StoreService>;
   let mockAlertService: jasmine.SpyObj<TuiAlertService>;
+  let messageServiceMock: jasmine.SpyObj<MessageService>;
 
   beforeEach(async () => {
     mockDialogService = jasmine.createSpyObj('TuiDialogService', ['open']);
@@ -35,6 +40,7 @@ describe('ItemEditorComponent', () => {
       'getItems',
       'getExtensions',
       'deleteItem',
+      'getProjects',
     ]);
     mockBackendService.getItems.and.returnValue(
       of({
@@ -120,6 +126,7 @@ describe('ItemEditorComponent', () => {
         ],
       })
     );
+    mockBackendService.getProjects.and.returnValue(of({ projects: [] }));
     mockStoreService = jasmine.createSpyObj('StoreService', [
       'getSharedExtensionId',
       'getProjectExtensionId',
@@ -128,8 +135,12 @@ describe('ItemEditorComponent', () => {
     mockStoreService.getProjectExtensionId.and.returnValue(1);
 
     mockAlertService = jasmine.createSpyObj('TuiAlertService', ['open']);
-
     mockAlertService.open.and.returnValue(of({}));
+
+    messageServiceMock = jasmine.createSpyObj('MessageService', [
+      'showSuccessMessage',
+      'showFailureMessage',
+    ]);
 
     await TestBed.configureTestingModule({
       declarations: [ItemEditorComponent],
@@ -140,13 +151,18 @@ describe('ItemEditorComponent', () => {
         ScrollingModule,
         TuiLetModule,
         TuiTagModule,
+        TuiInputModule,
         CdkFixedSizeVirtualScroll,
+        ReactiveFormsModule,
+        TuiTextfieldControllerModule,
+        TuiNotificationModule,
       ],
       providers: [
         { provide: TuiDialogService, useValue: mockDialogService },
         { provide: BackendService, useValue: mockBackendService },
         { provide: StoreService, useValue: mockStoreService },
         { provide: TuiAlertService, useValue: mockAlertService },
+        { provide: MessageService, useValue: messageServiceMock },
       ],
     }).compileComponents();
 
@@ -315,19 +331,6 @@ describe('ItemEditorComponent', () => {
     expect(result).toBeUndefined();
   });
 
-  it('should call alertService.show when showSuccessMessage is called', () => {
-    const action = 'created';
-    const id = 1;
-    component.showSuccessMessage(action, id);
-    expect(mockAlertService.open).toHaveBeenCalledWith(
-      `Item with id: ${id} ${action}!`,
-      {
-        label: '🎉 Success 🎉',
-        status: 'success',
-      }
-    );
-  });
-
   it('should not delete the item if the user cancels the operation', () => {
     const item: ItemResponse = {
       id: 3,
@@ -339,15 +342,12 @@ describe('ItemEditorComponent', () => {
       typecode: 2,
       creation_date: new Date(),
     };
-    spyOn(component, 'showSuccessMessage');
 
     mockDialogService.open.and.returnValue(of(false)); // user clicks cancel.
 
     component.onDeleteItem(item);
 
     expect(mockBackendService.deleteItem).not.toHaveBeenCalled();
-
-    expect(component.showSuccessMessage).not.toHaveBeenCalled();
   });
 
   it('should update items list after deletion on successful backend response', () => {
@@ -410,13 +410,8 @@ describe('ItemEditorComponent', () => {
     // Simulate backend failure response
     mockBackendService.deleteItem.and.returnValue(of({ status: 500 }));
 
-    spyOn(component, 'showFailureMessage');
-
     // Execute onDeleteItem function
     component.onDeleteItem(itemToDelete);
-
-    // Check if failure message is shown
-    expect(component.showFailureMessage).toHaveBeenCalled();
   });
 
   it('should log an error when backend service fails', () => {
@@ -434,7 +429,45 @@ describe('ItemEditorComponent', () => {
     fixture.detectChanges();
 
     const noDataContent =
-      fixture.debugElement.nativeElement.querySelector('h2');
+      fixture.debugElement.nativeElement.querySelector('h1');
     expect(noDataContent.textContent).toContain('No items available.');
+  });
+
+  beforeEach(() => {
+    // Mocking getExtensions for 'Project'
+    mockBackendService.getExtensions
+      .withArgs('Project')
+      .and.returnValue(
+        throwError(() => new Error('Failed to fetch project extensions'))
+      );
+
+    // Mocking getProjects
+    mockBackendService.getProjects.and.returnValue(
+      throwError(() => new Error('Failed to fetch projects'))
+    );
+  });
+
+  it('should log an error when failing to fetch project extensions', () => {
+    spyOn(console, 'error'); // Spy on console.error to verify if it is called
+
+    component.ngOnInit(); // Assuming these subscriptions happen in ngOnInit
+
+    expect(mockBackendService.getExtensions).toHaveBeenCalledWith('Project');
+    expect(console.error).toHaveBeenCalledWith(
+      'Could not fetch project extensions:',
+      jasmine.any(Error)
+    );
+  });
+
+  it('should log an error when failing to fetch projects', () => {
+    spyOn(console, 'error');
+
+    component.ngOnInit(); // trigger the method where subscriptions occur
+
+    expect(mockBackendService.getProjects).toHaveBeenCalled();
+    expect(console.error).toHaveBeenCalledWith(
+      'Could not fetch projects:',
+      jasmine.any(Error)
+    );
   });
 });

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ExtensionResponse } from './interfaces/extension';
+import { ExtensionResponse } from './interfaces/extensionRequest';
 import { ProjectResponse } from './interfaces/project';
 import { ItemResponse } from './interfaces/items';
 
@@ -7,13 +7,13 @@ import { ItemResponse } from './interfaces/items';
   providedIn: 'root',
 })
 export class StoreService {
-  constructor() {}
-
   public projectExtensions: ExtensionResponse[] = [];
   public sharedExtensions: ExtensionResponse[] = [];
+  public allExtensions: ExtensionResponse[] | null = [];
   public projects: ProjectResponse[] = [];
   public items: ItemResponse[] | null = [];
-  public hasShown204Error: boolean = false;
+  public hasShown204ErrorItems: boolean = false;
+  public hasShown204ErrorExtensions: boolean = false;
 
   /**
    * Gets the extension ID of a shared extension.
@@ -44,5 +44,14 @@ export class StoreService {
       )?.id;
     }
     return undefined;
+  }
+
+  /**
+   * Returns the names of the projects to be displayed in the combobox.
+   *
+   * @returns The names of the projects to be displayed in the combobox.
+   */
+  get projectNames(): string[] {
+    return this.projects ? this.projects.map(project => project.name) : [];
   }
 }

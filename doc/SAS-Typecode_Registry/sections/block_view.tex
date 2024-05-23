@@ -171,6 +171,8 @@ This approach allows us to directly use the powerful concurrency features of Go 
     \hline
     /projects & GET & Returns all projects created. \\
     \hline
+    /extensions & GET & Returns all extensions created). \\
+    \hline
     /extensions/ & GET & Gets the extensions of a specific scope.
     Only two values will return extensions:
     \newline\newline - \textbf{Shared}: Returns all the shared extensions.
@@ -313,9 +315,9 @@ Content-Type: application/json
 {
     "id": 1,
     "scope": "Project",
-    "project": "Projekt A",
+    "project": "Project A",
     "name": "Item A1",
-    "table_name": "Tabelle A1",
+    "table_name": "Table A1",
     "extension_id": 1,
     "typecode": 14000,
     "creation_date": "2024-04-24T20:02:00.573142Z"
@@ -405,19 +407,57 @@ Content-Type: application/json
 }
 \end{lstlisting}
 
-\headingSix{GET /extensions/}
+\headingSix{GET /extensions}
 
-The \texttt{GET /extensions/} endpoint allows clients to retrieve all extensions of a specific scope.
-When a client makes a \texttt{GET} request to the \texttt{/extensions/} endpoint, the backend service will return a list of extensions.
-The returned extensions are filtered based on their scope, which can be either 'Shared' or 'Project'.
-\\The 'Shared' scope returns all the shared extensions, while the 'Project' scope returns all project extensions.
-\\
+The \texttt{GET /extensions} endpoint allows clients to retrieve all extensions in the system.
+When a client makes a \texttt{GET} request to the \texttt{/extensions} endpoint, the backend service will return a list of extensions.
+
 \begin{lstlisting}[language=json,label={lst:lstlisting13}]
-GET /extensions/ HTTP/1.1
+GET /extensions HTTP/1.1
 Host: example.com
 \end{lstlisting}
 
 Response:
+
+\begin{lstlisting}[language=json,label={lst:lstlisting23}]
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "extensions": [
+        {
+            "id": 1,
+            "project_id": null,
+            "name": "Extension 1",
+            "description": "This is extension 1",
+            "scope": "Shared",
+            "creation_date": "2023-01-01T00:00:00Z"
+            "item_count: 2"
+        },
+        {
+            "id": 2,
+            "project_id": 2,
+            "name": "Extension 2",
+            "description": "This is extension 2",
+            "scope": "Project",
+            "creation_date": "2023-01-02T00:00:00Z"
+            "item_count: 10"
+        }
+    ]
+}
+\end{lstlisting}
+
+
+\headingSix{GET /extensions/{scope}}
+The client has the option to specify the scope of the extensions they want to retrieve.
+Therefore, the client can include the scope consisting of either `shared` or `project` in the request URL\@.
+The returned extensions are then filtered based on their scope, which can be either 'Shared' or 'Project'.
+The 'Shared' scope returns all the shared extensions, while the 'Project' scope returns all project extensions.
+
+\begin{lstlisting}[language=json,label={lst:lstlisting22}]
+GET /extensions/project HTTP/1.1
+Host: example.com
+\end{lstlisting}
 
 \begin{lstlisting}[language=json,label={lst:lstlisting14}]
 HTTP/1.1 200 OK
@@ -430,8 +470,9 @@ Content-Type: application/json
             "project_id": 1,
             "name": "Extension 1",
             "description": "This is extension 1",
-            "scope": "Shared",
+            "scope": "Project",
             "creation_date": "2023-01-01T00:00:00Z"
+            "item_count: 2"
         },
         {
             "id": 2,
@@ -440,6 +481,7 @@ Content-Type: application/json
             "description": "This is extension 2",
             "scope": "Project",
             "creation_date": "2023-01-02T00:00:00Z"
+            "item_count: 0"
         }
     ]
 }
@@ -539,7 +581,7 @@ Figure~\ref{fig:frontend_architecture} provides a visual representation of the f
 \end{figure}
 
 The \texttt{AppModule} serves as the root module of the Angular application, which bootstraps the \texttt{AppComponent} — the top-level component container.
-Within \texttt{AppModule}, several feature components are declared, such as \\\texttt{SidebarMenuComponent} and \texttt{ItemEditorComponent}.
+Within \texttt{AppModule}, several feature components are declared, such as \\\texttt{HeaderComponent} and \texttt{ItemEditorComponent}.
 
 The \texttt{ItemEditorComponent} is particularly interactive, featuring a button that, when clicked by the user, triggers the display of the \texttt{AddItemComponent}.
 This component presents a form that users can use to input the details required to create a new item in the system.
@@ -603,6 +645,7 @@ The component offers following functionalities:
     \item \textbf{Delete Items}: Users have the ability to delete items directly from the displayed list.
     Upon selecting an item and triggering the delete action, a confirmation prompt is displayed, and upon confirmation, the item is removed from the list and deleted from the backend server via the appropriate API endpoint.
      When a deletion is successful, a success notification is displayed.
+    \item \textbf{Update Items}: Users can modify existing items by selecting an item from the list and clicking the edit icon.
 \end{itemize}
 
 This design ensures that the \texttt{ItemEditorComponent} not only serves as a data presentation layer but also as an interactive interface, facilitating the creation of new items.
@@ -656,6 +699,106 @@ Input validation is enforced by the \texttt{FormGroup}'s built-in validators and
 The 'Create' button remains inactive as long as any form control remains invalid or unfilled.
 The component is structured to prevent form submission if any validation errors persist, ensuring data integrity and user adherence to input requirements.
 
+\headingFive{Update Item Component}
+
+The Update Item Component exemplifies the dynamic and interactive nature of the application's frontend, enabling users to modify existing item details with precision.
+It features robust integration with backend services for data retrieval, employs sophisticated user input validation mechanisms, and maintains data integrity throughout the update process.
+
+Figure~\ref{fig:updateitem_component} illustrates the architectural overview of the \texttt{UpdateItemComponent}, delineating its form structure, backend integration for data population, dynamic content adaptation based on user selections, and the validation procedures essential for its operation.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{./images/frontend/update-item-component}
+    \caption{Architecture and interaction flow within the UpdateItemComponent.}
+    \label{fig:updateitem_component}
+\end{figure}
+
+\headingSix{Form Structure and User Interaction}
+The Update Item Component is developed using Angular's reactive forms, facilitating seamless user interactions through a series of input controls tailored for modifying item attributes.
+Validators are meticulously configured to ensure the accuracy and compliance of user-submitted data with established business rules.
+Upon initiating the update process, the modified data is dispatched to the backend for processing or emitted to parent components as dictated by the application's data flow architecture.
+
+\headingSix{Service Integration}
+Leveraging the \texttt{BackendService}, the component dynamically retrieves and populates existing item details into the form controls, providing users with contextual information for making informed modifications.
+This integration ensures coherence and consistency between the frontend and backend systems.
+Additionally, the \texttt{StoreService} is employed to manage the application's state, facilitating real-time updates and maintaining synchronization across various components.
+
+\headingSix{User Input Validation and Error Handling}
+The Update Item Component implements robust validation strategies to verify the accuracy and completeness of user inputs before initiating the update operation.
+The following key fields constitute the modification form:
+
+\begin{itemize}
+    \item \textbf{Item Name}: An essential field for updating the name of the item.
+    Input validation prompts an error message if the field is left empty or contains invalid characters.
+    \item \textbf{Table Name}: A mandatory field specifying the table name for storing updated item data in SAP. Similar to the item name, user input validation is enforced to ensure data integrity.
+\end{itemize}
+
+Validation procedures, including built-in \texttt{FormGroup} validators are employed to verify user selections against available data retrieved from the \texttt{StoreService}.
+The 'Update' button remains inactive until all form controls are valid and accurately filled, ensuring adherence to input requirements and safeguarding data consistency during the modification process.
+
+\headingFive{Extension Editor Component}
+The \texttt{ExtensionEditorComponent} is a central component that allows users to view, create, update, and delete extensions in the system. It renders a comprehensive table that lists all extensions created, providing users with a quick overview and access to the data they need. The component offers the following functionalities:
+
+\begin{itemize}
+    \item \textbf{Display of Data}: The component utilizes a tabular format to present the extension data effectively, allowing for sorting and filtering capabilities to navigate through the extensions conveniently.
+    \item \textbf{Interaction with Backend}: It interacts with the backend via the RESTful API to fetch and display the latest extension data.
+    \item \textbf{Create New Extensions}: An integral feature of this component is a button that, upon interaction, launches the \texttt{AddExtensionComponent}. This sub-component is a form that captures user input required to create a new extension. When a new extension is created, a success notification is displayed.
+    \item \textbf{Delete Extensions}: Users have the ability to delete extensions directly from the displayed list. Upon selecting an extension and triggering the delete action, a confirmation prompt is displayed, and upon confirmation, the extension is removed from the list and deleted from the backend server via the appropriate API endpoint. When a deletion is successful, a success notification is displayed.
+    \item \textbf{Update Extensions}: Users can modify existing extensions by selecting an extension from the list and clicking the edit icon.
+\end{itemize}
+
+This design ensures that the \texttt{ExtensionEditorComponent} not only serves as a data presentation layer but also as an interactive interface, facilitating the creation and management of extensions.
+
+\begin{figure}[H]
+\centering
+    \includegraphics[width=\textwidth]{./images/frontend/extension-editor-component}
+    \caption{An Illustration of the ExtensionEditorComponent.}
+    \label{fig:extensioneditor_component}
+\end{figure}
+
+\headingFive{Add Extension Component}
+
+This component provides fields for extension details and dynamically adjusts the available input options based on user selections.
+It interfaces with services to fetch necessary data for dropdown selections and enforces validation rules to ensure data integrity prior to submission.
+
+Figure~\ref{fig:add_extension_component} presents a schematic view of the \texttt{AddExtensionComponent}'s architecture, delineating its form structure, the integration with backend services for data fetching, the logic for dynamic display based on scope selection, and the validation mechanisms that underpin its operation.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{./images/frontend/add-extension-component}
+    \caption{The architecture and interaction flow within the AddExtensionComponent.}
+    \label{fig:add_extension_component}
+\end{figure}
+
+\headingSix{Form Structure and User Interaction}
+Constructed using Angular's reactive forms, the \texttt{AddExtensionComponent} orchestrates user interactions through a series of input controls.
+Validators attached to these inputs ensure the user-submitted data adheres to the expected formats and business rules.
+Upon triggering the submission process, the form data is either emitted to parent components or sent directly to the backend, depending on the configured data flow strategy.
+
+\headingSix{Service Integration}
+The component leverages the \texttt{BackendService} to retrieve metadata such as project names.
+This data populates the respective form controls, enabling a cohesive and guided user experience.
+Through the \texttt{StoreService}, the component accesses a centralized state management pattern, ensuring consistency and reactivity to state changes across the application.
+
+\headingSix{User Input Validation and Error Feedback}
+The \texttt{AddExtensionComponent} is designed with validation functions to ensure that all user inputs meet the necessary criteria before a backend request is initiated to create a new extension.
+The following fields constitute the user input form:
+
+\begin{itemize}
+    \item \textbf{Extension Name}: A required field for the name of the extension to be created. An error message is prompted when the field is not populated upon form submission attempt.
+    \item \textbf{Description}: An optional field where users can enter a description for the extension.
+    \item \textbf{Scope of Extension}: The user must specify the scope—either 'Project' or 'Shared'—for the new extension. This selection influences the visibility and content of subsequent dropdowns for 'Project'.
+    \item \textbf{Project}: If the 'Project' scope is selected, this mandatory dropdown field allows for the selection of a project from a list populated via the backend.
+\end{itemize}
+
+Input validation is enforced by the \texttt{FormGroup}'s built-in validators and custom validator functions such as \texttt{validProjectValidator}, which performs checks against the available data retrieved from the \texttt{StoreService}. The 'Add' button remains inactive as long as any form control remains invalid or unfilled. The component is structured to prevent form submission if any validation errors persist, ensuring data integrity and user adherence to input requirements.
+
+\headingSix{Dynamic Scope Handling}
+The component handles scope changes dynamically through the \texttt{scopeChanged} method. This method updates the form's validation state based on the selected scope and ensures the appropriate form controls are validated or cleared as necessary. For instance, when the scope changes from 'Project' to 'Shared', the 'Project' dropdown validators are cleared and the field is reset.
+
+\headingSix{Project Validation}
+A custom validator, \texttt{validProjectValidator}, checks the validity of the selected project against the list of projects stored in the \texttt{StoreService}. If the entered project does not exist, a validation error is returned, ensuring that only valid projects can be selected.
+
 \headingFive{Backend Service}
 The \texttt{BackendService} acts as the intermediary between the frontend and backend, facilitating data exchange and API calls.
 It encapsulates the logic for HTTP requests, error handling, and data transformation, ensuring a seamless communication channel between the Angular application and the Golang backend.
@@ -672,23 +815,21 @@ The \texttt{BackendService}'s design follows best practices for modern web devel
 \headingFive{State Management with StoreService}
 TODO
 
-\headingFive{Sidebar Menu Component}
-The \texttt{SidebarMenuComponent} is a navigational element that provides users with quick access to different sections of the application.
-It features a collapsible menu structure that expands upon user interaction, revealing links to various pages and functionalities within the application.
+\headingFive{Header Component}
+The \texttt{HeaderComponent} is a navigational element that provides users with quick access to different sections of the application.
+It features a comprehensible menu structure, revealing links to various pages and functionalities within the application.
 Those links are:
 
 \begin{itemize}
-    \item \textbf{Home}: Navigates users to the landing page of the application.
+    \item \textbf{Items (Logo Section)}: Navigates users to the items page of the application.
     \item \textbf{Items}: Directs users to the \texttt{ItemEditorComponent}, where they can view, create, update, and delete items.
     \item \textbf{Projects}: Leads users to a page displaying all projects in the system.
-    \item \textbf{Extensions}: Redirects users to a page listing all extensions based on their scope.
+    \item \textbf{Extensions}: Redirects users to the \texttt{ExtensionEditorComponent}, which lists all extensions based on their scope.
     \item \textbf{Settings}: Provides access to user settings.
     \item \textbf{Logout}: Logs users out of the application, terminating the current session.
 \end{itemize}
 
-The \texttt{SidebarMenuComponent} is designed to enhance user navigation and streamline access to key features, ensuring a user-friendly and intuitive experience.
-
-The \texttt{SidebarMenuComponent} is designed to enhance user navigation and streamline access to key features, ensuring a user-friendly and intuitive experience.
+The \texttt{HeaderComponent} is designed to enhance user navigation and streamline access to key features, ensuring a user-friendly and intuitive experience.
 
 \headingFive{Error Display Component}
 

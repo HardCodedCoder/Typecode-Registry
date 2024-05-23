@@ -47,7 +47,7 @@
     <h3 class="tui-form__header">Scope of Target Extension</h3>
     <div
       tuiGroup
-      class="tui-form__row tui-form__header_margin-bottom_small"
+      class="tui-form__row tui-form__header_margin-bottom_small gray-background"
       [adaptive]="true"
       [collapsed]="true"
       (tuiValueChanges)="scopeChanged($event)"
@@ -81,7 +81,7 @@
         <input placeholder="Project Name" tuiTextfield />
         <tui-data-list-wrapper
           *tuiDataList
-          [items]="projectNames | tuiFilterByInput"
+          [items]="this.store.projectNames | tuiFilterByInput"
         ></tui-data-list-wrapper>
       </tui-combo-box>
       <tui-error
@@ -125,7 +125,17 @@
       (click)="submit()"
       [disabled]="this.form.invalid"
     >
-      Create
+      Add
+    </button>
+    <button
+      size="l"
+      tuiButton
+      appearance="flat"
+      type="button"
+      class="tui-form__button"
+      (click)="closeDialog()"
+    >
+      Cancel
     </button>
   </div>
 </form>

@@ -57,7 +57,7 @@ func TestReadJSONReturnsErrorIfRequestBodyContainsMultipleValues(t *testing.T) {
 func TestCalculateTypecodeReturnsErrorWhenExtensionWithEmptyScopeIsPassed(t *testing.T) {
 	extension := data.Extension{
 		ID:           1,
-		ProjectID:    data.NullInt32{NullInt32: sql.NullInt32{Int32: 2}},
+		ProjectID:    data.NullInt64{NullInt64: sql.NullInt64{Int64: 2}},
 		Name:         "Test-Extension",
 		Description:  "Test-Description",
 		Scope:        "",
@@ -73,7 +73,7 @@ func TestCalculateTypecodeReturnsErrorWhenExtensionWithEmptyScopeIsPassed(t *tes
 func TestCalculateTypecodeReturnsErrorWhenNotInitializedItemModelIsPassed(t *testing.T) {
 	extension := data.Extension{
 		ID:           1,
-		ProjectID:    data.NullInt32{NullInt32: sql.NullInt32{Int32: 2}},
+		ProjectID:    data.NullInt64{NullInt64: sql.NullInt64{Int64: 2}},
 		Name:         "Test-Extension",
 		Description:  "Test-Description",
 		Scope:        "Shared",
@@ -99,7 +99,7 @@ func TestCalculateTypecodePanicsWhenCalledWithHybrisScope(t *testing.T) {
 
 	extension := data.Extension{
 		ID:           1,
-		ProjectID:    data.NullInt32{NullInt32: sql.NullInt32{Int32: 1}},
+		ProjectID:    data.NullInt64{NullInt64: sql.NullInt64{Int64: 1}},
 		Name:         "Test-Name",
 		Description:  "Test-Description",
 		Scope:        "Hybris",
@@ -113,7 +113,7 @@ func TestCalculateTypecodePanicsWhenCalledWithHybrisScope(t *testing.T) {
 func TestCalculateTypecodeReturnsNegativeTypecodeWhenInvalidScopeIsPassed(t *testing.T) {
 	extension := data.Extension{
 		ID:           1,
-		ProjectID:    data.NullInt32{NullInt32: sql.NullInt32{Int32: 1}},
+		ProjectID:    data.NullInt64{NullInt64: sql.NullInt64{Int64: 1}},
 		Name:         "Test-Name",
 		Description:  "Test-Description",
 		Scope:        "Test-Scope",

@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, Observable, of, tap } from 'rxjs';
-import { ExtensionsAPIResponse } from './interfaces/extension';
+import {
+  ExtensionAPIResponse,
+  ExtensionRequest,
+  ExtensionsAPIResponse,
+} from './interfaces/extensionRequest';
 import { ProjectsAPIResponse } from './interfaces/project';
 import { ItemAPIResponse, ItemsAPIResponse } from './interfaces/items';
-import { ItemRequest } from './interfaces/requests';
+import { ItemRequest, UpdateItemRequest } from './interfaces/requests';
 import { environment } from '../../environments/environment';
 import { HttpStatusCode } from './interfaces/http-status-codes';
 import { Router } from '@angular/router';
@@ -81,6 +85,27 @@ export class BackendService {
       );
   }
 
+  sendCreateExtensionRequest(
+    extensionRequest: ExtensionRequest
+  ): Observable<ExtensionAPIResponse> {
+    return this.http
+      .post<ExtensionAPIResponse>(`${this.apiUrl}/extensions`, extensionRequest)
+      .pipe(
+        catchError(
+          this.handleError<ExtensionAPIResponse>('sendCreateExtensionRequest', {
+            extension: {
+              id: 0,
+              project_id: 0,
+              name: '',
+              scope: '',
+              description: '',
+              creation_date: new Date(),
+            },
+          })
+        )
+      );
+  }
+
   /**
      Deletes an item from the backend.
 
@@ -108,6 +133,24 @@ export class BackendService {
       );
   }
 
+  /*
+   * Updates an item in the backend.
+   * This method sends an HTTP PUT request to the backend to update an item. The item to update is identified by the id parameter.
+   * The endpoint it hits is ${this.apiUrl}/items/${id}, where this.apiUrl is the base URL of the backend and id is the ID of the item to update.
+   */
+  updateItem(id: number, updateRequest: UpdateItemRequest): Observable<any> {
+    return this.http
+      .put(`${this.apiUrl}/items/${id}`, updateRequest, { observe: 'response' })
+      .pipe(
+        tap(response => {
+          if (response.status === 204) {
+            console.log(`Updated item with id: ${id}`);
+          }
+        }),
+        catchError(this.handleError('updateItem', { items: [] }))
+      );
+  }
+
   /**
    * Fetches all extensions of a given scope from the backend.
    *
@@ -123,17 +166,18 @@ export class BackendService {
    * @param scope - The scope of the extensions to fetch. This can be 'Shared' or 'Project'.
    * @returns An Observable of `ExtensionsAPIResponse`. Subscribe to this Observable to get the data when the request succeeds or fails.
    */
-  getExtensions(scope: string): Observable<ExtensionsAPIResponse> {
-    return this.http
-      .get<ExtensionsAPIResponse>(`${this.apiUrl}/extensions/${scope}`)
-      .pipe(
-        tap(_ => console.log(`fetched extensions of scope ${scope}`)),
-        catchError(
-          this.handleError<ExtensionsAPIResponse>('getExtensions', {
-            extensions: [],
-          })
-        )
-      );
+  getExtensions(scope: string = ''): Observable<ExtensionsAPIResponse> {
+    let endpoint: string;
+    if (scope === '') endpoint = `${this.apiUrl}/extensions`;
+    else endpoint = `${this.apiUrl}/extensions/${scope}`;
+    return this.http.get<ExtensionsAPIResponse>(endpoint).pipe(
+      tap(_ => console.log(`fetched extensions of scope ${scope}`)),
+      catchError(
+        this.handleError<ExtensionsAPIResponse>('getExtensions', {
+          extensions: [],
+        })
+      )
+    );
   }
 
   /**

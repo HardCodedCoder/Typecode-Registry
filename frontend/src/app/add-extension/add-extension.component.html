@@ -1,0 +1,107 @@
+<form [formGroup]="form">
+  <div class="tui-row tui-row_sme tui-form__header_margin-bottom_small">
+    <div class="tui-col_8">
+      <h3 class="tui-form__header tui-form__header_margin-top_none">Name</h3>
+      <div class="tui-form__row">
+        <tui-input
+          formControlName="extensionName"
+          tuiHintContent="Enter the name of the extension that should be created"
+        >
+          Extension Name
+          <input placeholder="New Extension" tuiTextfield />
+        </tui-input>
+        <tui-error
+          formControlName="extensionName"
+          [error]="[] | tuiFieldError | async"
+        ></tui-error>
+      </div>
+    </div>
+  </div>
+
+  <div class="tui-row tui-row_sme tui-form__header_margin-bottom_small">
+    <div class="tui-col_8">
+      <h3 class="tui-form__header tui-form__header_margin-top_none">
+        Description
+      </h3>
+      <div class="tui-form__row">
+        <tui-input
+          formControlName="extensionDescription"
+          tuiHintContent="Enter a description for the extension (optional)"
+        >
+          Description
+          <input placeholder="Description" tuiTextfield />
+        </tui-input>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <h3 class="tui-form__header">Scope of Extension</h3>
+    <div
+      tuiGroup
+      class="tui-form__row tui-form__header_margin-bottom_small gray-background"
+      (tuiValueChanges)="scopeChanged($event)"
+    >
+      <tui-radio-block
+        contentAlign="right"
+        formControlName="extensionScope"
+        item="Project"
+        size="l"
+        >Project</tui-radio-block
+      >
+      <tui-radio-block
+        contentAlign="right"
+        formControlName="extensionScope"
+        item="Shared"
+        size="l"
+        >Shared</tui-radio-block
+      >
+    </div>
+  </div>
+
+  <div *ngIf="projectScopeSelected">
+    <h3 class="tui-form__header tui-form__header_margin-top_none">Project</h3>
+    <div class="tui-form__row tui-form__header_margin-bottom_small">
+      <tui-combo-box class="b-form" formControlName="projectComboBox">
+        Type a Project Name
+        <input placeholder="Project Name" tuiTextfield />
+        <tui-data-list-wrapper
+          *tuiDataList
+          [items]="this.store.projectNames | tuiFilterByInput"
+        ></tui-data-list-wrapper>
+      </tui-combo-box>
+      <tui-error
+        formControlName="projectComboBox"
+        *ngIf="
+          form.get('projectComboBox')?.touched &&
+          form.get('projectComboBox')?.errors?.['invalidProject']
+        "
+        [error]="projectValidationError"
+      >
+      </tui-error>
+    </div>
+  </div>
+
+  <div class="tui-form__buttons">
+    <button
+      size="l"
+      tuiButton
+      type="button"
+      class="tui-form__button"
+      (click)="submit()"
+      [disabled]="this.form.invalid"
+    >
+      Add
+    </button>
+    <button
+      size="l"
+      appearance="flat"
+      tuiButton
+      type="button"
+      class="tui-form__button"
+      (click)="closeDialog()"
+    >
+      Cancel
+    </button>
+  </div>
+</form>

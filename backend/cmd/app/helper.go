@@ -50,8 +50,6 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst any
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
 
 	dec := json.NewDecoder(r.Body)
-	dec.DisallowUnknownFields()
-
 	if err := dec.Decode(dst); err != nil {
 		return err
 	}
@@ -164,7 +162,7 @@ func calculateTypecode(extension *data.Extension, itemModel *data.ItemModel) (in
 		return nextFreeTypecode.Int32, nil
 	case data.ScopeProject:
 		nextFreeTypecode, err := itemModel.GetNextProjectFreeTypeCode(
-			extension.ProjectID.Int32,
+			extension.ProjectID.Int64,
 			data.ScopeRanges[data.ScopeProject].Start,
 			data.ScopeRanges[data.ScopeProject].End)
 

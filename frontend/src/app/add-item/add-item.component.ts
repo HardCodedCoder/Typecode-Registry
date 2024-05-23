@@ -9,7 +9,7 @@ import {
 } from '@angular/forms';
 import { StoreService } from '../services/store.service';
 import { BackendService } from '../services/backend.service';
-import { ExtensionResponse } from '../services/interfaces/extension';
+import { ExtensionResponse } from '../services/interfaces/extensionRequest';
 import { Subject, takeUntil } from 'rxjs';
 import { TuiValidationError } from '@taiga-ui/cdk';
 import { TuiDialogContext } from '@taiga-ui/core';
@@ -56,17 +56,6 @@ export class AddItemComponent implements OnInit, OnDestroy {
   get extensionNames(): string[] {
     return this.extensionsToDisplay
       ? this.extensionsToDisplay.map(extension => extension.name)
-      : [];
-  }
-
-  /**
-   * Returns the names of the projects to be displayed in the combobox.
-   *
-   * @returns The names of the projects to be displayed in the combobox.
-   */
-  get projectNames(): string[] {
-    return this.store.projects
-      ? this.store.projects.map(project => project.name)
       : [];
   }
 
@@ -150,9 +139,6 @@ export class AddItemComponent implements OnInit, OnDestroy {
    */
   scopeChanged($event: any) {
     if (this.lastSelectedScope != $event.extensionScope) {
-      console.log(
-        `Changing scope from ${this.lastSelectedScope} to ${$event.extensionScope}`
-      );
       this.projectScopeSelected = !this.projectScopeSelected;
 
       const projectControl = this.form.get('projectComboBox');
@@ -202,7 +188,8 @@ export class AddItemComponent implements OnInit, OnDestroy {
    * @returns A validation error if the selected project is invalid.
    */
   validProjectValidator(control: AbstractControl): ValidationErrors | null {
-    return this.projectNames.includes(control.value)
+    console.log('Validator called in class');
+    return this.store.projectNames.includes(control.value)
       ? null
       : { invalidProject: true };
   }
@@ -216,7 +203,7 @@ export class AddItemComponent implements OnInit, OnDestroy {
    * @param $event - The event object containing the selected project.
    */
   onProjectSelected($event: any) {
-    if (this.projectNames.includes($event)) {
+    if (this.store.projectNames.includes($event)) {
       this.extensionsToDisplay = this.store.projectExtensions;
       const selectedProject = this.store.projects.find(
         project => project.name == $event
@@ -237,6 +224,13 @@ export class AddItemComponent implements OnInit, OnDestroy {
    */
   submit(): void {
     this.context.completeWith(this.form.value);
+  }
+
+  /*
+   * Closes the dialog box.
+   */
+  closeDialog(): void {
+    this.context.completeWith(this.form);
   }
 
   /**

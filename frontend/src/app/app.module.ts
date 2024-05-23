@@ -13,11 +13,11 @@ import {
   TuiButtonModule,
   TuiSvgModule,
   TuiScrollbarModule,
+  TuiHostedDropdownModule,
 } from '@taiga-ui/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { SidebarMenuComponent } from './sidebar-menu/sidebar-menu.component';
 import { ItemEditorComponent } from './item-editor/item-editor.component';
 import { AddItemComponent } from './add-item/add-item.component';
 import {
@@ -28,8 +28,11 @@ import {
   TuiInputModule,
   TuiRadioBlockModule,
   TuiTagModule,
+  TuiElasticContainerModule,
+  TuiIslandModule,
 } from '@taiga-ui/kit';
 import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { TuiLetModule, TuiValueChangesModule } from '@taiga-ui/cdk';
 import { HttpClientModule } from '@angular/common/http';
 import { TuiTableModule } from '@taiga-ui/addon-table';
@@ -39,14 +42,26 @@ import {
 } from '@angular/cdk/scrolling';
 import { RouterModule } from '@angular/router';
 import { ErrorDisplayComponent } from './error-display/error-display.component';
+import { UpdateItemComponent } from './update-item/update-item.component';
+import { ExtensionEditorComponent } from './extension-editor/extension-editor.component';
+import { HeaderComponent } from './header/header.component';
+import {
+  TuiNotificationModule,
+  TuiTextfieldControllerModule,
+  TuiLinkModule,
+} from '@taiga-ui/core';
+import { AddExtensionComponent } from './add-extension/add-extension.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SidebarMenuComponent,
     ItemEditorComponent,
     AddItemComponent,
     ErrorDisplayComponent,
+    UpdateItemComponent,
+    HeaderComponent,
+    ExtensionEditorComponent,
+    AddExtensionComponent,
   ],
   imports: [
     BrowserAnimationsModule,
@@ -77,6 +92,13 @@ import { ErrorDisplayComponent } from './error-display/error-display.component';
     CdkVirtualScrollViewport,
     CdkFixedSizeVirtualScroll,
     RouterModule,
+    TuiHostedDropdownModule,
+    TuiNotificationModule,
+    TuiTextfieldControllerModule,
+    FormsModule,
+    TuiElasticContainerModule,
+    TuiLinkModule,
+    TuiIslandModule,
   ],
   providers: [{ provide: TUI_SANITIZER, useClass: NgDompurifySanitizer }],
   bootstrap: [AppComponent],

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 // ItemRequest is the request object for creating a new item.
@@ -15,6 +16,13 @@ type ItemRequest struct {
 	Name        string `json:"name"`
 	TableName   string `json:"table_name"`
 	ExtensionId int64  `json:"extension_id"`
+}
+
+type ExtensionRequest struct {
+	Name        string `json:"name"`
+	Scope       string `json:"scope"`
+	Description string `json:"description,omitempty"`
+	ProjectID   int64  `json:"project_id,omitempty"`
 }
 
 // healthcheck is a simple handler to check if the service is up and running.
@@ -228,6 +236,12 @@ func (app *application) deleteItem(w http.ResponseWriter, r *http.Request) {
 //   - If the item is successfully created, it returns a 201 Created status with the item details in the response body.
 //   - If there is an error while inserting the item into the database, it returns a 500 Internal Server Error.
 func (app *application) createItem(w http.ResponseWriter, r *http.Request) {
+	if r.Body == nil {
+		app.logger.Error().Msg("Bad Request: Empty request body")
+		http.Error(w, "Bad Request: Empty request body", http.StatusBadRequest)
+		return
+	}
+
 	var itemReq ItemRequest
 	err := app.readJSON(w, r, &itemReq)
 	if err != nil {
@@ -264,23 +278,39 @@ func (app *application) createItem(w http.ResponseWriter, r *http.Request) {
 		Typecode:    typecode,
 	}
 
-	err = app.models.Items.Insert(item)
+	err = app.models.Items.BeginTransaction()
 	if err != nil {
 		app.logger.Err(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
+	err = app.models.Items.Insert(item)
+	if err != nil {
+		app.logger.Err(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		_ = app.models.Items.Rollback()
+		return
+	}
+
 	item.Scope = extension.Scope
 	if item.Scope == data.ScopeProject && extension.ProjectID.Valid {
-		err = app.models.Projects.ReadProjectName(int64(extension.ProjectID.Int32), &item.Project)
+		err = app.models.Projects.ReadProjectName(int64(extension.ProjectID.Int64), &item.Project)
 		if err != nil {
 			app.logger.Err(err)
 			http.Error(w,
-				fmt.Sprintf("error while reading project with id %d %v", extension.ProjectID.Int32, err),
+				fmt.Sprintf("error while reading project with id %d %v", extension.ProjectID.Int64, err),
 				http.StatusInternalServerError)
+			_ = app.models.Items.Rollback()
 			return
 		}
+	}
+
+	err = app.models.Items.CommitTransaction()
+	if err != nil {
+		app.logger.Err(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
 	}
 
 	headers := make(http.Header)
@@ -301,35 +331,130 @@ func (app *application) getExtensionsHandler(w http.ResponseWriter, r *http.Requ
 	switch r.Method {
 	case http.MethodGet:
 		app.getExtensions(w, r)
+	case http.MethodPost:
+		app.createExtension(w, r)
 	default:
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 	}
 }
 
-// getExtensions handles the GET request for all extensions with the specified scope.
-// It reads the scope from the URL and returns all extensions with that scope.
-// If the scope is not valid, it returns a 400 Bad Request.
-// If there are no extensions with the specified scope, it returns a 404 Not Found.
-func (app *application) getExtensions(w http.ResponseWriter, r *http.Request) {
-	scope := r.URL.Path[len("/extensions/"):]
-
-	if scope != "Project" && scope != "Shared" {
-		app.logger.Warn().Msg(
-			fmt.Sprintf("Invalid scope: %s | responding with %s", scope, http.StatusText(http.StatusBadRequest)),
-		)
-		http.Error(w, "Invalid scope", http.StatusBadRequest)
+func (app *application) createExtension(w http.ResponseWriter, r *http.Request) {
+	app.logger.Info().Msg("got request to create extension")
+	app.logger.Info().Msg("Validating request")
+	if "/extensions" != r.URL.Path {
+		app.logger.Error().Msg(fmt.Sprintf("Bad Request: Invalid path: %s", r.URL.Path))
+		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
 
+	if r.Body == nil {
+		app.logger.Error().Msg("Bad Request: Empty request body")
+		http.Error(w, "Bad Request: Empty request body", http.StatusBadRequest)
+		return
+	}
+
+	var requestData ExtensionRequest
+	err := app.readJSON(w, r, &requestData)
+	if err != nil {
+		app.logger.Error().Msg(fmt.Sprintf("Bad Request: Invalid JSON request: %v", err))
+		http.Error(w, "Bad Request data! Wrong content format!", http.StatusBadRequest)
+		return
+	}
+
+	if requestData.Name == "" || requestData.Scope == "" || requestData.Scope == data.ScopeProject && requestData.ProjectID < 1 || data.ScopeShared == requestData.Scope && 0 != requestData.ProjectID {
+		app.logger.Error().Msg(fmt.Sprintf("Bad Request: Invalid extension create request with data: %v", requestData))
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+
+	extension := data.Extension{
+		Name:        requestData.Name,
+		Scope:       requestData.Scope,
+		Description: requestData.Description,
+	}
+
+	if requestData.ProjectID == 0 {
+		extension.ProjectID = data.NullInt64{
+			NullInt64: sql.NullInt64{
+				Int64: 0,
+				Valid: false,
+			}}
+	} else {
+		extension.ProjectID = data.NullInt64{NullInt64: sql.NullInt64{Int64: requestData.ProjectID, Valid: true}}
+	}
+
+	app.logger.Info().Msg(fmt.Sprintf("Creating extension: %v", extension))
+	err = app.models.Extensions.Insert(&extension)
+	if err != nil {
+		app.logger.Err(err)
+		http.Error(w, "Internal Server Error during creation of new extension", http.StatusInternalServerError)
+		return
+	}
+
+	headers := make(http.Header)
+	headers.Set("Location", fmt.Sprintf("/extensions/%d", extension.ID))
+
+	err = app.writeJSON(w, http.StatusCreated, envelope{"extension": extension}, headers)
+	if err != nil {
+		app.logger.Err(err)
+		http.Error(w, "error while trying to write extension to http response.", http.StatusInternalServerError)
+		return
+	}
+}
+
+// getExtensions handles the GET request for all extensions.
+// It reads the URL path and calls the appropriate handler based on the path.
+// If the path is `/extensions`, it returns all extensions stored in the database.
+// If the path is `/extensions/<scope>`, it returns all extensions with the specified scope.
+// If the scope is not valid, it returns a 400 Bad Request.
+func (app *application) getExtensions(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path
+	basePath := "/extensions"
+
+	if path == basePath {
+		app.handleGetAllExtensions(w, r)
+	} else if strings.HasPrefix(path, basePath+"/") {
+		scope := path[len(basePath+"/"):]
+		app.handleGetExtensionsByScope(scope, w, r)
+	} else {
+		http.NotFound(w, r)
+	}
+}
+
+// handleGetAllExtensions handles the GET request for all extensions.
+// It returns all extensions stored in the database.
+// If there are no extensions in the database, it returns a 404 Not Found.
+func (app *application) handleGetAllExtensions(w http.ResponseWriter, r *http.Request) {
+	extensions, err := app.models.Extensions.ReadAll()
+	if err != nil {
+		app.logger.Err(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	err = app.writeJSON(w, http.StatusOK, envelope{"extensions": extensions}, nil)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("error while trying to write extensions to http response. error: %s", err), http.StatusInternalServerError)
+		app.logger.Err(err)
+		return
+	}
+}
+
+// handleGetExtensionsByScope handles the GET request for all extensions with the specified scope.
+// It reads the scope from the URL and returns all extensions with that scope.
+// If the scope is not valid, it returns a 400 Bad Request.
+func (app *application) handleGetExtensionsByScope(scope string, w http.ResponseWriter, r *http.Request) {
+	if strings.ToLower(scope) != "project" && strings.ToLower(scope) != "shared" {
+		app.logger.Warn().Msg(fmt.Sprintf("Invalid scope: %s | responding with %s", scope, http.StatusText(http.StatusBadRequest)))
+		http.Error(w, "Invalid scope", http.StatusBadRequest)
+		return
+	}
 	extensions, err := app.models.Extensions.ReadAll(scope)
 	if err != nil {
 		app.logger.Err(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
-
 	err = app.writeJSON(w, http.StatusOK, envelope{"extensions": extensions}, nil)
-
 	if err != nil {
 		http.Error(w, fmt.Sprintf("error while trying to write extensions to http response. error: %s", err), http.StatusInternalServerError)
 		app.logger.Err(err)
