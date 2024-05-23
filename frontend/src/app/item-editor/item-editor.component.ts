@@ -281,6 +281,7 @@ export class ItemEditorComponent implements OnInit {
       item: item,
       new_item_name: '',
       new_table_name: '',
+      wasCanceled: false,
     };
 
     const dialog$ = this.dialogs
@@ -303,7 +304,7 @@ export class ItemEditorComponent implements OnInit {
       next: (data: UpdateItemFormData) => {
         console.log('item-editor: Dialog closed with data:', data);
         // necessary for cancel button in update-item dialog
-        if (data.new_item_name === '') {
+        if (data.wasCanceled === true) {
           return;
         }
         if (data.error?.error === true) {
@@ -327,7 +328,7 @@ export class ItemEditorComponent implements OnInit {
                   item.name = data.new_item_name;
                 } else {
                   this.messageService.showFailureMessage(
-                    `Could not update item: ${item.id}! Received status code: ${response.status}`
+                    `Could not update item: ${item.id}!<br>Received status code: ${response.status}`
                   );
                 }
               },
@@ -347,14 +348,17 @@ export class ItemEditorComponent implements OnInit {
    */
   selectItem(item: ItemResponse) {
     this.selectedItem = item;
-    if (this.codeElements) {
-      this.codeElements.forEach(element => {
-        element.nativeElement.classList.add('change-colors');
-        setTimeout(() => {
-          element.nativeElement.classList.remove('change-colors');
-        }, 500);
-      });
-    }
+    setTimeout(() => {
+      // Timeout as html is not yet rendered
+      if (this.codeElements) {
+        this.codeElements.forEach(element => {
+          element.nativeElement.classList.add('change-colors');
+          setTimeout(() => {
+            element.nativeElement.classList.remove('change-colors');
+          }, 500);
+        });
+      }
+    }, 10);
   }
 
   /**
