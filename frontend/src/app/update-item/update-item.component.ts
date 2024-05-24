@@ -1,6 +1,5 @@
-import { Component, Inject, OnDestroy } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Subject } from 'rxjs';
 import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
 import { TuiDialogContext } from '@taiga-ui/core';
 import { UpdateItemFormData } from '../services/interfaces/formdata';
@@ -10,10 +9,9 @@ import { UpdateItemFormData } from '../services/interfaces/formdata';
   templateUrl: './update-item.component.html',
   styleUrl: './update-item.component.scss',
 })
-export class UpdateItemComponent implements OnDestroy {
+export class UpdateItemComponent {
   updateItemData: UpdateItemFormData;
   form: FormGroup;
-  private destroy$ = new Subject<void>();
 
   constructor(
     private formBuilder: FormBuilder,
@@ -47,15 +45,6 @@ export class UpdateItemComponent implements OnDestroy {
       };
       this.context.completeWith(this.updateItemData);
     }
-  }
-
-  /**
-   * Unsubscribes from the destroy$ observable.
-   * This method is called when the component is destroyed.
-   */
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   /**

@@ -101,7 +101,40 @@
                 extension.creation_date | date: 'shortTime'
               }}</span>
             </td>
-            <td *tuiCell="'Actions'" tuiTd>Button</td>
+            <td *tuiCell="'Actions'" tuiTd>
+              <tui-hosted-dropdown [content]="dropdownContent">
+                <button
+                  tuiIconButton
+                  type="button"
+                  icon="tuiIconMoreVertical"
+                  appearance="flat"
+                  shape="rounded"
+                  size="s"
+                  class="options"
+                ></button>
+              </tui-hosted-dropdown>
+
+              <ng-template #dropdownContent let-closeDropdown="closeDropdown">
+                <button
+                  tuiIconButton
+                  type="button"
+                  (click)="onEditItem(extension)"
+                  icon="tuiIconEdit3"
+                  appearance="flat"
+                  shape="rounded"
+                  size="s"
+                ></button>
+                <button
+                  tuiIconButton
+                  type="button"
+                  (click)="onDeleteItem(extension)"
+                  icon="tuiIconTrash"
+                  appearance="flat"
+                  shape="rounded"
+                  size="s"
+                ></button>
+              </ng-template>
+            </td>
           </tr>
         </tbody>
       </table>

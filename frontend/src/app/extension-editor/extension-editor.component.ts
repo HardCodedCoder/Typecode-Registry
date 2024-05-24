@@ -5,12 +5,20 @@ import { TuiAlertService, TuiDialogService } from '@taiga-ui/core';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup } from '@angular/forms';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
-import { ExtensionFormData } from '../services/interfaces/formdata';
+import {
+  ExtensionFormData,
+  UpdateExtensionFormData,
+} from '../services/interfaces/formdata';
 import { AddExtensionComponent } from '../add-extension/add-extension.component';
 import { Injector } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
-import { ExtensionRequest } from '../services/interfaces/extensionRequest';
+import {
+  ExtensionRequest,
+  ExtensionResponse,
+  ExtensionUpdateRequest,
+} from '../services/interfaces/extensionRequest';
 import { MessageService } from '../services/message.service';
+import { UpdateExtensionComponent } from '../update-extension/update-extension.component';
 
 @Component({
   selector: 'app-extension-editor',
@@ -195,4 +203,71 @@ export class ExtensionEditorComponent implements OnInit {
       })
       .subscribe();
   }
+
+  onEditItem(extension: ExtensionResponse) {
+    if (extension === undefined || extension.id === 0) {
+      this.messageService.showFailureMessage(
+        'Error: Unexpected internal error! Please restart application!'
+      );
+      return;
+    }
+
+    const data: UpdateExtensionFormData = {
+      extension: extension,
+    };
+
+    const dialog$ = this.dialogs
+      .open<UpdateExtensionFormData>(
+        new PolymorpheusComponent(UpdateExtensionComponent, this.injector),
+        {
+          dismissible: true,
+          label: 'Update Extension',
+          data: data,
+        }
+      )
+      .pipe(
+        catchError(err => {
+          console.error('item-editor: Error opening dialog:', err);
+          return throwError(err);
+        })
+      );
+
+    dialog$.subscribe(dialogData => {
+      if (dialogData.error !== undefined) {
+        if (dialogData.error.message === 'Cancelled')
+          this.messageService.showInformationNotification(
+            dialogData.error.message
+          );
+        else this.messageService.showFailureMessage(dialogData.error.message);
+        return;
+      }
+
+      const requestData: ExtensionUpdateRequest = {};
+      if (dialogData.new_name !== undefined)
+        requestData.name = dialogData.new_name;
+      if (dialogData.new_description !== undefined)
+        requestData.description = dialogData.new_description;
+
+      this.backendService.updateExtension(extension.id, requestData).subscribe({
+        next: response => {
+          console.log('Extension updated successfully', response);
+          this.messageService.showSuccessMessage(
+            'updated',
+            'extension',
+            extension.id
+          );
+
+          if (requestData.name !== undefined) extension.name = requestData.name;
+          if (requestData.description !== undefined)
+            extension.description = requestData.description;
+        },
+        error: error => {
+          console.error('Error updating extension', error);
+          this.messageService.showFailureMessage('Error updating extension');
+        },
+      });
+    });
+  }
+
+  onDeleteItem(extension: ExtensionResponse) {}
 }

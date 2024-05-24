@@ -5,6 +5,7 @@ import {
   ExtensionAPIResponse,
   ExtensionRequest,
   ExtensionsAPIResponse,
+  ExtensionUpdateRequest,
 } from './interfaces/extensionRequest';
 import { ProjectsAPIResponse } from './interfaces/project';
 import { ItemAPIResponse, ItemsAPIResponse } from './interfaces/items';
@@ -12,6 +13,7 @@ import { ItemRequest, UpdateItemRequest } from './interfaces/requests';
 import { environment } from '../../environments/environment';
 import { HttpStatusCode } from './interfaces/http-status-codes';
 import { Router } from '@angular/router';
+import { UpdateExtensionFormData } from './interfaces/formdata';
 
 @Injectable({
   providedIn: 'root',
@@ -201,6 +203,34 @@ export class BackendService {
         catchError(
           this.handleError<ProjectsAPIResponse>('getProjects', { projects: [] })
         )
+      );
+  }
+
+  /**
+   * Updates an extension in the backend.
+   *
+   * This method sends an HTTP PUT request to the backend to update an extension. The extension to update is identified by the `id` parameter.
+   * The endpoint it hits is `${this.apiUrl}/extensions/${id}`, where `this.apiUrl` is the base URL of the backend and `id` is the ID of the extension to update.
+   *
+   * If the request is successful and the extension is updated, it logs a message to the console.
+   *
+   * If the request fails, it will trigger the `handleError` method. This method logs the error and returns an Observable that emits a default object.
+   * The default object is `{ items: [] }`.
+   *
+   * @param id - The ID of the extension to update.
+   * @param data - The updated data for the extension. This should be an object that conforms to the `UpdateExtensionFormData` interface.
+   * @returns An Observable of any. Subscribe to this Observable to get the data when the request succeeds or fails.
+   */
+  updateExtension(id: number, data: ExtensionUpdateRequest): Observable<any> {
+    return this.http
+      .put(`${this.apiUrl}/extensions/${id}`, data, { observe: 'response' })
+      .pipe(
+        tap(response => {
+          if (response.status === 204) {
+            console.log(`Updated extension with id: ${id}`);
+          }
+        }),
+        catchError(this.handleError('updateExtension', { items: [] }))
       );
   }
 

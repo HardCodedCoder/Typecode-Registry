@@ -54,4 +54,8 @@ export class StoreService {
   get projectNames(): string[] {
     return this.projects ? this.projects.map(project => project.name) : [];
   }
+
+  getProjectName(project_id: number): string | undefined {
+    return this.projects.find(project => project.id === project_id)?.name;
+  }
 }
