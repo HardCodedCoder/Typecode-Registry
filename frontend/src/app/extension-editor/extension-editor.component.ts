@@ -269,5 +269,7 @@ export class ExtensionEditorComponent implements OnInit {
     });
   }
 
-  onDeleteItem(extension: ExtensionResponse) {}
+  onDeleteItem(extension: ExtensionResponse) {
+    console.log(extension);
+  }
 }
