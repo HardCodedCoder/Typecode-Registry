@@ -72,7 +72,8 @@ export class UpdateExtensionComponent {
       this.updateExtensionData.new_description !==
       this.updateExtensionData.extension.description
     )
-      this.updateExtensionData.new_description = this.form.value.extensionDescription;
+      this.updateExtensionData.new_description =
+        this.form.value.extensionDescription;
 
     this.context.completeWith(this.updateExtensionData);
   }
