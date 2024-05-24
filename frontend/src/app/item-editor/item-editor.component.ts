@@ -236,7 +236,7 @@ export class ItemEditorComponent implements OnInit {
           this.backendService.deleteItem(item.id).subscribe({
             next: response => {
               if (response.status === 204) {
-                console.log('Received response 204 from backend');
+                console.log('Received 204 response from backend');
                 this.messageService.showSuccessMessage(
                   'deleted',
                   'Item',
@@ -318,11 +318,9 @@ export class ItemEditorComponent implements OnInit {
             .subscribe({
               next: response => {
                 if (response.status === 204) {
-                  console.log('Received response 204 from backend');
-                  this.messageService.showSuccessMessage(
-                    'updated',
-                    'Item',
-                    item.id
+                  console.log('Received 204 response from backend');
+                  this.messageService.showSuccessMessageWithCustomMessage(
+                    `Item with ID ${item.id} (${data.item.project}, ${this.getExtensionName(data.item.extension_id)}, ${data.item.typecode}) updated!`
                   );
                   item.table_name = data.new_table_name;
                   item.name = data.new_item_name;

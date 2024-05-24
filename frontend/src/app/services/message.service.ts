@@ -23,13 +23,25 @@ export class MessageService {
   ): void {
     let message = action;
     if (itemId !== undefined) {
-      message = `${object} with ID: ${itemId} ${action}!`;
+      message = `${object} with ID ${itemId} ${action}!`;
     }
 
     this.alertService
       .open(message, {
         label: '🎉 Success 🎉',
         status: 'success',
+        hasIcon: false,
+      })
+      .subscribe();
+  }
+
+  public showSuccessMessageWithCustomMessage(message: string): void {
+    this.alertService
+      .open(message, {
+        label: '🎉 Success 🎉',
+        status: 'success',
+        hasIcon: false,
+        hasCloseButton: false,
       })
       .subscribe();
   }
@@ -44,6 +56,7 @@ export class MessageService {
       .open(errorMessage, {
         label: '❌ Failure ❌',
         status: 'error',
+        hasIcon: false,
       })
       .subscribe();
   }
@@ -56,6 +69,7 @@ export class MessageService {
       .open('Please populate the database.', {
         label: '💡 Information 💡',
         status: 'info',
+        hasIcon: false,
       })
       .subscribe();
   }

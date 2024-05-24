@@ -61,7 +61,7 @@ export class ExtensionEditorComponent implements OnInit {
           console.warn('NULL response: /extensions');
 
           if (this.storeService.hasShown204ErrorExtensions) {
-            this.showInformationNotification();
+            this.messageService.showInformationNotification();
           }
 
           if (!this.storeService.hasShown204ErrorExtensions) {
@@ -186,17 +186,5 @@ export class ExtensionEditorComponent implements OnInit {
     } else {
       this.expandedItemIds.add(extensionId); // expand the description
     }
-  }
-
-  /**
-   * Shows an information notification.
-   */
-  private showInformationNotification(): void {
-    this.alertService
-      .open('Please populate the database.', {
-        label: '💡 Information 💡',
-        status: 'info',
-      })
-      .subscribe();
   }
 }

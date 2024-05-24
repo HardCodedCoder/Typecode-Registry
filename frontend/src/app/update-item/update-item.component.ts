@@ -111,6 +111,10 @@ export class UpdateItemComponent implements OnInit, OnDestroy {
     this.context.completeWith(this.updateItemData);
   }
 
+  /**
+   * Returns the error message for the input fields.
+   * @returns TuiValidationError
+   */
   get inputValidationError(): TuiValidationError | null {
     return new TuiValidationError('Empty values will be ignored.');
   }

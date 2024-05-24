@@ -38,7 +38,6 @@ tui-scrollbar {
 tui-notification {
   // Affects both TUI notifications and TUI alerts
   font-size: 1rem !important;
-  white-space: nowrap;
 }
 
 .fit-content {
@@ -160,10 +159,8 @@ tbody tr:nth-child(even) {
   flex-direction: row-reverse !important;
 }
 
-.main-content {
-  background-image: url('./assets/img/item_editor_background.webp');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+// Alert Service Styles:
+[_ngcontent-ng-c3463963360] {
+  display: block;
+  margin-bottom: 0.125rem !important;
 }
-
