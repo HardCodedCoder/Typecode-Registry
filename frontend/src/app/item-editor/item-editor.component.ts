@@ -345,7 +345,8 @@ export class ItemEditorComponent implements OnInit {
    * @param {ItemResponse} item - The item to select.
    */
   selectItem(item: ItemResponse) {
-    this.selectedItem = item;
+    // Deselect the item if it is already selected
+    this.selectedItem = this.selectedItem === item ? null : item;
     setTimeout(() => {
       // Timeout as html is not yet rendered
       if (this.codeElements) {
