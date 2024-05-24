@@ -13,14 +13,20 @@
     <div class="tui-col_8">
       <h3 class="tui-form__header tui-form__header_margin-top_none">Name</h3>
       <div class="tui-form__row">
-        <tui-input tuiField formControlName="itemName"
-          tuiHintContent="Enter a new item name here. Empty inputs will be ignored.">
+        <tui-input
+          tuiField
+          formControlName="itemName"
+          tuiHintContent="Enter a new item name here. Empty inputs will be ignored."
+        >
           New Name
           <input placeholder="{{ updateItemData.item.name }}" tuiTextfield />
         </tui-input>
-        <tui-error ngDefaultControl formControlName="itemName" *ngIf="
-          form.get('itemName')?.value === ''
-        " [error]="inputValidationError">
+        <tui-error
+          ngDefaultControl
+          formControlName="itemName"
+          *ngIf="form.get('itemName')?.value === ''"
+          [error]="inputValidationError"
+        >
         </tui-error>
       </div>
     </div>
@@ -33,14 +39,23 @@
         Table Name
       </h3>
       <div class="tui-form__row">
-        <tui-input tuiField formControlName="itemTable"
-          tuiHintContent="Enter a new table name here. Empty inputs will be ignored.">
+        <tui-input
+          tuiField
+          formControlName="itemTable"
+          tuiHintContent="Enter a new table name here. Empty inputs will be ignored."
+        >
           New Table Name
-          <input placeholder="{{ updateItemData.item.table_name }}" tuiTextfield />
+          <input
+            placeholder="{{ updateItemData.item.table_name }}"
+            tuiTextfield
+          />
         </tui-input>
-        <tui-error ngDefaultControl formControlName="itemTable" *ngIf="
-          form.get('itemTable')?.value === ''
-        " [error]="inputValidationError">
+        <tui-error
+          ngDefaultControl
+          formControlName="itemTable"
+          *ngIf="form.get('itemTable')?.value === ''"
+          [error]="inputValidationError"
+        >
         </tui-error>
       </div>
     </div>
@@ -52,11 +67,24 @@
   </p>
 
   <div class="tui-form__buttons">
-    <button size="l" tuiButton type="button" class="tui-form__button" (click)="submit()"
-      [disabled]="!checkForChanges()">
+    <button
+      size="l"
+      tuiButton
+      type="button"
+      class="tui-form__button"
+      (click)="submit()"
+      [disabled]="!checkForChanges()"
+    >
       Update
     </button>
-    <button size="l" tuiButton appearance="flat" type="button" class="tui-form__button" (click)="closeDialog()">
+    <button
+      size="l"
+      tuiButton
+      appearance="flat"
+      type="button"
+      class="tui-form__button"
+      (click)="closeDialog()"
+    >
       Cancel
     </button>
   </div>
