@@ -51,6 +51,7 @@ import {
   TuiLinkModule,
 } from '@taiga-ui/core';
 import { ProjectEditorComponent } from './projects/project-editor/project-editor.component';
+import { AddProjectComponent } from './projects/add-project/add-project.component';
 
 @NgModule({
   declarations: [
@@ -62,6 +63,7 @@ import { ProjectEditorComponent } from './projects/project-editor/project-editor
     HeaderComponent,
     ExtensionEditorComponent,
     ProjectEditorComponent,
+    AddProjectComponent,
   ],
   imports: [
     BrowserAnimationsModule,

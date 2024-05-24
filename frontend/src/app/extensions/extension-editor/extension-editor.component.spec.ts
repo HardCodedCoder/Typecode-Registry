@@ -2,16 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { StoreService } from '../../services/store.service';
 import { BackendService } from '../../services/backend.service';
-import { ExtensionEditorComponent } from './extension-editor.component';
-import { ExtensionsAPIResponse } from '../../services/interfaces/extension';
+import { ExtensionEditorComponent } from './extension-editor.component'
 import { ProjectsAPIResponse } from '../../services/interfaces/project';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TuiTableModule } from '@taiga-ui/addon-table';
-import { TuiScrollbarModule } from '@taiga-ui/core';
-import {TuiElasticContainerModule} from '@taiga-ui/kit';
-import { TuiAlertService } from '@taiga-ui/core';
-import { Router } from '@angular/router';
-import { FormControl, FormGroup } from '@angular/forms';
 import {
   TuiAlertService,
   TuiScrollbarModule,
@@ -203,13 +197,13 @@ describe('ExtensionEditorComponent', () => {
   it('should add an ID to expandedItemIds if it does not exist', () => {
     const testId = 1;
     component.toggle(testId);
-    expect(component.expandedItemIds.has(testId)).toBeTrue();
+    expect(component.expandedItemId).toEqual(1);
   });
 
   it('should remove an ID from expandedItemIds if it already exists', () => {
     const testId = 1;
-    component.expandedItemIds.add(testId); // Pre-add the ID
+    component.expandedItemId = 1;
     component.toggle(testId); // Should remove the ID
-    expect(component.expandedItemIds.has(testId)).toBeFalse();
+    expect(component.expandedItemId).toBeNull();
   });
 });

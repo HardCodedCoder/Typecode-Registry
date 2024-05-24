@@ -32,6 +32,12 @@ export interface UpdateItemFormData {
   error?: Error;
 }
 
+export interface ProjectFormData {
+  projectName: string;
+  projectDescription: string;
+  error?: Error;
+}
+
 /**
  * Represents an error message.
  * @interface Error

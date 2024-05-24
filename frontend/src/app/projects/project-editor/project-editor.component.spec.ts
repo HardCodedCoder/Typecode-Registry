@@ -56,7 +56,6 @@ describe('ProjectEditorComponent', () => {
         ],
       })
     );
-    /*
     mockBackendService.sendCreateProjectRequest.and.returnValue(
       of({
         project: {
@@ -67,25 +66,8 @@ describe('ProjectEditorComponent', () => {
         },
       })
     );
-    mockStoreService = jasmine.createSpyObj('StoreService', ['getProjects']);
-    mockStoreService.getProjects.and.returnValue(
-      of([
-        {
-          id: 1,
-          name: 'Project A',
-          description: 'Description A',
-          creation_date: new Date(),
-        },
-        {
-          id: 2,
-          name: 'Project B',
-          description: 'Description B',
-          creation_date: new Date(),
-        },
-      ])
-    );
-     */
 
+    mockStoreService = jasmine.createSpyObj('StoreService', [], { projects: [] });
     mockAlertService = jasmine.createSpyObj('TuiAlertService', ['open']);
     mockAlertService.open.and.returnValue(of({}));
 

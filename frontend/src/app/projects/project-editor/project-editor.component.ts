@@ -1,10 +1,13 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, Injector, OnInit } from '@angular/core';
 import { StoreService } from '../../services/store.service';
 import { BackendService } from '../../services/backend.service';
-import { TuiAlertService } from '@taiga-ui/core';
-import { Router } from '@angular/router';
+import { TuiDialogService } from '@taiga-ui/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ProjectResponse } from '../../services/interfaces/project';
+import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
+import { catchError, throwError } from 'rxjs';
+import { AddProjectComponent } from '../add-project/add-project.component';
+import { ProjectFormData } from '../../services/interfaces/formdata';
 
 @Component({
   selector: 'app-project-editor',
@@ -12,8 +15,6 @@ import { ProjectResponse } from '../../services/interfaces/project';
   styleUrl: './project-editor.component.scss',
 })
 export class ProjectEditorComponent implements OnInit {
-  readonly MAX_DESCRIPTION_LENGTH = 40;
-  expandedItemId: number | null = null;
   searchForm = new FormGroup({
     search: new FormControl(''),
   });
@@ -28,8 +29,8 @@ export class ProjectEditorComponent implements OnInit {
   constructor(
     @Inject(StoreService) public readonly storeService: StoreService,
     @Inject(BackendService) public readonly backendService: BackendService,
-    @Inject(TuiAlertService) private readonly alertService: TuiAlertService,
-    @Inject(Router) private readonly router: Router
+    @Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
+    @Inject(Injector) private readonly injector: Injector
   ) {}
 
   ngOnInit(): void {
@@ -39,7 +40,57 @@ export class ProjectEditorComponent implements OnInit {
     });
   }
 
-  showDialog() {}
+  showDialog(): void {
+    const data: ProjectFormData = {
+      projectName: ' ',
+      projectDescription: '',
+    };
+    const dialog$ = this.dialogs
+      .open<ProjectFormData>(
+        new PolymorpheusComponent(AddProjectComponent, this.injector),
+        {
+          dismissible: true,
+          label: 'Create Project',
+          data: data,
+        }
+      )
+      .pipe(
+        catchError(err => {
+          console.error('project-editor: Error opening dialog:', err);
+          return throwError(err);
+        })
+      );
+
+    dialog$.subscribe({
+      next: (data: ProjectFormData) => {
+        console.log('project-editor: Dialog closed with data:', data);
+        if (
+          data.error?.error === true &&
+          data.error?.message === 'cancelled by user'
+        )
+          return;
+
+        const requestData = {
+          name: data.projectName,
+          description: data.projectDescription,
+        };
+        console.log(requestData);
+        this.backendService
+          .sendCreateProjectRequest(requestData)
+          .subscribe(next => {
+            if (this.storeService.projects !== null) {
+              this.storeService.projects = [
+                ...this.storeService.projects,
+                next.project,
+              ];
+            }
+          });
+      },
+      complete: () => {
+        console.info('project-editor: Dialog closed');
+      },
+    });
+  }
 
   formatDate(dateString: Date): string {
     const date = new Date(dateString);

@@ -2,7 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, Observable, of, tap } from 'rxjs';
 import { ExtensionsAPIResponse } from './interfaces/extension';
-import { ProjectsAPIResponse } from './interfaces/project';
+import {
+  ProjectAPIResponse,
+  ProjectRequest,
+  ProjectsAPIResponse,
+} from './interfaces/project';
 import { ItemAPIResponse, ItemsAPIResponse } from './interfaces/items';
 import { ItemRequest, UpdateItemRequest } from './interfaces/requests';
 import { environment } from '../../environments/environment';
@@ -175,6 +179,43 @@ export class BackendService {
       .pipe(
         catchError(
           this.handleError<ProjectsAPIResponse>('getProjects', { projects: [] })
+        )
+      );
+  }
+
+  /**
+   * Sends a request to the backend to create a new project.
+   *
+   * This method sends an HTTP POST request to the backend to create a new project. The project details are passed in the `projectRequest` parameter.
+   * The endpoint it hits is `${this.apiUrl}/projects`, where `this.apiUrl` is the base URL of the backend.
+   *
+   * If the request is successful, it returns an Observable that emits an `ProjectAPIResponse`.
+   * The `ProjectAPIResponse` is an object that contains the details of the created project.
+   *
+   * If the request fails, it will trigger the `handleError` method. This method logs the error and returns an Observable that emits a default `ProjectAPIResponse` object.
+   * The default `ProjectAPIResponse` object is an empty project object.
+   *
+   * @returns An Observable of `ProjectAPIResponse`. Subscribe to this Observable to get the data when the request succeeds or fails.
+   * @param projectRequest - The details of the project to create. This should be an object that conforms to the `ProjectRequest` interface.
+   */
+  sendCreateProjectRequest(
+    projectRequest: ProjectRequest
+  ): Observable<ProjectAPIResponse> {
+    return this.http
+      .post<ProjectAPIResponse>(`${this.apiUrl}/projects`, projectRequest)
+      .pipe(
+        tap(_ =>
+          console.log(`created project with name ${projectRequest.name}`)
+        ),
+        catchError(
+          this.handleError<ProjectAPIResponse>('sendCreateProjectRequest', {
+            project: {
+              id: 0,
+              name: '',
+              description: '',
+              creation_date: new Date(),
+            },
+          })
         )
       );
   }
