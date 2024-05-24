@@ -13,7 +13,6 @@ import { ItemRequest, UpdateItemRequest } from './interfaces/requests';
 import { environment } from '../../environments/environment';
 import { HttpStatusCode } from './interfaces/http-status-codes';
 import { Router } from '@angular/router';
-import { UpdateExtensionFormData } from './interfaces/formdata';
 
 @Injectable({
   providedIn: 'root',
