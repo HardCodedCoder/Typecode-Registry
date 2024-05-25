@@ -1,8 +1,9 @@
-<div class="outer-container">
-  <div class="table-container">
+<div class="outer-container width-70">
+  <div class="table-container width-100">
     <div class="table-menu">
       <form [formGroup]="searchForm" tuiTextfieldIcon="tuiIconSearchLarge">
         <tui-input
+          *ngIf="this.storeService.allExtensions"
           label="Search"
           formControlName="search"
           [tuiTextfieldCleaner]="true"
@@ -13,6 +14,7 @@
         </tui-input>
       </form>
       <button
+        *ngIf="this.storeService.allExtensions"
         appearance="destructive"
         icon="tuiIconFilterLarge"
         tuiIconButton
@@ -69,8 +71,8 @@
                     : (extension.description
                         | slice: 0 : MAX_DESCRIPTION_LENGTH) + '...'
                 }}
-                <!-- show
-                  button only if description is longer than MAX_DESCRIPTION_LENGTH -->
+                <!-- show button only if description is longer than
+                  MAX_DESCRIPTION_LENGTH -->
                 <button
                   *ngIf="extension.description.length > MAX_DESCRIPTION_LENGTH"
                   tuiLink

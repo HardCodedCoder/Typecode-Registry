@@ -167,7 +167,7 @@ export class ItemEditorComponent implements OnInit {
    * @returns {string | undefined} The name of the extension or undefined if the extension was not found.
    */
   getExtensionName(extension_id: number): string | undefined {
-    let extension = this.store.projectExtensions.find(
+    let extension = this.store.projectExtensions?.find(
       ext => ext.id === extension_id
     );
     if (!extension) {

@@ -6,6 +6,7 @@
         <div class="table-menu">
           <form [formGroup]="searchForm" tuiTextfieldIcon="tuiIconSearchLarge">
             <tui-input
+              *ngIf="this.store.items"
               label="Search"
               formControlName="search"
               [tuiTextfieldCleaner]="true"
@@ -16,6 +17,7 @@
             </tui-input>
           </form>
           <button
+            *ngIf="this.store.items"
             appearance="destructive"
             icon="tuiIconFilterLarge"
             tuiIconButton
@@ -136,7 +138,7 @@
       <h1>No items available.</h1>
     </ng-template>
 
-    <div class="item-display border-radius shadow">
+    <div *ngIf="this.store.items" class="item-display border-radius shadow">
       <div
         *ngIf="selectedItem; else noItemSelected"
         class="item-display-sub-container"
@@ -180,7 +182,10 @@
     </ng-template>
   </div>
 
-  <div class="project-card-container shadow border-radius">
+  <div
+    class="project-card-container shadow border-radius"
+    *ngIf="this.store.projects.length > 0"
+  >
     <tui-scrollbar>
       <div class="project-card-sub-container">
         <tui-island

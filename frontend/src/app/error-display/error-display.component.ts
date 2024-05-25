@@ -5,6 +5,7 @@ import {
   HttpStatusDetails,
   httpStatusCodes,
 } from '../services/interfaces/http-status-codes';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-error-display',
@@ -23,7 +24,14 @@ export class ErrorDisplayComponent implements OnInit {
       this.checkErrorCode();
       this.setErrorDetails(this.errorCode);
       if (history.state.errorOrigin) {
-        this.errorOrigin = history.state.errorOrigin;
+        // If there's an error origin (error 204), use the error text with the origin appended
+        this.errorDetails.errorText = `${httpStatusCodes[this.errorCode].errorText} – ${environment.backendUrl}${history.state.errorOrigin}`;
+        this.errorDetails.buttonLink = history.state.errorOrigin;
+      } else {
+        // If there's no error origin, use the default error text
+        this.errorDetails.errorText = httpStatusCodes[this.errorCode].errorText;
+        this.errorDetails.buttonLink =
+          httpStatusCodes[this.errorCode].buttonLink;
       }
     });
   }
@@ -45,6 +53,6 @@ export class ErrorDisplayComponent implements OnInit {
    * @param errorCode - The error code to set the error details for.
    */
   setErrorDetails(errorCode: HttpStatusCode) {
-    this.errorDetails = httpStatusCodes[errorCode];
+    this.errorDetails = { ...httpStatusCodes[errorCode] };
   }
 }
