@@ -18,10 +18,10 @@ export class ExtensionEditorComponent implements OnInit {
   });
 
   readonly columns: string[] = [
+    'Scope',
+    'Project',
     'Name',
     'Description',
-    'Project',
-    'Scope',
     'Item Count',
     'Creation Date',
     'Actions',

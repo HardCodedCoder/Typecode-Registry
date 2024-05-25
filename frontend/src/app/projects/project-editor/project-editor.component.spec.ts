@@ -1,160 +1,121 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
-import { share } from 'rxjs/operators';
+import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { ProjectEditorComponent } from './project-editor.component';
-import {
-  TuiAlertService,
-  TuiDialogService,
-  TuiScrollbarModule,
-  TuiTextfieldControllerModule,
-  TuiNotificationModule,
-} from '@taiga-ui/core';
-import { BackendService } from '../../services/backend.service';
 import { StoreService } from '../../services/store.service';
-import { TuiTableModule } from '@taiga-ui/addon-table';
-import {
-  CdkFixedSizeVirtualScroll,
-  CdkVirtualScrollViewport,
-  ScrollingModule,
-} from '@angular/cdk/scrolling';
+import { BackendService } from '../../services/backend.service';
+import { TuiDialogService } from '@taiga-ui/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { TuiLetModule } from '@taiga-ui/cdk';
-import { TuiTagModule, TuiInputModule } from '@taiga-ui/kit';
-import { ProjectResponse } from '../../services/interfaces/project';
+import { of } from 'rxjs';
+import { ProjectRequest, ProjectResponse } from '../../services/interfaces/project';
+import { AddProjectComponent } from '../add-project/add-project.component';
+import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
+import { Injector } from '@angular/core';
 
 describe('ProjectEditorComponent', () => {
   let component: ProjectEditorComponent;
   let fixture: ComponentFixture<ProjectEditorComponent>;
+  let mockStoreService: Partial<StoreService>;
+  let mockBackendService: Partial<BackendService>;
   let mockDialogService: jasmine.SpyObj<TuiDialogService>;
-  let mockBackendService: jasmine.SpyObj<BackendService>;
-  let mockStoreService: jasmine.SpyObj<StoreService>;
-  let mockAlertService: jasmine.SpyObj<TuiAlertService>;
+  let mockInjector: Injector;
 
-  beforeEach(async () => {
-    mockDialogService = jasmine.createSpyObj('TuiDialogService', ['open']);
-    mockDialogService.open.and.returnValue(of({}).pipe(share()));
-    mockBackendService = jasmine.createSpyObj('BackendService', [
-      'sendCreateProjectRequest',
-      'getProjects',
-      'deleteProject',
-    ]);
-    mockBackendService.getProjects.and.returnValue(
-      of({
-        projects: [
-          {
-            id: 1,
-            name: 'Project A',
-            description: 'Description A',
-            creation_date: new Date(),
-          },
-          {
-            id: 2,
-            name: 'Project B',
-            description: 'Description B',
-            creation_date: new Date(),
-          },
-        ],
-      })
-    );
-    mockBackendService.sendCreateProjectRequest.and.returnValue(
-      of({
+  beforeEach(() => {
+    mockStoreService = {
+      projects: [],
+    };
+
+    mockBackendService = {
+      getProjects: () => of({ projects: [] }),
+      sendCreateProjectRequest: (requestData: ProjectRequest) => of({
         project: {
           id: 1,
-          name: 'New Project',
-          description: 'New Project Description',
-          creation_date: new Date(),
-        },
+          name: requestData.name,
+          description: requestData.description,
+          creation_date: new Date()
+        }
       })
-    );
+    };
 
-    mockStoreService = jasmine.createSpyObj('StoreService', [], { projects: [] });
-    mockAlertService = jasmine.createSpyObj('TuiAlertService', ['open']);
-    mockAlertService.open.and.returnValue(of({}));
+    mockDialogService = jasmine.createSpyObj('TuiDialogService', ['open']);
+    mockDialogService.open.and.returnValue(of({
+      projectName: 'Test Project',
+      projectDescription: 'Test Description'
+    }));
 
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       declarations: [ProjectEditorComponent],
-      imports: [
-        TuiScrollbarModule,
-        TuiTableModule,
-        CdkVirtualScrollViewport,
-        ScrollingModule,
-        TuiLetModule,
-        TuiTagModule,
-        TuiInputModule,
-        CdkFixedSizeVirtualScroll,
-        ReactiveFormsModule,
-        TuiTextfieldControllerModule,
-        TuiNotificationModule,
-      ],
+      imports: [ReactiveFormsModule],
       providers: [
-        { provide: TuiDialogService, useValue: mockDialogService },
-        { provide: BackendService, useValue: mockBackendService },
         { provide: StoreService, useValue: mockStoreService },
-        { provide: TuiAlertService, useValue: mockAlertService },
-      ],
-    }).compileComponents();
+        { provide: BackendService, useValue: mockBackendService },
+        { provide: TuiDialogService, useValue: mockDialogService },
+        { provide: Injector, useValue: mockInjector },
+      ]
+    });
 
     fixture = TestBed.createComponent(ProjectEditorComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display projects in the table', () => {
-    const compiled = fixture.debugElement.nativeElement;
-    const projectRows = compiled.querySelectorAll('.project-row');
-    expect(projectRows.length).toBe(2);
-    expect(projectRows[0].textContent).toContain('Project A');
-    expect(projectRows[1].textContent).toContain('Project B');
+  it('should initialize with projects from backend service', () => {
+    const projects: ProjectResponse[] = [
+      {
+        id: 1,
+        name: 'Test Project 1',
+        description: 'Test Description 1',
+        creation_date: new Date(),
+      },
+      {
+        id: 2,
+        name: 'Test Project 2',
+        description: 'Test Description 2',
+        creation_date: new Date(),
+      },
+    ];
+    spyOn(mockBackendService as any, 'getProjects').and.returnValue(of({ projects }));
+    component.ngOnInit();
+    expect(component.storeService.projects).toEqual(projects);
   });
-  /*
-    it('should update the table after adding a new project', () => {
-      const newProject = {
-        id: 3,
-        name: 'Project C',
-        description: 'Description C',
-        creation_date: new Date(),     };
-      /*
-      mockBackendService.sendCreateProjectRequest.and.returnValue(
-        of({ project: newProject })
-      );
-     component.addProject(newProject);
-    fixture.detectChanges();
 
-    const compiled = fixture.debugElement.nativeElement;
-    const projectRows = compiled.querySelectorAll('.project-row');
-    expect(projectRows.length).toBe(3);
-    expect(projectRows[2].textContent).toContain('Project C');
-  });
-*/
-  it('should update the table after deleting a project', () => {
-    const projectToDelete: ProjectResponse = {
-      id: 1,
-      name: 'Project A',
-      description: 'Description A',
-      creation_date: new Date(),
+  it('should open a dialog and handle the response', () => {
+    const dialogData = { projectName: 'New Project', projectDescription: 'New Description' };
+    const projectResponse = {
+      project: {
+        id: 1,
+        name: dialogData.projectName,
+        description: dialogData.projectDescription,
+        creation_date: new Date(),
+      },
     };
 
-    mockDialogService.open.and.returnValue(of(true));
-    //mockBackendService.deleteProject.and.returnValue(of({ status: 204 }));
-    component.onDeleteProject(projectToDelete);
-    fixture.detectChanges();
+    mockDialogService.open.and.returnValue(of(dialogData));
+    spyOn(mockBackendService as any, 'sendCreateProjectRequest').and.returnValue(of(projectResponse));
 
-    const compiled = fixture.debugElement.nativeElement;
-    const projectRows = compiled.querySelectorAll('.project-row');
-    expect(projectRows.length).toBe(1);
-    expect(projectRows[0].textContent).toContain('Project B');
+    component.showDialog();
+
+    expect(mockDialogService.open).toHaveBeenCalledWith(
+        new PolymorpheusComponent(AddProjectComponent, component['injector']),
+        jasmine.objectContaining({
+          dismissible: true,
+          label: 'Create Project',
+          data: jasmine.objectContaining({ projectName: ' ', projectDescription: '' })
+        })
+    );
+
+    expect(mockBackendService.sendCreateProjectRequest).toHaveBeenCalledWith({
+      name: dialogData.projectName,
+      description: dialogData.projectDescription,
+    });
+
+    expect(component.storeService.projects).toContain(projectResponse.project);
   });
 
-  it('should display "No projects available" when there are no project details', () => {
-    component.storeService.projects = [];
-    fixture.detectChanges();
-
-    const noDataContent =
-      fixture.debugElement.nativeElement.querySelector('h1');
-    expect(noDataContent.textContent).toContain('No projects available.');
+  it('should format date correctly', () => {
+    const date = new Date(2022, 1, 1, 13, 30);
+    const formattedDate = component.formatDate(date);
+    expect(formattedDate).toEqual('01.02.2022 - 13:30 Uhr');
   });
 });

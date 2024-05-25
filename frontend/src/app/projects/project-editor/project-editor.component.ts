@@ -8,6 +8,7 @@ import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { catchError, throwError } from 'rxjs';
 import { AddProjectComponent } from '../add-project/add-project.component';
 import { ProjectFormData } from '../../services/interfaces/formdata';
+import { MessageService } from '../../services/message.service';
 
 @Component({
   selector: 'app-project-editor',
@@ -30,7 +31,8 @@ export class ProjectEditorComponent implements OnInit {
     @Inject(StoreService) public readonly storeService: StoreService,
     @Inject(BackendService) public readonly backendService: BackendService,
     @Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
-    @Inject(Injector) private readonly injector: Injector
+    @Inject(Injector) private readonly injector: Injector,
+    @Inject(MessageService) private readonly messageService: MessageService,
   ) {}
 
   ngOnInit(): void {
@@ -84,6 +86,11 @@ export class ProjectEditorComponent implements OnInit {
                 next.project,
               ];
             }
+            this.messageService.showSuccessMessage(
+                'added',
+                'Project',
+                next.project.id
+            );
           });
       },
       complete: () => {
