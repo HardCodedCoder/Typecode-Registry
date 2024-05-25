@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { StoreService } from '../services/store.service';
 import { BackendService } from '../services/backend.service';
-import { TuiAlertService, TuiDialogService } from '@taiga-ui/core';
+import { TuiDialogService } from '@taiga-ui/core';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup } from '@angular/forms';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
@@ -25,10 +25,10 @@ export class ExtensionEditorComponent implements OnInit {
   });
 
   readonly columns: string[] = [
+    'Scope',
     'Name',
     'Description',
     'Project',
-    'Scope',
     'Item Count',
     'Creation Date',
     'Actions',
@@ -39,11 +39,8 @@ export class ExtensionEditorComponent implements OnInit {
     @Inject(Injector) private readonly injector: Injector,
     @Inject(StoreService) public readonly storeService: StoreService,
     @Inject(BackendService) public readonly backendService: BackendService,
-    @Inject(TuiAlertService) private readonly alertService: TuiAlertService,
     @Inject(MessageService) private readonly messageService: MessageService,
-    @Inject(Router) private readonly router: Router,
-    @Inject(ChangeDetectorRef)
-    private changeDetectorRef: ChangeDetectorRef
+    @Inject(Router) private readonly router: Router
   ) {}
 
   getProjectName(project_id: number): string | undefined {
