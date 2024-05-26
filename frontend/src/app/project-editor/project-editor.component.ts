@@ -3,7 +3,10 @@ import { StoreService } from '../services/store.service';
 import { BackendService } from '../services/backend.service';
 import { TuiDialogService } from '@taiga-ui/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import {ProjectResponse, ProjectUpdateRequest} from '../services/interfaces/project';
+import {
+  ProjectResponse,
+  ProjectUpdateRequest,
+} from '../services/interfaces/project';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { catchError, throwError } from 'rxjs';
 import { MessageService } from '../services/message.service';
