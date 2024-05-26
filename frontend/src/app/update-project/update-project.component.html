@@ -1,15 +1,7 @@
 <form [formGroup]="form">
   <p>
-    <span class="field-style">Scope:</span>
-    {{ updateExtensionData.extension.scope }}
-  </p>
-  <p>
-    <span class="field-style">Project:</span>
-    {{ store.getProjectName(updateExtensionData.extension.project_id) }}
-  </p>
-  <p>
     <span class="field-style">Creation Date:</span>
-    {{ formattedDate(updateExtensionData.extension.creation_date) }}
+    {{ formattedDate(updateProjectData.project.creation_date) }}
   </p>
 
   <!-- Extension Name Header and Input -->
@@ -18,17 +10,14 @@
       <h3 class="tui-form__header tui-form__header_margin-top_none">Name</h3>
       <div class="tui-form__row">
         <tui-input
-          formControlName="extensionName"
-          tuiHintContent="Enter the extension name that should be created here."
+          formControlName="projectName"
+          tuiHintContent="Enter the project name that should be created here."
         >
-          Update Extension Name
-          <input
-            value="{{ updateExtensionData.extension.name }}"
-            tuiTextfield
-          />
+          Update Project Name
+          <input value="{{ updateProjectData.project.name }}" tuiTextfield />
         </tui-input>
         <tui-error
-          formControlName="extensionName"
+          formControlName="projectName"
           [error]="[] | tuiFieldError | async"
         ></tui-error>
       </div>
@@ -42,12 +31,12 @@
       </h3>
       <div class="tui-form__row">
         <tui-input
-          formControlName="extensionDescription"
-          tuiHintContent="Enter the extension Description that should be used to update the extension"
+          formControlName="projectDescription"
+          tuiHintContent="Enter the project Description that should be used to update the project"
         >
-          Update Extension Description
+          Update Project Description
           <input
-            value="{{ updateExtensionData.extension.description }}"
+            value="{{ updateProjectData.project.description }}"
             tuiTextfield
           />
         </tui-input>

@@ -3,12 +3,20 @@ import { StoreService } from '../services/store.service';
 import { BackendService } from '../services/backend.service';
 import { TuiDialogService } from '@taiga-ui/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ProjectResponse } from '../services/interfaces/project';
+import {
+  ProjectResponse,
+  ProjectUpdateRequest,
+} from '../services/interfaces/project';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { catchError, throwError } from 'rxjs';
 import { MessageService } from '../services/message.service';
-import { ProjectFormData } from '../services/interfaces/formdata';
+import {
+  ProjectFormData,
+  UpdateExtensionFormData,
+  UpdateProjectFormData,
+} from '../services/interfaces/formdata';
 import { AddProjectComponent } from '../add-project/add-project.component';
+import { UpdateProjectComponent } from '../update-project/update-project.component';
 
 @Component({
   selector: 'app-project-editor',
@@ -99,7 +107,7 @@ export class ProjectEditorComponent implements OnInit {
     });
   }
 
-  formatDate(dateString: Date): string {
+  formattedDate(dateString: Date): string {
     const date = new Date(dateString);
 
     const dateOptions: Intl.DateTimeFormatOptions = {
@@ -121,7 +129,68 @@ export class ProjectEditorComponent implements OnInit {
   }
 
   onEditProject(project: ProjectResponse) {
-    console.log(project);
+    if (project === undefined || project.id === 0) {
+      this.messageService.showFailureMessage(
+        'Error: Unexpected internal error! Please restart application!'
+      );
+      return;
+    }
+
+    const data: UpdateProjectFormData = {
+      project: project,
+    };
+
+    const dialog$ = this.dialogs
+      .open<UpdateExtensionFormData>(
+        new PolymorpheusComponent(UpdateProjectComponent, this.injector),
+        {
+          dismissible: true,
+          label: 'Update Project',
+          data: data,
+        }
+      )
+      .pipe(
+        catchError(err => {
+          console.error('project-editor: Error opening dialog:', err);
+          return throwError(err);
+        })
+      );
+
+    dialog$.subscribe(dialogData => {
+      if (dialogData.error !== undefined) {
+        if (dialogData.error.message === 'Cancelled')
+          this.messageService.showInformationNotification(
+            dialogData.error.message
+          );
+        else this.messageService.showFailureMessage(dialogData.error.message);
+        return;
+      }
+
+      const requestData: ProjectUpdateRequest = {};
+      if (dialogData.new_name !== undefined)
+        requestData.name = dialogData.new_name;
+      if (dialogData.new_description !== undefined)
+        requestData.description = dialogData.new_description;
+
+      this.backendService.updateProject(project.id, requestData).subscribe({
+        next: response => {
+          console.log('Project updated successfully', response);
+          this.messageService.showSuccessMessage(
+            'updated',
+            'project',
+            project.id
+          );
+
+          if (requestData.name !== undefined) project.name = requestData.name;
+          if (requestData.description !== undefined)
+            project.description = requestData.description;
+        },
+        error: error => {
+          console.error('Error updating project', error);
+          this.messageService.showFailureMessage('Error updating project');
+        },
+      });
+    });
   }
 
   onDeleteProject(project: ProjectResponse) {

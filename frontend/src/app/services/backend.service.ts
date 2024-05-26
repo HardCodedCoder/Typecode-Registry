@@ -11,6 +11,7 @@ import {
   ProjectAPIResponse,
   ProjectRequest,
   ProjectsAPIResponse,
+  ProjectUpdateRequest,
 } from './interfaces/project';
 import { ItemAPIResponse, ItemsAPIResponse } from './interfaces/items';
 import { ItemRequest, UpdateItemRequest } from './interfaces/requests';
@@ -316,6 +317,34 @@ export class BackendService {
             },
           })
         )
+      );
+  }
+
+  /**
+   * Updates a project in the backend.
+   *
+   * This method sends an HTTP PUT request to the backend to update a project. The project to update is identified by the `id` parameter.
+   * The endpoint it hits is `${this.apiUrl}/projects/${id}`, where `this.apiUrl` is the base URL of the backend and `id` is the ID of the project to update.
+   *
+   * If the request is successful and the project is updated, it logs a message to the console.
+   *
+   * If the request fails, it will trigger the `handleError` method. This method logs the error and returns an Observable that emits a default object.
+   * The default object is `{ projects: [] }`.
+   *
+   * @param id - The ID of the project to update.
+   * @param data - The updated data for the project. This should be an object that conforms to the `UpdateProjectFormData` interface.
+   * @returns An Observable of any. Subscribe to this Observable to get the data when the request succeeds or fails.
+   */
+  updateProject(id: number, data: ProjectUpdateRequest): Observable<any> {
+    return this.http
+      .put(`${this.apiUrl}/projects/${id}`, data, { observe: 'response' })
+      .pipe(
+        tap(response => {
+          if (response.status === 204) {
+            console.log(`Updated Project with id: ${id}`);
+          }
+        }),
+        catchError(this.handleError('updateProject', { projects: [] }))
       );
   }
 }

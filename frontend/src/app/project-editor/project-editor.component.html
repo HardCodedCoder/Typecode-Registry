@@ -55,7 +55,7 @@
           <tr *ngFor="let project of sortedProjects">
             <td tuiTd>{{ project.name }}</td>
             <td tuiTd>{{ project.description }}</td>
-            <td tuiTd>{{ formatDate(project.creation_date) }}</td>
+            <td tuiTd>{{ formattedDate(project.creation_date) }}</td>
             <td tuiTd>
               <tui-hosted-dropdown [content]="dropdownContent">
                 <button
