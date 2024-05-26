@@ -30,6 +30,8 @@ import {
   TuiTagModule,
   TuiElasticContainerModule,
   TuiIslandModule,
+  TuiCheckboxModule,
+  TuiCheckboxLabeledModule,
 } from '@taiga-ui/kit';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
@@ -52,6 +54,8 @@ import {
 } from '@taiga-ui/core';
 import { ProjectEditorComponent } from './projects/project-editor/project-editor.component';
 import { AddProjectComponent } from './projects/add-project/add-project.component';
+import { AddExtensionComponent } from './add-extension/add-extension.component';
+import { UpdateExtensionComponent } from './update-extension/update-extension.component';
 
 @NgModule({
   declarations: [
@@ -64,6 +68,8 @@ import { AddProjectComponent } from './projects/add-project/add-project.componen
     ExtensionEditorComponent,
     ProjectEditorComponent,
     AddProjectComponent,
+    AddExtensionComponent,
+    UpdateExtensionComponent,
   ],
   imports: [
     BrowserAnimationsModule,
@@ -101,6 +107,8 @@ import { AddProjectComponent } from './projects/add-project/add-project.componen
     TuiElasticContainerModule,
     TuiLinkModule,
     TuiIslandModule,
+    TuiCheckboxModule,
+    TuiCheckboxLabeledModule,
   ],
   providers: [{ provide: TUI_SANITIZER, useClass: NgDompurifySanitizer }],
   bootstrap: [AppComponent],

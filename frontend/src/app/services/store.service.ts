@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ExtensionResponse } from './interfaces/extension';
+import { ExtensionResponse } from './interfaces/extensionRequest';
 import { ProjectResponse } from './interfaces/project';
 import { ItemResponse } from './interfaces/items';
 
@@ -44,5 +44,18 @@ export class StoreService {
       )?.id;
     }
     return undefined;
+  }
+
+  /**
+   * Returns the names of the projects to be displayed in the combobox.
+   *
+   * @returns The names of the projects to be displayed in the combobox.
+   */
+  get projectNames(): string[] {
+    return this.projects ? this.projects.map(project => project.name) : [];
+  }
+
+  getProjectName(project_id: number): string | undefined {
+    return this.projects.find(project => project.id === project_id)?.name;
   }
 }

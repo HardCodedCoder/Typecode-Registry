@@ -20,11 +20,11 @@ import (
 )
 
 type ResponseItem struct {
-	Item data.Item `json:"item"`
+	Item data.Item json:"item"
 }
 
 type ResponseItems struct {
-	Items []data.Item `json:"items"`
+	Items []data.Item json:"items"
 }
 
 type ExpectedItemValues struct {
@@ -669,7 +669,7 @@ func TestUpdateItem(t *testing.T) {
 	})
 
 	t.Run("BadRequestWithInvalidBody", func(t *testing.T) {
-		req, _ := http.NewRequest(http.MethodPut, "/items/1", bytes.NewBuffer([]byte(`invalid`)))
+		req, _ := http.NewRequest(http.MethodPut, "/items/1", bytes.NewBuffer([]byte(invalid)))
 		resp := httptest.NewRecorder()
 
 		app.updateItem(resp, req)
@@ -842,7 +842,7 @@ func TestCreateItem(t *testing.T) {
 
 	t.Run("StatusInternalServerErrorWhenReadingProjectNameFails", func(t *testing.T) {
 		_, mock, app := setupMockAndApp(t)
-		req, _ := http.NewRequest(http.MethodPost, "/items", bytes.NewBuffer([]byte(`{"name": "Test-Item", "table_name": "Test-Item-Table", "extension_id": 1}`)))
+		req, _ := http.NewRequest(http.MethodPost, "/items", bytes.NewBuffer([]byte({"name": "Test-Item", "table_name": "Test-Item-Table", "extension_id": 1})))
 		resp := httptest.NewRecorder()
 
 		setupExtensionMock(mock, testExtensionForProject.ID, sql.NullInt64{Int64: testExtensionForProject.ProjectID.Int64, Valid: true}, testExtensionForProject.Scope, testExtensionForProject.Name, testExtensionForProject.Description, testExtensionForProject.ItemCount, true)
@@ -962,6 +962,63 @@ func TestCreateItem(t *testing.T) {
 			t.Errorf("there were unfulfilled expectations: %s", err)
 		}
 	})
+}
+
+func TestUpdateExtension(t *testing.T) {
+	_, mock, app := setupMockAndApp(t)
+
+	t.Run("BadRequestWithInvalidID", func(t *testing.T) {
+		req, _ := http.NewRequest(http.MethodPut, "/extensions/invalid", nil)
+		resp := httptest.NewRecorder()
+
+		app.updateExtension(resp, req)
+
+		assert.Equal(t, http.StatusBadRequest, resp.Code)
+	})
+
+	t.Run("BadRequestWithNilBody", func(t *testing.T) {
+		req, _ := http.NewRequest(http.MethodPut, "/extensions/38", nil)
+		resp := httptest.NewRecorder()
+
+		app.updateExtension(resp, req)
+
+		assert.Equal(t, http.StatusBadRequest, resp.Code)
+	})
+
+	t.Run("InternalServerErrorOnFailingRead", func(t *testing.T) {
+		mockReadExtensionByIDQueryReturnsError(mock, int64(38), errors.New("mock error"))
+
+		req, _ := http.NewRequest(http.MethodPut, "/extensions/38", bytes.NewBuffer([]byte({"name": "Updated Name"})))
+		resp := httptest.NewRecorder()
+
+		app.updateExtension(resp, req)
+
+		assert.Equal(t, http.StatusInternalServerError, resp.Code)
+	})
+
+	t.Run("BadRequestWithInvalidJSON", func(t *testing.T) {
+		setupExtensionMock(mock, 38, sql.NullInt64{}, "Shared", "Test-Extension", "Test-Description", 1, true)
+
+		req, _ := http.NewRequest(http.MethodPut, "/extensions/38", bytes.NewBuffer([]byte({"name":)))
+		resp := httptest.NewRecorder()
+
+		app.updateExtension(resp, req)
+
+		assert.Equal(t, http.StatusBadRequest, resp.Code)
+	})
+
+	t.Run("SuccessfulUpdate", func(t *testing.T) {
+		setupExtensionMock(mock, 38, sql.NullInt64{}, "Shared", "Test-Extension", "Test-Description", 1, true)
+		mockUpdateExtensionQuery(mock, "Updated Name", "Updated Description", int64(38))
+
+		req, _ := http.NewRequest(http.MethodPut, "/extensions/38", bytes.NewBuffer([]byte({"name": "Updated Name", "description": "Updated Description"})))
+		resp := httptest.NewRecorder()
+
+		app.updateExtension(resp, req)
+
+		assert.Equal(t, http.StatusNoContent, resp.Code)
+	})
+
 }
 
 func TestCreateProject(t *testing.T) {

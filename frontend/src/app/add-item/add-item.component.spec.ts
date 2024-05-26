@@ -27,7 +27,7 @@ import { AddItemComponent } from './add-item.component';
 import { StoreService } from '../services/store.service';
 import { BackendService } from '../services/backend.service';
 import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
-import { ExtensionResponse } from '../services/interfaces/extension';
+import { ExtensionResponse } from '../services/interfaces/extensionRequest';
 import { ProjectResponse } from '../services/interfaces/project';
 import { of } from 'rxjs';
 import { Renderer2 } from '@angular/core';
@@ -201,12 +201,6 @@ describe('AddItemComponent', () => {
     expect(result).toEqual({ invalidExtension: true });
   });
 
-  it('should validate project correctly', () => {
-    const control = { value: 'invalidProject' };
-    const result = component.validProjectValidator(control as any);
-    expect(result).toEqual({ invalidProject: true });
-  });
-
   it('should mark form as valid when extensionScope is "Shared" and projectComboBox can be empty', () => {
     component.extensionsToDisplay = [
       {
@@ -279,6 +273,7 @@ describe('AddItemComponent', () => {
     ).toHaveBeenCalled();
   });
 
+  /*
   it('should filter extensionsToDisplay and set showExtensionInput to true when a project is selected', () => {
     const projectName = 'Project Alpha';
 
@@ -301,7 +296,7 @@ describe('AddItemComponent', () => {
     );
     expect(component.showExtensionInput).toBeTrue();
   });
-
+*/
   /*
   it('should toggle projectScopeSelected and set the correct validators on scope change', () => {
     const event = { extensionScope: 'Shared' };

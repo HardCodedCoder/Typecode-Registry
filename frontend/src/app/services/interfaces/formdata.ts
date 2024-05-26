@@ -1,4 +1,5 @@
 import { ItemResponse } from './items';
+import { ExtensionResponse } from './extensionRequest';
 
 /**
  * Represents the form data for the add item form.
@@ -14,6 +15,21 @@ export interface FormData {
   extensionScope: string;
   itemName: string;
   itemTable: string;
+  projectComboBox: string;
+}
+
+/**
+ * Represents the form data for creating or editing an extension.
+ * @interface ExtensionFormData
+ * @property {string} extensionName - The name of the extension.
+ * @property {string} extensionDescription - The description of the extension.
+ * @property {string} extensionScope - The scope of the extension.
+ * @property {string} projectComboBox - The selected project.
+ */
+export interface ExtensionFormData {
+  extensionName: string;
+  extensionDescription: string;
+  extensionScope: string;
   projectComboBox: string;
 }
 
@@ -35,6 +51,21 @@ export interface UpdateItemFormData {
 export interface ProjectFormData {
   projectName: string;
   projectDescription: string;
+  error?: Error;
+}
+
+/**
+ * Represents the form data for updating an extension.
+ * @interface UpdateExtensionFormData
+ * @property {ExtensionResponse} extension - The extension to update.
+ * @property {string} [name] - The new name for the extension. Optional.
+ * @property {string} [description] - The new description for the extension. Optional.
+ * @property {Error} error - Representing if an error occurred.
+ */
+export interface UpdateExtensionFormData {
+  extension: ExtensionResponse;
+  new_name?: string;
+  new_description?: string;
   error?: Error;
 }
 

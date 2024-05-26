@@ -175,12 +175,17 @@ This approach allows us to directly use the powerful concurrency features of Go 
     \newline\newline - \textbf{name}: The name of the new project to create
     \newline\newline - \textbf{description}: (optional) The description of the project to create.\\
     \hline
-    /extensions & GET & Returns all extensions created). \\
+    /extensions & GET, POST & GET returns all extensions created\newline\newline POST creates a new extension. The following information must be provided:
+    \newline\newline - \textbf{Name}: The name of the extension to create.
+    \newline\newline - \textbf{Scope}: The new extension's scope.
+    \newline\newline - \textbf{Project ID}: If the scope is set to Project, the corresponding project id must be provided.
+    \newline\newline - \textbf{Description}: (optional) The Description of the extension.\\
     \hline
-    /extensions/ & GET & Gets the extensions of a specific scope.
+    /extensions/ & GET, PUT & GET Gets the extensions of a specific scope.
     Only two values will return extensions:
     \newline\newline - \textbf{Shared}: Returns all the shared extensions.
-    \newline\newline - \textbf{Project}: Returns all Project extensions. \\
+    \newline\newline - \textbf{Project}: Returns all Project extensions.
+    \newline\newline PUT updates the name and/or the description of the extension.\\
     \hline
     \caption{Overview of Backend Routes}
     \label{tab:table_routes}
@@ -484,6 +489,105 @@ Content-Type: application/json
 }
 \end{lstlisting}
 
+\headingSix{POST /extensions}
+
+The \texttt{POST /extensions} endpoint allows clients to create a new extension.
+When a client makes a \texttt{POST} request to the \texttt{/extensions} endpoint, the backend service will return Status Created Code (201) containing the newly created extension.
+
+\begin{lstlisting}[language=json,label={lst:lstlisting26}]
+POST /extensions HTTP/1.1
+Host: example.com
+
+{
+    "name": "Extension 1",
+    "description": "This is extension 1",
+    "scope": "Project"
+    "project_id: 1"
+}
+\end{lstlisting}
+
+Response:
+
+\begin{lstlisting}[language=json,label={lst:lstlisting23}]
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+    "extension":
+        {
+            "id": 1,
+            "project_id": 1,
+            "name": "Extension 1",
+            "description": "This is extension 1",
+            "scope": "Project",
+            "creation_date": "2023-01-01T00:00:00Z"
+            "item_count: 0"
+        }
+}
+\end{lstlisting}
+
+\textbff{Example 2}:
+
+
+Request:
+
+\begin{lstlisting}[language=json,label={lst:lstlisting27}]
+POST /extensions HTTP/1.1
+Host: example.com
+
+{
+    "name": "Extension 1",
+    "scope": "Shared"
+}
+\end{lstlisting}
+
+
+Response:
+
+\begin{lstlisting}[language=json,label={lst:lstlisting28}]
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+  "extension": {
+    "id": 39,
+    "project_id": null,
+    "name": "Extension 2",
+    "description": "",
+    "scope": "Shared",
+    "creation_date": "2024-05-19T19:25:37.28529Z"
+  }
+}
+\end{lstlisting}
+
+\headingSix{PUT /extensions/{id}}
+
+The \texttt{PUT /extensions/\{id\}} endpoint allows clients to update an existing extension.
+When a client makes a \texttt{PUT} request to the \texttt{/extensions/\{id\}} endpoint, the backend service will update the specified extension with the provided data.
+
+\begin{lstlisting}[language=json,label={lst:lstlisting29}]
+PUT /extensions/38 HTTP/1.1
+Host: example.com
+Content-Type: application/json
+
+{
+    "name": "This is a new name"
+}
+\end{lstlisting}
+
+Response:
+
+\begin{lstlisting}[language=json,label={lst:lstlisting30}]
+HTTP/1.1 204 No Content
+\end{lstlisting}
+
+If the item exists and is successfully updated, the service will return a \texttt{204 No Content} status code to indicate that the request was successful.
+
+\begin{mynote}
+    NOTE: The following fields cannot be updated: \\ \texttt{scope}, \texttt{project}, \texttt{extension\_id}.
+    Changing these fields would require more complex operations and is not supported by this endpoint, as changing the scope would require changing subsequently all items and their typecodes belonging to that extension.
+    Changing the scope would require moving the item to a different extension, which is not supported by this endpoint.
+\end{mynote}
 
 \headingSix{GET /extensions/{scope}}
 The client has the option to specify the scope of the extensions they want to retrieve.
@@ -523,6 +627,8 @@ Content-Type: application/json
     ]
 }
 \end{lstlisting}
+
+
 
 \begin{itemize}
     \item \textbf{Health Check}: A simple endpoint to verify the backend service's health.

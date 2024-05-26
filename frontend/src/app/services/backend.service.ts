@@ -1,12 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, Observable, of, tap } from 'rxjs';
-import { ExtensionsAPIResponse } from './interfaces/extension';
 import {
   ProjectAPIResponse,
   ProjectRequest,
   ProjectsAPIResponse,
 } from './interfaces/project';
+import {
+  ExtensionAPIResponse,
+  ExtensionRequest,
+  ExtensionsAPIResponse,
+  ExtensionUpdateRequest,
+} from './interfaces/extensionRequest';
 import { ItemAPIResponse, ItemsAPIResponse } from './interfaces/items';
 import { ItemRequest, UpdateItemRequest } from './interfaces/requests';
 import { environment } from '../../environments/environment';
@@ -78,6 +83,27 @@ export class BackendService {
               typecode: 0,
               table_name: '',
               extension_id: 0,
+              creation_date: new Date(),
+            },
+          })
+        )
+      );
+  }
+
+  sendCreateExtensionRequest(
+    extensionRequest: ExtensionRequest
+  ): Observable<ExtensionAPIResponse> {
+    return this.http
+      .post<ExtensionAPIResponse>(`${this.apiUrl}/extensions`, extensionRequest)
+      .pipe(
+        catchError(
+          this.handleError<ExtensionAPIResponse>('sendCreateExtensionRequest', {
+            extension: {
+              id: 0,
+              project_id: 0,
+              name: '',
+              scope: '',
+              description: '',
               creation_date: new Date(),
             },
           })
@@ -217,6 +243,34 @@ export class BackendService {
             },
           })
         )
+      );
+    }
+    
+   /**
+   * Updates an extension in the backend.
+   *
+   * This method sends an HTTP PUT request to the backend to update an extension. The extension to update is identified by the `id` parameter.
+   * The endpoint it hits is `${this.apiUrl}/extensions/${id}`, where `this.apiUrl` is the base URL of the backend and `id` is the ID of the extension to update.
+   *
+   * If the request is successful and the extension is updated, it logs a message to the console.
+   *
+   * If the request fails, it will trigger the `handleError` method. This method logs the error and returns an Observable that emits a default object.
+   * The default object is `{ items: [] }`.
+   *
+   * @param id - The ID of the extension to update.
+   * @param data - The updated data for the extension. This should be an object that conforms to the `UpdateExtensionFormData` interface.
+   * @returns An Observable of any. Subscribe to this Observable to get the data when the request succeeds or fails.
+   */
+  updateExtension(id: number, data: ExtensionUpdateRequest): Observable<any> {
+    return this.http
+      .put(`${this.apiUrl}/extensions/${id}`, data, { observe: 'response' })
+      .pipe(
+        tap(response => {
+          if (response.status === 204) {
+            console.log(`Updated extension with id: ${id}`);
+          }
+        }),
+        catchError(this.handleError('updateExtension', { items: [] }))
       );
   }
 
