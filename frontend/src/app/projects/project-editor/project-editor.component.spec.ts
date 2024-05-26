@@ -5,7 +5,10 @@ import { BackendService } from '../../services/backend.service';
 import { TuiDialogService } from '@taiga-ui/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
-import { ProjectRequest, ProjectResponse } from '../../services/interfaces/project';
+import {
+  ProjectRequest,
+  ProjectResponse,
+} from '../../services/interfaces/project';
 import { AddProjectComponent } from '../add-project/add-project.component';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { Injector } from '@angular/core';
@@ -25,21 +28,24 @@ describe('ProjectEditorComponent', () => {
 
     mockBackendService = {
       getProjects: () => of({ projects: [] }),
-      sendCreateProjectRequest: (requestData: ProjectRequest) => of({
-        project: {
-          id: 1,
-          name: requestData.name,
-          description: requestData.description,
-          creation_date: new Date()
-        }
-      })
+      sendCreateProjectRequest: (requestData: ProjectRequest) =>
+        of({
+          project: {
+            id: 1,
+            name: requestData.name,
+            description: requestData.description,
+            creation_date: new Date(),
+          },
+        }),
     };
 
     mockDialogService = jasmine.createSpyObj('TuiDialogService', ['open']);
-    mockDialogService.open.and.returnValue(of({
-      projectName: 'Test Project',
-      projectDescription: 'Test Description'
-    }));
+    mockDialogService.open.and.returnValue(
+      of({
+        projectName: 'Test Project',
+        projectDescription: 'Test Description',
+      })
+    );
 
     TestBed.configureTestingModule({
       declarations: [ProjectEditorComponent],
@@ -49,7 +55,7 @@ describe('ProjectEditorComponent', () => {
         { provide: BackendService, useValue: mockBackendService },
         { provide: TuiDialogService, useValue: mockDialogService },
         { provide: Injector, useValue: mockInjector },
-      ]
+      ],
     });
 
     fixture = TestBed.createComponent(ProjectEditorComponent);
@@ -75,13 +81,18 @@ describe('ProjectEditorComponent', () => {
         creation_date: new Date(),
       },
     ];
-    spyOn(mockBackendService as any, 'getProjects').and.returnValue(of({ projects }));
+    spyOn(mockBackendService as any, 'getProjects').and.returnValue(
+      of({ projects })
+    );
     component.ngOnInit();
     expect(component.storeService.projects).toEqual(projects);
   });
 
   it('should open a dialog and handle the response', () => {
-    const dialogData = { projectName: 'New Project', projectDescription: 'New Description' };
+    const dialogData = {
+      projectName: 'New Project',
+      projectDescription: 'New Description',
+    };
     const projectResponse = {
       project: {
         id: 1,
@@ -92,17 +103,23 @@ describe('ProjectEditorComponent', () => {
     };
 
     mockDialogService.open.and.returnValue(of(dialogData));
-    spyOn(mockBackendService as any, 'sendCreateProjectRequest').and.returnValue(of(projectResponse));
+    spyOn(
+      mockBackendService as any,
+      'sendCreateProjectRequest'
+    ).and.returnValue(of(projectResponse));
 
     component.showDialog();
 
     expect(mockDialogService.open).toHaveBeenCalledWith(
-        new PolymorpheusComponent(AddProjectComponent, component['injector']),
-        jasmine.objectContaining({
-          dismissible: true,
-          label: 'Create Project',
-          data: jasmine.objectContaining({ projectName: ' ', projectDescription: '' })
-        })
+      new PolymorpheusComponent(AddProjectComponent, component['injector']),
+      jasmine.objectContaining({
+        dismissible: true,
+        label: 'Create Project',
+        data: jasmine.objectContaining({
+          projectName: ' ',
+          projectDescription: '',
+        }),
+      })
     );
 
     expect(mockBackendService.sendCreateProjectRequest).toHaveBeenCalledWith({

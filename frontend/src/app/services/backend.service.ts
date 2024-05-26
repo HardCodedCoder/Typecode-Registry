@@ -264,9 +264,9 @@ export class BackendService {
           })
         )
       );
-    }
-    
-   /**
+  }
+
+  /**
    * Updates an extension in the backend.
    *
    * This method sends an HTTP PUT request to the backend to update an extension. The extension to update is identified by the `id` parameter.

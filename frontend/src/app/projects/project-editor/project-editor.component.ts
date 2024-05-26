@@ -32,7 +32,7 @@ export class ProjectEditorComponent implements OnInit {
     @Inject(BackendService) public readonly backendService: BackendService,
     @Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
     @Inject(Injector) private readonly injector: Injector,
-    @Inject(MessageService) private readonly messageService: MessageService,
+    @Inject(MessageService) private readonly messageService: MessageService
   ) {}
 
   ngOnInit(): void {
@@ -87,9 +87,9 @@ export class ProjectEditorComponent implements OnInit {
               ];
             }
             this.messageService.showSuccessMessage(
-                'added',
-                'Project',
-                next.project.id
+              'added',
+              'Project',
+              next.project.id
             );
           });
       },

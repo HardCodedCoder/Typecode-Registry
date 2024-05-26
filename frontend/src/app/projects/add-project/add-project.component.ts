@@ -38,7 +38,8 @@ export class AddProjectComponent {
 
   submit() {
     this.projectFormData.projectName = this.form.get('projectName')?.value;
-    this.projectFormData.projectDescription = this.form.get('projectDescription')?.value;
+    this.projectFormData.projectDescription =
+      this.form.get('projectDescription')?.value;
     this.context.completeWith(this.projectFormData);
   }
 
@@ -47,7 +48,7 @@ export class AddProjectComponent {
       error: true,
       message: 'cancelled by user',
     };
-    
+
     this.context.completeWith(this.projectFormData);
   }
 }
