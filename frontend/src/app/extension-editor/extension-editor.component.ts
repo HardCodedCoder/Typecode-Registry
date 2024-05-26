@@ -19,6 +19,7 @@ import {
 } from '../services/interfaces/extensionRequest';
 import { MessageService } from '../services/message.service';
 import { UpdateExtensionComponent } from '../update-extension/update-extension.component';
+import { TUI_PROMPT, TuiPromptData } from '@taiga-ui/kit';
 
 @Component({
   selector: 'app-extension-editor',
@@ -260,6 +261,54 @@ export class ExtensionEditorComponent implements OnInit {
   }
 
   onDeleteItem(extension: ExtensionResponse) {
-    console.log(extension);
+    const data: TuiPromptData = {
+      content: `This will delete the extension <b>${extension.name}</b> containing <b>${extension.item_count ?? 0}</b> items.`,
+      yes: 'Remove',
+      no: 'Cancel',
+    };
+
+    this.dialogs
+      .open<boolean>(TUI_PROMPT, {
+        label: 'Do you really want to delete this extension?',
+        size: 'm',
+        data,
+      })
+      .subscribe(response => {
+        if (response) {
+          this.backendService.deleteExtension(extension.id).subscribe({
+            next: response => {
+              if (response.status === 204) {
+                console.log('Received response 204 from backend');
+                this.messageService.showSuccessMessage(
+                  'deleted',
+                  'extension',
+                  extension.id
+                );
+                if (extension.project_id > 0) {
+                  this.storeService.projectExtensions =
+                    this.storeService.projectExtensions.filter(
+                      item => item.id !== extension.id
+                    );
+                } else {
+                  this.storeService.sharedExtensions =
+                    this.storeService.sharedExtensions.filter(
+                      item => item.id !== extension.id
+                    );
+                }
+                if (this.storeService.allExtensions !== null) {
+                  this.storeService.allExtensions =
+                    this.storeService.allExtensions.filter(
+                      item => item.id !== extension.id
+                    );
+                }
+              }
+            },
+            error: error =>
+              this.messageService.showFailureMessage(
+                `Could not delete extension: ${extension.name}! Error: ${error}`
+              ),
+          });
+        }
+      });
   }
 }

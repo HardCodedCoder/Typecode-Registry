@@ -409,9 +409,64 @@ func (app *application) getExtensionsHandler(w http.ResponseWriter, r *http.Requ
 		} else {
 			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		}
+
+	case http.MethodDelete:
+		if strings.Contains(r.URL.Path, "/extensions/") {
+			app.deleteExtension(w, r)
+		} else {
+			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		}
 	default:
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 	}
+}
+
+func (app *application) deleteExtension(w http.ResponseWriter, r *http.Request) {
+	app.logger.Debug().Msg("reading extension id from url")
+	id := r.URL.Path[len("/extensions/"):]
+	idInt, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		app.logger.Warn().Msg(fmt.Sprintf("Bad Request in %s using id %s",
+			GetFunctionName(),
+			id))
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+	}
+
+	app.logger.Debug().Msg("starting transaction")
+	// Begin a transaction
+	err = app.models.Items.BeginTransaction()
+	if err != nil {
+		app.logger.Err(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	app.logger.Debug().Msg("deleting items from extension")
+
+	err = app.models.Items.DeleteItemsByExtension(idInt)
+	if err != nil {
+		app.logger.Err(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		_ = app.models.Items.Rollback()
+		return
+	}
+
+	err = app.models.Extensions.Delete(idInt)
+	if err != nil {
+		app.logger.Err(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		_ = app.models.Items.Rollback()
+		return
+	}
+
+	err = app.models.Items.CommitTransaction()
+	if err != nil {
+		app.logger.Err(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
 
 // updateExtension handles the PUT request to update an existing extension.

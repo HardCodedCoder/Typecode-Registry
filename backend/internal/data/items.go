@@ -224,3 +224,9 @@ func (i *ItemModel) CommitTransaction() error {
 	}
 	return nil
 }
+
+func (i *ItemModel) DeleteItemsByExtension(extensionID int64) error {
+	query := `DELETE FROM item WHERE extension_id = $1`
+	_, err := i.DB.Exec(query, extensionID)
+	return err
+}
