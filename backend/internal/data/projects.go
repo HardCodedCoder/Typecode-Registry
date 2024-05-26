@@ -66,6 +66,21 @@ func (pm ProjectModel) ReadProjectName(id int64, projectName *string) error {
 	return pm.DB.QueryRow(query, id).Scan(projectName)
 }
 
+// Insert adds a new project to the database.
+// It takes a Project struct as input and returns an error if the SQL query or scan fails.
+// The function executes an INSERT statement to add the project's name and description
+// to the 'project' table. It then scans the returned id and creation_date into the
+// provided Project struct.
+func (pm ProjectModel) Insert(project *Project) error {
+	query := `INSERT INTO project (name, description)
+		VALUES ($1, $2)
+		RETURNING id, creation_date`
+
+	args := []interface{}{project.Name, project.Description}
+
+	return pm.DB.QueryRow(query, args...).Scan(&project.ID, &project.CreationDate)
+}
+
 // Update modifies the name and description of a project in the database.
 // If the provided altName is an empty string, the existing name in the database is retained.
 // The description is always updated to the provided altDescription.
