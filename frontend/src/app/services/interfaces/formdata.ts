@@ -73,3 +73,9 @@ export interface Error {
   error: boolean;
   message: string;
 }
+
+export interface ProjectFormData {
+  projectName: string;
+  projectDescription: string;
+  error?: Error;
+}
