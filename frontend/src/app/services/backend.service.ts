@@ -254,7 +254,7 @@ export class BackendService {
             console.log(`Updated extension with id: ${id}`);
           }
         }),
-        catchError(this.handleError('updateExtension', { items: [] }))
+        catchError(this.handleError('updateExtension', { extensions: [] }))
       );
   }
 
