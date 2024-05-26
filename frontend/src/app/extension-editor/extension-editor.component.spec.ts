@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
-import { StoreService } from '../../services/store.service';
-import { BackendService } from '../../services/backend.service';
+import { StoreService } from '../services/store.service';
+import { BackendService } from '../services/backend.service';
 import { ExtensionEditorComponent } from './extension-editor.component'
-import { ProjectsAPIResponse } from '../../services/interfaces/project';
+import { ProjectsAPIResponse } from '../services/interfaces/project';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TuiTableModule } from '@taiga-ui/addon-table';
 import {

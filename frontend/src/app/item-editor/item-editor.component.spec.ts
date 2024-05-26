@@ -9,8 +9,8 @@ import {
   TuiTextfieldControllerModule,
   TuiNotificationModule,
 } from '@taiga-ui/core';
-import { BackendService } from '../../services/backend.service';
-import { StoreService } from '../../services/store.service';
+import { BackendService } from '../services/backend.service';
+import { StoreService } from '../services/store.service';
 import { TuiTableModule } from '@taiga-ui/addon-table';
 import {
   CdkFixedSizeVirtualScroll,
@@ -20,7 +20,7 @@ import {
 import { ReactiveFormsModule } from '@angular/forms';
 import { TuiLetModule } from '@taiga-ui/cdk';
 import { TuiTagModule, TuiInputModule } from '@taiga-ui/kit';
-import { ItemResponse } from '../../services/interfaces/items';
+import { ItemResponse } from '../services/interfaces/items';
 
 describe('ItemEditorComponent', () => {
   let component: ItemEditorComponent;

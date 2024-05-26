@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { StoreService } from '../../services/store.service';
-import { BackendService } from '../../services/backend.service';
+import { StoreService } from '../services/store.service';
+import { BackendService } from '../services/backend.service';
 import { TuiAlertService } from '@taiga-ui/core';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup } from '@angular/forms';

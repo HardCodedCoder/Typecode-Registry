@@ -18,8 +18,8 @@ import {
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { ItemEditorComponent } from './items/item-editor/item-editor.component';
-import { AddItemComponent } from './items/add-item/add-item.component';
+import { ItemEditorComponent } from './item-editor/item-editor.component';
+import { AddItemComponent } from './add-item/add-item.component';
 import {
   TuiComboBoxModule,
   TuiDataListWrapperModule,
@@ -42,8 +42,8 @@ import {
 } from '@angular/cdk/scrolling';
 import { RouterModule } from '@angular/router';
 import { ErrorDisplayComponent } from './error-display/error-display.component';
-import { UpdateItemComponent } from './items/update-item/update-item.component';
-import { ExtensionEditorComponent } from './extensions/extension-editor/extension-editor.component';
+import { UpdateItemComponent } from './update-item/update-item.component';
+import { ExtensionEditorComponent } from './extension-editor/extension-editor.component';
 import { HeaderComponent } from './header/header.component';
 import {
   TuiNotificationModule,
