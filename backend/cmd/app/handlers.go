@@ -32,6 +32,11 @@ type ExtensionUpdateRequest struct {
 	Description string `json:"description,omitempty"`
 }
 
+type ProjectUpdateRequest struct {
+	Name        string `json:"name,omitempty"`
+	Description string `json:"description,omitempty"`
+}
+
 // healthcheck is a simple handler to check if the service is up and running.
 // TODO: Add more checks to ensure the service is healthy.
 func (app *application) healthcheck(w http.ResponseWriter, r *http.Request) {
@@ -55,6 +60,12 @@ func (app *application) getProjectsHandler(w http.ResponseWriter, r *http.Reques
 	switch r.Method {
 	case http.MethodGet:
 		app.getProjects(w)
+	case http.MethodPut:
+		if strings.Contains(r.URL.Path, "/projects/") {
+			app.updateProject(w, r)
+		} else {
+			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		}
 	default:
 		app.logger.Error().Msg(fmt.Sprintf("%s not allowed on route %s ", r.Method, r.URL.Path))
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
@@ -613,6 +624,62 @@ func (app *application) getProjects(w http.ResponseWriter) {
 		msg := fmt.Sprintf("Error while trying to write projects to http response. error: %s", err)
 		app.logger.Error().Msg(msg)
 		http.Error(w, msg, http.StatusInternalServerError)
+		return
+	}
+}
+
+func (app *application) updateProject(w http.ResponseWriter, r *http.Request) {
+	app.logger.Debug().Msg("reading project id from url")
+	id := r.URL.Path[len("/projects/"):]
+	idInt, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		app.logger.Warn().Msg(fmt.Sprintf("Bad Request in %s using id %s",
+			GetFunctionName(),
+			id))
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+	}
+
+	if r.Body == nil {
+		app.logger.Error().Msg("Bad Request: Empty request body")
+		http.Error(w, "Bad Request: Empty request body", http.StatusBadRequest)
+		return
+	}
+
+	app.logger.Debug().Msg("reading project from database")
+	project, err := app.models.Projects.Read(idInt)
+	if err != nil {
+		app.logger.Error().Msg(fmt.Sprintf("Error while reading project with id %d: %v", idInt, err))
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	app.logger.Debug().Msg(fmt.Sprintf("Found project with id %d", idInt))
+	app.logger.Debug().Msg("parsing request body")
+
+	var projectUpdateRequest ProjectUpdateRequest
+	err = app.readJSON(w, r, &projectUpdateRequest)
+	if err != nil {
+		app.logger.Error().Msg(fmt.Sprintf("Bad Request: Invalid JSON request: %v", r.Body))
+		http.Error(w, "could not read project update request content from request body", http.StatusBadRequest)
+		return
+	}
+
+	app.logger.Debug().Msg(fmt.Sprintf("Updating project with id %d", idInt))
+	err = app.models.Projects.Update(project, projectUpdateRequest.Name, projectUpdateRequest.Description)
+	if err != nil {
+		app.logger.Error().Msg(fmt.Sprintf("Error while updating project with id %d: %v", idInt, err))
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	app.logger.Debug().Msg(fmt.Sprintf("Sending confirmation to client"))
+	headers := make(http.Header)
+	headers.Set("Location", fmt.Sprintf("/projects/%d", project.ID))
+
+	err = app.writeJSON(w, http.StatusNoContent, nil, headers)
+	if err != nil {
+		app.logger.Err(err)
+		http.Error(w, "error while trying to write project to http response.", http.StatusInternalServerError)
 		return
 	}
 }

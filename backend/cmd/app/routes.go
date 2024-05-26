@@ -11,5 +11,6 @@ func (app *application) route() *http.ServeMux {
 	mux.HandleFunc("/extensions", app.getExtensionsHandler)
 	mux.HandleFunc("/extensions/", app.getExtensionsHandler)
 	mux.HandleFunc("/projects", app.getProjectsHandler)
+	mux.HandleFunc("/projects/", app.getProjectsHandler)
 	return mux
 }
