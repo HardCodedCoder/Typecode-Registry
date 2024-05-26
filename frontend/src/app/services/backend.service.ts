@@ -134,6 +134,26 @@ export class BackendService {
       );
   }
 
+  /**
+   * Deletes an extension from the backend.
+   *
+   * This method sends an HTTP DELETE request to the backend to delete an extension. The extension to delete is identified by the `id` parameter.
+   * The endpoint it hits is `${this.apiUrl}/extensions/${id}`, where `this.apiUrl` is the base URL of the backend and `id` is the ID of the extension to delete.
+   *
+   * If the request is successful, it returns an Observable that emits the HTTP response.
+   *
+   * If the request fails, it will trigger the `handleError` method. This method logs the error and returns an Observable that emits a default object.
+   * The default object is `{ details: [] }`.
+   *
+   * @param id - The ID of the extension to delete.
+   * @returns An Observable of any. Subscribe to this Observable to get the data when the request succeeds or fails.
+   */
+  deleteExtension(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/extensions/${id}`, {
+      observe: 'response',
+    });
+  }
+
   /*
    * Updates an item in the backend.
    * This method sends an HTTP PUT request to the backend to update an item. The item to update is identified by the id parameter.
