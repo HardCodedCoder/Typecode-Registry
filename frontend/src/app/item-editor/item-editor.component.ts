@@ -52,7 +52,9 @@ export class ItemEditorComponent implements OnInit {
           console.warn('NULL response: /items');
 
           if (this.store.hasShown204ErrorItems) {
-            this.messageService.showInformationNotification();
+            this.messageService.showInformationNotification(
+              'Please populate the database.'
+            );
           }
 
           if (!this.store.hasShown204ErrorItems) {

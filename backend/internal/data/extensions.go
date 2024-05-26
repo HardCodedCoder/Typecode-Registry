@@ -159,3 +159,28 @@ func (e ExtensionModel) Insert(d *Extension) error {
 	args := []interface{}{d.Name, d.Description, d.Scope, d.ProjectID}
 	return e.DB.QueryRow(query, args...).Scan(&d.ID, &d.CreationDate)
 }
+
+func (e ExtensionModel) Update(d *Extension, altName, altDescription string) error {
+	query := `
+        UPDATE extension
+        SET name = COALESCE(NULLIF($1, ''), name), 
+            description = $2
+        WHERE id = $3`
+
+	args := []interface{}{altName, altDescription, d.ID}
+	result, err := e.DB.Exec(query, args...)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("no record found")
+	}
+
+	return nil
+}

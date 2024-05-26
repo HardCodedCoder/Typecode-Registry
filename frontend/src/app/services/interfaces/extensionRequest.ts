@@ -22,3 +22,15 @@ export interface ExtensionRequest {
   scope: string;
   description: string;
 }
+
+/**
+ * Interface representing a request to update an existing extension.
+ *
+ * This interface is used to define the structure of the data required
+ * to update the properties of an existing extension. The properties
+ * are optional, allowing for partial updates.
+ */
+export interface ExtensionUpdateRequest {
+  name?: string;
+  description?: string;
+}
