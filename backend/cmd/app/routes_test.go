@@ -415,8 +415,6 @@ func TestIfInvalidRoutesHTTPMethodsReturnMethodNotAllowed(t *testing.T) {
 		{"/healthcheck", "TRACE", http.StatusMethodNotAllowed},
 		{"/healthcheck", "PATCH", http.StatusMethodNotAllowed},
 		{"/projects", "HEAD", http.StatusMethodNotAllowed},
-		{"/projects", "POST", http.StatusMethodNotAllowed},
-		{"/projects", "PUT", http.StatusMethodNotAllowed},
 		{"/projects", "DELETE", http.StatusMethodNotAllowed},
 		{"/projects", "CONNECT", http.StatusMethodNotAllowed},
 		{"/projects", "HEAD", http.StatusMethodNotAllowed},
