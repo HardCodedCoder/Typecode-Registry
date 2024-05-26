@@ -54,6 +54,8 @@ import {
 } from '@taiga-ui/core';
 import { AddExtensionComponent } from './add-extension/add-extension.component';
 import { UpdateExtensionComponent } from './update-extension/update-extension.component';
+import { ProjectEditorComponent } from './project-editor/project-editor.component';
+import { AddProjectComponent } from './add-project/add-project.component';
 
 @NgModule({
   declarations: [
@@ -66,6 +68,8 @@ import { UpdateExtensionComponent } from './update-extension/update-extension.co
     ExtensionEditorComponent,
     AddExtensionComponent,
     UpdateExtensionComponent,
+    ProjectEditorComponent,
+    AddProjectComponent,
   ],
   imports: [
     BrowserAnimationsModule,
