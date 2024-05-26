@@ -33,6 +33,12 @@ type ProjectRequest struct {
 	Description string `json:"description,omitempty"`
 }
 
+// ExtensionUpdateRequest is the request object for updating an existing extension.
+type ExtensionUpdateRequest struct {
+	Name        string `json:"name,omitempty"`
+	Description string `json:"description,omitempty"`
+}
+
 // healthcheck is a simple handler to check if the service is up and running.
 // TODO: Add more checks to ensure the service is healthy.
 func (app *application) healthcheck(w http.ResponseWriter, r *http.Request) {
