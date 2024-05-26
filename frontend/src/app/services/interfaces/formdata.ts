@@ -1,5 +1,6 @@
 import { ItemResponse } from './items';
 import { ExtensionResponse } from './extensionRequest';
+import { ProjectResponse } from './project';
 
 /**
  * Represents the form data for the add item form.
@@ -74,8 +75,29 @@ export interface Error {
   message: string;
 }
 
+/**
+ * Represents the form data for creating or editing a project.
+ * @interface ProjectFormData
+ * @property {string} projectName - The name of the project.
+ * @property {string} projectDescription - The description of the project.
+ */
 export interface ProjectFormData {
   projectName: string;
   projectDescription: string;
+  error?: Error;
+}
+
+/**
+ * Represents the form data for updating a project.
+ * @interface UpdateProjectFormData
+ * @property {ProjectResponse} project - The project to update.
+ * @property {string} [name] - The new name for the project. Optional.
+ * @property {string} [description] - The new description for the project. Optional.
+ * @property {Error} error - Representing if an error occurred.
+ */
+export interface UpdateProjectFormData {
+  project: ProjectResponse;
+  new_name?: string;
+  new_description?: string;
   error?: Error;
 }

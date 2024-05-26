@@ -34,10 +34,10 @@ export class ExtensionEditorComponent implements OnInit {
   });
 
   readonly columns: string[] = [
+    'Scope',
+    'Project',
     'Name',
     'Description',
-    'Project',
-    'Scope',
     'Item Count',
     'Creation Date',
     'Actions',
@@ -205,7 +205,7 @@ export class ExtensionEditorComponent implements OnInit {
       .subscribe();
   }
 
-  onEditItem(extension: ExtensionResponse) {
+  onEditExtension(extension: ExtensionResponse) {
     if (extension === undefined || extension.id === 0) {
       this.messageService.showFailureMessage(
         'Error: Unexpected internal error! Please restart application!'
@@ -228,7 +228,7 @@ export class ExtensionEditorComponent implements OnInit {
       )
       .pipe(
         catchError(err => {
-          console.error('item-editor: Error opening dialog:', err);
+          console.error('extension-editor: Error opening dialog:', err);
           return throwError(err);
         })
       );
@@ -270,7 +270,7 @@ export class ExtensionEditorComponent implements OnInit {
     });
   }
 
-  onDeleteItem(extension: ExtensionResponse) {
+  onDeleteExtension(extension: ExtensionResponse) {
     const data: TuiPromptData = {
       content: `This will delete the extension <b>${extension.name}</b> containing <b>${extension.item_count ?? 0}</b> items.`,
       yes: 'Remove',
@@ -320,5 +320,26 @@ export class ExtensionEditorComponent implements OnInit {
           });
         }
       });
+  }
+
+  formattedDate(dateString: Date): string {
+    const date = new Date(dateString);
+
+    const dateOptions: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    };
+
+    const timeOptions: Intl.DateTimeFormatOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    };
+
+    const formattedDate = date.toLocaleDateString('de-DE', dateOptions);
+    const formattedTime = date.toLocaleTimeString('de-DE', timeOptions);
+
+    return `${formattedDate} - ${formattedTime} Uhr`;
   }
 }

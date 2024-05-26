@@ -56,6 +56,7 @@ import { AddExtensionComponent } from './add-extension/add-extension.component';
 import { UpdateExtensionComponent } from './update-extension/update-extension.component';
 import { ProjectEditorComponent } from './project-editor/project-editor.component';
 import { AddProjectComponent } from './add-project/add-project.component';
+import { UpdateProjectComponent } from './update-project/update-project.component';
 
 @NgModule({
   declarations: [
@@ -70,6 +71,7 @@ import { AddProjectComponent } from './add-project/add-project.component';
     UpdateExtensionComponent,
     ProjectEditorComponent,
     AddProjectComponent,
+    UpdateProjectComponent,
   ],
   imports: [
     BrowserAnimationsModule,

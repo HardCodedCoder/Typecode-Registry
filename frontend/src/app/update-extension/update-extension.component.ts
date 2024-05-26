@@ -89,4 +89,25 @@ export class UpdateExtensionComponent {
         this.updateExtensionData.extension.description
     );
   }
+
+  formattedDate(dateString: Date): string {
+    const date = new Date(dateString);
+
+    const dateOptions: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    };
+
+    const timeOptions: Intl.DateTimeFormatOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    };
+
+    const formattedDate = date.toLocaleDateString('de-DE', dateOptions);
+    const formattedTime = date.toLocaleTimeString('de-DE', timeOptions);
+
+    return `${formattedDate} - ${formattedTime} Uhr`;
+  }
 }
