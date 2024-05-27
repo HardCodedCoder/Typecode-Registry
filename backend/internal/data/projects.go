@@ -140,3 +140,60 @@ func (pm ProjectModel) Read(id int64) (*Project, error) {
 
 	return &project, nil
 }
+
+// DeleteExtensionsByProjectID deletes all extensions associated with a given project ID.
+func (pm ProjectModel) DeleteExtensionsByProjectID(projectID int64) error {
+	query := `DELETE FROM extension WHERE project_id = $1`
+	_, err := pm.DB.Exec(query, projectID)
+	return err
+}
+
+func (pm ProjectModel) Delete(id int64, itemModel ItemModel) error {
+	tx, err := pm.DB.Begin()
+	if err != nil {
+		return err
+	}
+
+	// Retrieve all extension IDs for the project
+	query := `SELECT id FROM extension WHERE project_id = $1`
+	rows, err := tx.Query(query, id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	defer rows.Close()
+
+	var extensionIDs []int64
+	for rows.Next() {
+		var extensionID int64
+		if err := rows.Scan(&extensionID); err != nil {
+			tx.Rollback()
+			return err
+		}
+		extensionIDs = append(extensionIDs, extensionID)
+	}
+
+	// Delete all items for each extension
+	for _, extensionID := range extensionIDs {
+		if err := itemModel.DeleteItemsByExtension(extensionID); err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	// Delete all extensions for the project
+	if err := pm.DeleteExtensionsByProjectID(id); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Delete the project itself
+	query = `DELETE FROM project WHERE id = $1`
+	_, err = tx.Exec(query, id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit()
+}

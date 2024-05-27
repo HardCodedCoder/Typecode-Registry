@@ -135,7 +135,7 @@ export class BackendService {
             console.log(`Deleted item with id: ${id}`);
           }
         }),
-        catchError(this.handleError('deleteItem', { details: [] }))
+        catchError(this.handleError('deleteItem', { items: [] }))
       );
   }
 
@@ -254,7 +254,7 @@ export class BackendService {
             console.log(`Updated extension with id: ${id}`);
           }
         }),
-        catchError(this.handleError('updateExtension', { items: [] }))
+        catchError(this.handleError('updateExtension', { extensions: [] }))
       );
   }
 
@@ -345,6 +345,33 @@ export class BackendService {
           }
         }),
         catchError(this.handleError('updateProject', { projects: [] }))
+      );
+  }
+
+  /**
+ Deletes a project from the backend.
+
+ This method sends an HTTP DELETE request to the backend to delete a project. The project to delete is identified by the id parameter.
+ The endpoint it hits is ${this.apiUrl}/projects/${id}, where this.apiUrl is the base URL of the backend and id is the ID of the project to delete.
+
+ If the request is successful and the project is deleted, it logs a message to the console.
+
+ If the request fails, it will trigger the handleError method. This method logs the error and returns an Observable that emits a default object.
+ The default object is { projects: [] }.
+
+ @param id - The ID of the project to delete.
+ @returns An Observable of any. Subscribe to this Observable to get the data when the request succeeds or fails.
+ */
+  deleteProject(id: number): Observable<any> {
+    return this.http
+      .delete(`${this.apiUrl}/projects/${id}`, { observe: 'response' })
+      .pipe(
+        tap(response => {
+          if (response.status === 204) {
+            console.log(`Deleted project with id: ${id}`);
+          }
+        }),
+        catchError(this.handleError('deleteProject', { projects: [] }))
       );
   }
 }

@@ -17,6 +17,7 @@ import {
 } from '../services/interfaces/formdata';
 import { AddProjectComponent } from '../add-project/add-project.component';
 import { UpdateProjectComponent } from '../update-project/update-project.component';
+import { TUI_PROMPT, TuiPromptData } from '@taiga-ui/kit';
 
 @Component({
   selector: 'app-project-editor',
@@ -194,6 +195,45 @@ export class ProjectEditorComponent implements OnInit {
   }
 
   onDeleteProject(project: ProjectResponse) {
-    console.log(project);
+    const data: TuiPromptData = {
+      content: `This will delete the project <b>${project.name}</b>.`,
+      yes: 'Remove',
+      no: 'Cancel',
+    };
+
+    this.dialogs
+      .open<boolean>(TUI_PROMPT, {
+        label: 'Do you really want to delete this project?',
+        size: 'm',
+        data,
+      })
+      .subscribe(response => {
+        if (response) {
+          this.backendService.deleteProject(project.id).subscribe({
+            next: response => {
+              if (response.status === 204) {
+                console.log('Received response 204 from backend');
+                this.messageService.showSuccessMessage(
+                  `deleted project: ${project.name}`,
+                  '',
+                  undefined
+                );
+                if (this.storeService.projects != null) {
+                  this.storeService.projects =
+                    this.storeService.projects.filter(i => i.id !== project.id);
+                }
+              } else {
+                this.messageService.showFailureMessage(
+                  `Could not delete project: ${project.id}! Received status code: ${response.status}`
+                );
+              }
+            },
+            error: error =>
+              this.messageService.showFailureMessage(
+                `Could not delete project: ${project.id}! Error: ${error}`
+              ),
+          });
+        }
+      });
   }
 }
