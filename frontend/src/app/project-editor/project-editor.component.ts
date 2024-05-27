@@ -214,9 +214,9 @@ export class ProjectEditorComponent implements OnInit {
               if (response.status === 204) {
                 console.log('Received response 204 from backend');
                 this.messageService.showSuccessMessage(
-                  'deleted',
-                  'project',
-                  project.id
+                  `deleted project: ${project.name}`,
+                  '',
+                  undefined
                 );
                 if (this.storeService.projects != null) {
                   this.storeService.projects =

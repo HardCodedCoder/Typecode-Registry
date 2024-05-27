@@ -75,6 +75,12 @@ func (app *application) getProjectsHandler(w http.ResponseWriter, r *http.Reques
 		} else {
 			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		}
+	case http.MethodDelete:
+		if strings.Contains(r.URL.Path, "/projects/") {
+			app.deleteProject(w, r)
+		} else {
+			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		}
 	default:
 		app.logger.Error().Msg(fmt.Sprintf("%s not allowed on route %s ", r.Method, r.URL.Path))
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
@@ -741,4 +747,29 @@ func (app *application) updateProject(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error while trying to write project to http response.", http.StatusInternalServerError)
 		return
 	}
+}
+
+func (app *application) deleteProject(w http.ResponseWriter, r *http.Request) {
+	app.logger.Debug().Msg("reading project id from url")
+	id := r.URL.Path[len("/projects/"):]
+	idInt, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		app.logger.Warn().Msg(fmt.Sprintf("Bad Request in %s using id %s",
+			GetFunctionName(),
+			id))
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+	}
+
+	app.logger.Debug().Msg("deleting project from database")
+
+	err = app.models.Projects.Delete(idInt, app.models.Items)
+	if err != nil {
+		app.logger.Error().Msg(fmt.Sprintf("Error while deleting project with id %d: %v", idInt, err))
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	app.logger.Debug().Msg(fmt.Sprintf("Sending confirmation to client"))
+
+	w.WriteHeader(http.StatusNoContent)
 }
