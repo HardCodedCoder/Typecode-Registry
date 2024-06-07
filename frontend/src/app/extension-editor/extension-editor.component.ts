@@ -5,12 +5,21 @@ import { TuiDialogService } from '@taiga-ui/core';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup } from '@angular/forms';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
-import { ExtensionFormData } from '../services/interfaces/formdata';
+import {
+  ExtensionFormData,
+  UpdateExtensionFormData,
+} from '../services/interfaces/formdata';
 import { AddExtensionComponent } from '../add-extension/add-extension.component';
 import { Injector } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
-import { ExtensionRequest } from '../services/interfaces/extensionRequest';
+import {
+  ExtensionRequest,
+  ExtensionResponse,
+  ExtensionUpdateRequest,
+} from '../services/interfaces/extensionRequest';
 import { MessageService } from '../services/message.service';
+import { UpdateExtensionComponent } from '../update-extension/update-extension.component';
+import { TUI_PROMPT, TuiPromptData } from '@taiga-ui/kit';
 
 @Component({
   selector: 'app-extension-editor',
@@ -26,9 +35,9 @@ export class ExtensionEditorComponent implements OnInit {
 
   readonly columns: string[] = [
     'Scope',
+    'Project',
     'Name',
     'Description',
-    'Project',
     'Item Count',
     'Creation Date',
     'Actions',
@@ -183,5 +192,155 @@ export class ExtensionEditorComponent implements OnInit {
     } else {
       this.expandedItemIds.add(extensionId); // expand the description
     }
+  }
+
+  /**
+   * Shows an information notification.
+   */
+  private showInformationNotification(): void {
+    this.alertService
+      .open('Please populate the database.', {
+        label: '💡 Information 💡',
+        status: 'info',
+      })
+      .subscribe();
+  }
+
+  onEditExtension(extension: ExtensionResponse) {
+    if (extension === undefined || extension.id === 0) {
+      this.messageService.showFailureMessage(
+        'Error: Unexpected internal error! Please restart application!'
+      );
+      return;
+    }
+
+    const data: UpdateExtensionFormData = {
+      extension: extension,
+    };
+
+    const dialog$ = this.dialogs
+      .open<UpdateExtensionFormData>(
+        new PolymorpheusComponent(UpdateExtensionComponent, this.injector),
+        {
+          dismissible: true,
+          label: 'Update Extension',
+          data: data,
+        }
+      )
+      .pipe(
+        catchError(err => {
+          console.error('extension-editor: Error opening dialog:', err);
+          return throwError(err);
+        })
+      );
+
+    dialog$.subscribe(dialogData => {
+      if (dialogData.error !== undefined) {
+        if (dialogData.error.message === 'Cancelled')
+          this.messageService.showInformationNotification(
+            dialogData.error.message
+          );
+        else this.messageService.showFailureMessage(dialogData.error.message);
+        return;
+      }
+
+      const requestData: ExtensionUpdateRequest = {};
+      if (dialogData.new_name !== undefined)
+        requestData.name = dialogData.new_name;
+      if (dialogData.new_description !== undefined)
+        requestData.description = dialogData.new_description;
+
+      this.backendService.updateExtension(extension.id, requestData).subscribe({
+        next: response => {
+          console.log('Extension updated successfully', response);
+          this.messageService.showSuccessMessage(
+            'updated',
+            'extension',
+            extension.id
+          );
+
+          if (requestData.name !== undefined) extension.name = requestData.name;
+          if (requestData.description !== undefined)
+            extension.description = requestData.description;
+        },
+        error: error => {
+          console.error('Error updating extension', error);
+          this.messageService.showFailureMessage('Error updating extension');
+        },
+      });
+    });
+  }
+
+  onDeleteExtension(extension: ExtensionResponse) {
+    const data: TuiPromptData = {
+      content: `This will delete the extension <b>${extension.name}</b> containing <b>${extension.item_count ?? 0}</b> items.`,
+      yes: 'Remove',
+      no: 'Cancel',
+    };
+
+    this.dialogs
+      .open<boolean>(TUI_PROMPT, {
+        label: 'Do you really want to delete this extension?',
+        size: 'm',
+        data,
+      })
+      .subscribe(response => {
+        if (response) {
+          this.backendService.deleteExtension(extension.id).subscribe({
+            next: response => {
+              if (response.status === 204) {
+                console.log('Received response 204 from backend');
+                this.messageService.showSuccessMessage(
+                  'deleted',
+                  'extension',
+                  extension.id
+                );
+                if (extension.project_id > 0) {
+                  this.storeService.projectExtensions =
+                    this.storeService.projectExtensions.filter(
+                      item => item.id !== extension.id
+                    );
+                } else {
+                  this.storeService.sharedExtensions =
+                    this.storeService.sharedExtensions.filter(
+                      item => item.id !== extension.id
+                    );
+                }
+                if (this.storeService.allExtensions !== null) {
+                  this.storeService.allExtensions =
+                    this.storeService.allExtensions.filter(
+                      item => item.id !== extension.id
+                    );
+                }
+              }
+            },
+            error: error =>
+              this.messageService.showFailureMessage(
+                `Could not delete extension: ${extension.name}! Error: ${error}`
+              ),
+          });
+        }
+      });
+  }
+
+  formattedDate(dateString: Date): string {
+    const date = new Date(dateString);
+
+    const dateOptions: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    };
+
+    const timeOptions: Intl.DateTimeFormatOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    };
+
+    const formattedDate = date.toLocaleDateString('de-DE', dateOptions);
+    const formattedTime = date.toLocaleTimeString('de-DE', timeOptions);
+
+    return `${formattedDate} - ${formattedTime} Uhr`;
   }
 }

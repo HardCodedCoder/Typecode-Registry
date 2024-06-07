@@ -5,8 +5,14 @@ import {
   ExtensionAPIResponse,
   ExtensionRequest,
   ExtensionsAPIResponse,
+  ExtensionUpdateRequest,
 } from './interfaces/extensionRequest';
-import { ProjectsAPIResponse } from './interfaces/project';
+import {
+  ProjectAPIResponse,
+  ProjectRequest,
+  ProjectsAPIResponse,
+  ProjectUpdateRequest,
+} from './interfaces/project';
 import { ItemAPIResponse, ItemsAPIResponse } from './interfaces/items';
 import { ItemRequest, UpdateItemRequest } from './interfaces/requests';
 import { environment } from '../../environments/environment';
@@ -129,8 +135,28 @@ export class BackendService {
             console.log(`Deleted item with id: ${id}`);
           }
         }),
-        catchError(this.handleError('deleteItem', { details: [] }))
+        catchError(this.handleError('deleteItem', { items: [] }))
       );
+  }
+
+  /**
+   * Deletes an extension from the backend.
+   *
+   * This method sends an HTTP DELETE request to the backend to delete an extension. The extension to delete is identified by the `id` parameter.
+   * The endpoint it hits is `${this.apiUrl}/extensions/${id}`, where `this.apiUrl` is the base URL of the backend and `id` is the ID of the extension to delete.
+   *
+   * If the request is successful, it returns an Observable that emits the HTTP response.
+   *
+   * If the request fails, it will trigger the `handleError` method. This method logs the error and returns an Observable that emits a default object.
+   * The default object is `{ details: [] }`.
+   *
+   * @param id - The ID of the extension to delete.
+   * @returns An Observable of any. Subscribe to this Observable to get the data when the request succeeds or fails.
+   */
+  deleteExtension(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/extensions/${id}`, {
+      observe: 'response',
+    });
   }
 
   /*
@@ -205,6 +231,34 @@ export class BackendService {
   }
 
   /**
+   * Updates an extension in the backend.
+   *
+   * This method sends an HTTP PUT request to the backend to update an extension. The extension to update is identified by the `id` parameter.
+   * The endpoint it hits is `${this.apiUrl}/extensions/${id}`, where `this.apiUrl` is the base URL of the backend and `id` is the ID of the extension to update.
+   *
+   * If the request is successful and the extension is updated, it logs a message to the console.
+   *
+   * If the request fails, it will trigger the `handleError` method. This method logs the error and returns an Observable that emits a default object.
+   * The default object is `{ items: [] }`.
+   *
+   * @param id - The ID of the extension to update.
+   * @param data - The updated data for the extension. This should be an object that conforms to the `UpdateExtensionFormData` interface.
+   * @returns An Observable of any. Subscribe to this Observable to get the data when the request succeeds or fails.
+   */
+  updateExtension(id: number, data: ExtensionUpdateRequest): Observable<any> {
+    return this.http
+      .put(`${this.apiUrl}/extensions/${id}`, data, { observe: 'response' })
+      .pipe(
+        tap(response => {
+          if (response.status === 204) {
+            console.log(`Updated extension with id: ${id}`);
+          }
+        }),
+        catchError(this.handleError('updateExtension', { extensions: [] }))
+      );
+  }
+
+  /**
    * Handles an HTTP operation that failed and lets the app continue.
    * Logs the error to the console and redirects to a corresponding error route.
    *
@@ -227,5 +281,97 @@ export class BackendService {
 
       return of(result as T);
     };
+  }
+
+  /**
+   * Sends a request to the backend to create a new project.
+   *
+   * This method sends an HTTP POST request to the backend to create a new project. The project details are passed in the `projectRequest` parameter.
+   * The endpoint it hits is `${this.apiUrl}/projects`, where `this.apiUrl` is the base URL of the backend.
+   *
+   * If the request is successful, it returns an Observable that emits an `ProjectAPIResponse`.
+   * The `ProjectAPIResponse` is an object that contains the details of the created project.
+   *
+   * If the request fails, it will trigger the `handleError` method. This method logs the error and returns an Observable that emits a default `ProjectAPIResponse` object.
+   * The default `ProjectAPIResponse` object is an empty project object.
+   *
+   * @returns An Observable of `ProjectAPIResponse`. Subscribe to this Observable to get the data when the request succeeds or fails.
+   * @param projectRequest - The details of the project to create. This should be an object that conforms to the `ProjectRequest` interface.
+   */
+  sendCreateProjectRequest(
+    projectRequest: ProjectRequest
+  ): Observable<ProjectAPIResponse> {
+    return this.http
+      .post<ProjectAPIResponse>(`${this.apiUrl}/projects`, projectRequest)
+      .pipe(
+        tap(_ =>
+          console.log(`created project with name ${projectRequest.name}`)
+        ),
+        catchError(
+          this.handleError<ProjectAPIResponse>('sendCreateProjectRequest', {
+            project: {
+              id: 0,
+              name: '',
+              description: '',
+              creation_date: new Date(),
+            },
+          })
+        )
+      );
+  }
+
+  /**
+   * Updates a project in the backend.
+   *
+   * This method sends an HTTP PUT request to the backend to update a project. The project to update is identified by the `id` parameter.
+   * The endpoint it hits is `${this.apiUrl}/projects/${id}`, where `this.apiUrl` is the base URL of the backend and `id` is the ID of the project to update.
+   *
+   * If the request is successful and the project is updated, it logs a message to the console.
+   *
+   * If the request fails, it will trigger the `handleError` method. This method logs the error and returns an Observable that emits a default object.
+   * The default object is `{ projects: [] }`.
+   *
+   * @param id - The ID of the project to update.
+   * @param data - The updated data for the project. This should be an object that conforms to the `UpdateProjectFormData` interface.
+   * @returns An Observable of any. Subscribe to this Observable to get the data when the request succeeds or fails.
+   */
+  updateProject(id: number, data: ProjectUpdateRequest): Observable<any> {
+    return this.http
+      .put(`${this.apiUrl}/projects/${id}`, data, { observe: 'response' })
+      .pipe(
+        tap(response => {
+          if (response.status === 204) {
+            console.log(`Updated Project with id: ${id}`);
+          }
+        }),
+        catchError(this.handleError('updateProject', { projects: [] }))
+      );
+  }
+
+  /**
+ Deletes a project from the backend.
+
+ This method sends an HTTP DELETE request to the backend to delete a project. The project to delete is identified by the id parameter.
+ The endpoint it hits is ${this.apiUrl}/projects/${id}, where this.apiUrl is the base URL of the backend and id is the ID of the project to delete.
+
+ If the request is successful and the project is deleted, it logs a message to the console.
+
+ If the request fails, it will trigger the handleError method. This method logs the error and returns an Observable that emits a default object.
+ The default object is { projects: [] }.
+
+ @param id - The ID of the project to delete.
+ @returns An Observable of any. Subscribe to this Observable to get the data when the request succeeds or fails.
+ */
+  deleteProject(id: number): Observable<any> {
+    return this.http
+      .delete(`${this.apiUrl}/projects/${id}`, { observe: 'response' })
+      .pipe(
+        tap(response => {
+          if (response.status === 204) {
+            console.log(`Deleted project with id: ${id}`);
+          }
+        }),
+        catchError(this.handleError('deleteProject', { projects: [] }))
+      );
   }
 }

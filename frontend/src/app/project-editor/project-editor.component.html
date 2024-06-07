@@ -1,0 +1,102 @@
+<div class="outer-container">
+  <div class="table-container">
+    <div class="table-menu">
+      <form [formGroup]="searchForm" tuiTextfieldIcon="tuiIconSearchLarge">
+        <tui-input
+          label="Search"
+          formControlName="search"
+          [tuiTextfieldCleaner]="true"
+          tuiTextfieldSize="m"
+        >
+          Search
+          <input tuiTextfield />
+        </tui-input>
+      </form>
+      <button
+        appearance="destructive"
+        icon="tuiIconFilterLarge"
+        tuiIconButton
+        type="button"
+        [attr.aria-hidden]="true"
+      ></button>
+      <button
+        appearance="accent"
+        icon="tuiIconPlusLarge"
+        tuiIconButton
+        type="button"
+        (click)="showDialog()"
+        [attr.aria-hidden]="true"
+      ></button>
+    </div>
+
+    <tui-scrollbar
+      *ngIf="this.storeService.projects; else noData"
+      class="border-radius"
+    >
+      <table tuiTable [columns]="columns">
+        <thead>
+          <tr tuiThGroup>
+            <th *tuiHead="'Name'" [sticky]="true" tuiTh>Name</th>
+            <th *tuiHead="'Description'" [sticky]="true" tuiTh>Description</th>
+            <th *tuiHead="'Creation Date'" [sticky]="true" tuiTh>
+              Creation Date
+            </th>
+            <th *tuiHead="'Actions'" [sticky]="true" [sorter]="null" tuiTh>
+              Actions
+            </th>
+          </tr>
+        </thead>
+
+        <tbody
+          *tuiLet="this.storeService.projects | tuiTableSort as sortedProjects"
+          tuiTbody
+          [data]="sortedProjects"
+        >
+          <tr *ngFor="let project of sortedProjects">
+            <td tuiTd>{{ project.name }}</td>
+            <td tuiTd>{{ project.description }}</td>
+            <td tuiTd>{{ formattedDate(project.creation_date) }}</td>
+            <td tuiTd>
+              <tui-hosted-dropdown [content]="dropdownContent">
+                <button
+                  tuiIconButton
+                  type="button"
+                  icon="tuiIconMoreVertical"
+                  appearance="flat"
+                  shape="rounded"
+                  size="s"
+                  class="options"
+                ></button>
+              </tui-hosted-dropdown>
+
+              <ng-template #dropdownContent let-closeDropdown="closeDropdown">
+                <button
+                  tuiIconButton
+                  type="button"
+                  (click)="onEditProject(project)"
+                  icon="tuiIconEdit3"
+                  appearance="flat"
+                  shape="rounded"
+                  size="s"
+                ></button>
+                <button
+                  tuiIconButton
+                  type="button"
+                  (click)="onDeleteProject(project)"
+                  icon="tuiIconTrash"
+                  appearance="flat"
+                  shape="rounded"
+                  size="s"
+                ></button>
+              </ng-template>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </tui-scrollbar>
+
+    <ng-template #noData>
+      <h1>No projects available.</h1>
+    </ng-template>
+  </div>
+</div>

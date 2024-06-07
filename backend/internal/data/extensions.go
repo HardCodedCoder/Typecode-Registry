@@ -159,3 +159,56 @@ func (e ExtensionModel) Insert(d *Extension) error {
 	args := []interface{}{d.Name, d.Description, d.Scope, d.ProjectID}
 	return e.DB.QueryRow(query, args...).Scan(&d.ID, &d.CreationDate)
 }
+
+func (e ExtensionModel) Update(d *Extension, altName, altDescription string) error {
+	query := `
+        UPDATE extension
+        SET name = COALESCE(NULLIF($1, ''), name), 
+            description = $2
+        WHERE id = $3`
+
+	args := []interface{}{altName, altDescription, d.ID}
+	result, err := e.DB.Exec(query, args...)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("no record found")
+	}
+
+	return nil
+}
+
+// Delete removes an extension with the specified ID from the database.
+// It returns an error if the deletion fails or if no record is found with the given ID.
+//
+// Parameters:
+// id (int64): The ID of the extension to delete.
+//
+// Returns:
+// error: An error that will be nil if the deletion was successful, or an error message if failed.
+func (e ExtensionModel) Delete(id int64) error {
+	query := `DELETE FROM extension WHERE id = $1`
+
+	result, err := e.DB.Exec(query, id)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("no record found")
+	}
+
+	return nil
+}

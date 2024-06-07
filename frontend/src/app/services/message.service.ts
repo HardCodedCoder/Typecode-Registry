@@ -64,9 +64,9 @@ export class MessageService {
   /**
    * Shows an information notification.
    */
-  public showInformationNotification(): void {
+  public showInformationNotification(message: string): void {
     this.alertService
-      .open('Please populate the database.', {
+      .open(message, {
         label: '💡 Information 💡',
         status: 'info',
         hasIcon: false,

@@ -99,13 +99,42 @@
               {{ extension.item_count ?? 0 }}
             </td>
             <td *tuiCell="'Creation Date'" tuiTd>
-              <span>{{ extension.creation_date | date: 'fullDate' }} </span>
-              <br />
-              <span class="no-wrap">{{
-                extension.creation_date | date: 'shortTime'
-              }}</span>
+              <span>{{ formattedDate(extension.creation_date) }} </span>
             </td>
-            <td *tuiCell="'Actions'" tuiTd>Button</td>
+            <td *tuiCell="'Actions'" tuiTd>
+              <tui-hosted-dropdown [content]="dropdownContent">
+                <button
+                  tuiIconButton
+                  type="button"
+                  icon="tuiIconMoreVertical"
+                  appearance="flat"
+                  shape="rounded"
+                  size="s"
+                  class="options"
+                ></button>
+              </tui-hosted-dropdown>
+
+              <ng-template #dropdownContent let-closeDropdown="closeDropdown">
+                <button
+                  tuiIconButton
+                  type="button"
+                  (click)="onEditExtension(extension)"
+                  icon="tuiIconEdit3"
+                  appearance="flat"
+                  shape="rounded"
+                  size="s"
+                ></button>
+                <button
+                  tuiIconButton
+                  type="button"
+                  (click)="onDeleteExtension(extension)"
+                  icon="tuiIconTrash"
+                  appearance="flat"
+                  shape="rounded"
+                  size="s"
+                ></button>
+              </ng-template>
+            </td>
           </tr>
         </tbody>
       </table>
