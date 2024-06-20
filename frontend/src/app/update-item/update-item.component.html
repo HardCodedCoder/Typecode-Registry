@@ -14,16 +14,20 @@
       <h3 class="tui-form__header tui-form__header_margin-top_none">Name</h3>
       <div class="tui-form__row">
         <tui-input
+          tuiField
           formControlName="itemName"
-          tuiHintContent="Enter the item name that should be created here."
+          tuiHintContent="Enter a new item name here. Empty inputs will be ignored."
         >
-          {{ updateItemData.item.name }}
-          <input placeholder="Item Name" tuiTextfield />
+          New Name
+          <input placeholder="{{ updateItemData.item.name }}" tuiTextfield />
         </tui-input>
         <tui-error
+          ngDefaultControl
           formControlName="itemName"
-          [error]="[] | tuiFieldError | async"
-        ></tui-error>
+          *ngIf="form.get('itemName')?.value === ''"
+          [error]="inputValidationError"
+        >
+        </tui-error>
       </div>
     </div>
   </div>
@@ -36,16 +40,23 @@
       </h3>
       <div class="tui-form__row">
         <tui-input
+          tuiField
           formControlName="itemTable"
-          tuiHintContent="Enter the item name that should be created here."
+          tuiHintContent="Enter a new table name here. Empty inputs will be ignored."
         >
-          {{ updateItemData.item.table_name }}
-          <input placeholder="New Item" tuiTextfield />
+          New Table Name
+          <input
+            placeholder="{{ updateItemData.item.table_name }}"
+            tuiTextfield
+          />
         </tui-input>
         <tui-error
+          ngDefaultControl
           formControlName="itemTable"
-          [error]="[] | tuiFieldError | async"
-        ></tui-error>
+          *ngIf="form.get('itemTable')?.value === ''"
+          [error]="inputValidationError"
+        >
+        </tui-error>
       </div>
     </div>
   </div>
@@ -62,9 +73,19 @@
       type="button"
       class="tui-form__button"
       (click)="submit()"
-      [disabled]="this.form.invalid"
+      [disabled]="!checkForChanges()"
     >
       Update
+    </button>
+    <button
+      size="l"
+      tuiButton
+      appearance="flat"
+      type="button"
+      class="tui-form__button"
+      (click)="closeDialog()"
+    >
+      Cancel
     </button>
   </div>
 </form>

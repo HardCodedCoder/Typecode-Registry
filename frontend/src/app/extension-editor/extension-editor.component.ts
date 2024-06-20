@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { StoreService } from '../services/store.service';
 import { BackendService } from '../services/backend.service';
-import { TuiAlertService, TuiDialogService } from '@taiga-ui/core';
+import { TuiDialogService } from '@taiga-ui/core';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup } from '@angular/forms';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
@@ -48,11 +48,8 @@ export class ExtensionEditorComponent implements OnInit {
     @Inject(Injector) private readonly injector: Injector,
     @Inject(StoreService) public readonly storeService: StoreService,
     @Inject(BackendService) public readonly backendService: BackendService,
-    @Inject(TuiAlertService) private readonly alertService: TuiAlertService,
     @Inject(MessageService) private readonly messageService: MessageService,
-    @Inject(Router) private readonly router: Router,
-    @Inject(ChangeDetectorRef)
-    private changeDetectorRef: ChangeDetectorRef
+    @Inject(Router) private readonly router: Router
   ) {}
 
   getProjectName(project_id: number): string | undefined {
@@ -70,7 +67,9 @@ export class ExtensionEditorComponent implements OnInit {
           console.warn('NULL response: /extensions');
 
           if (this.storeService.hasShown204ErrorExtensions) {
-            this.showInformationNotification();
+            this.messageService.showInformationNotification(
+              'Please populate the database.'
+            );
           }
 
           if (!this.storeService.hasShown204ErrorExtensions) {
@@ -149,11 +148,15 @@ export class ExtensionEditorComponent implements OnInit {
   }
 
   sendCreateExtensionRequest(data: ExtensionRequest): void {
+    // necessary for cancel button in add-extension dialog
+    if (data.name === undefined) {
+      return;
+    }
     this.backendService.sendCreateExtensionRequest(data).subscribe({
       next: response => {
         console.log(response);
         this.messageService.showSuccessMessage(
-          'created',
+          'added',
           'Extension',
           response.extension.id
         );
@@ -191,18 +194,6 @@ export class ExtensionEditorComponent implements OnInit {
     } else {
       this.expandedItemIds.add(extensionId); // expand the description
     }
-  }
-
-  /**
-   * Shows an information notification.
-   */
-  private showInformationNotification(): void {
-    this.alertService
-      .open('Please populate the database.', {
-        label: '💡 Information 💡',
-        status: 'info',
-      })
-      .subscribe();
   }
 
   onEditExtension(extension: ExtensionResponse) {

@@ -1,4 +1,12 @@
-import { Component, Inject, Injector, OnInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Inject,
+  Injector,
+  OnInit,
+  QueryList,
+  ViewChildren,
+} from '@angular/core';
 import { TuiDialogService } from '@taiga-ui/core';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { AddItemComponent } from '../add-item/add-item.component';
@@ -19,6 +27,9 @@ import { MessageService } from '../services/message.service';
   styleUrl: './item-editor.component.scss',
 })
 export class ItemEditorComponent implements OnInit {
+  @ViewChildren('codeElements') codeElements!: QueryList<
+    ElementRef<HTMLDivElement>
+  >;
   readonly columns: string[] = [
     'Scope',
     'Project',
@@ -31,7 +42,7 @@ export class ItemEditorComponent implements OnInit {
   searchForm = new FormGroup({
     search: new FormControl(''),
   });
-  selectedItem!: ItemResponse | null;
+  selectedItem: ItemResponse | null = null;
 
   constructor(
     @Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
@@ -111,7 +122,7 @@ export class ItemEditorComponent implements OnInit {
         new PolymorpheusComponent(AddItemComponent, this.injector),
         {
           dismissible: true,
-          label: 'Create Item',
+          label: 'Add Item',
         }
       )
       .pipe(
@@ -123,6 +134,10 @@ export class ItemEditorComponent implements OnInit {
 
     dialog$.subscribe({
       next: (data: FormData) => {
+        // necessary for cancel button in add-item dialog
+        if (data.itemName === undefined) {
+          return;
+        }
         console.log('item-editor: Dialog closed with data:', data);
         let extension_id: number | undefined;
         if (data.extensionScope === 'Shared') {
@@ -148,8 +163,13 @@ export class ItemEditorComponent implements OnInit {
     });
   }
 
+  /**
+   * Returns the name of the extension with the given ID.
+   * @param {number} extension_id - The ID of the extension to get the name for.
+   * @returns {string | undefined} The name of the extension or undefined if the extension was not found.
+   */
   getExtensionName(extension_id: number): string | undefined {
-    let extension = this.store.projectExtensions.find(
+    let extension = this.store.projectExtensions?.find(
       ext => ext.id === extension_id
     );
     if (!extension) {
@@ -187,7 +207,7 @@ export class ItemEditorComponent implements OnInit {
         });
 
         this.messageService.showSuccessMessage(
-          'created',
+          'added',
           'Item',
           response.item.id
         );
@@ -202,6 +222,7 @@ export class ItemEditorComponent implements OnInit {
   onDeleteItem(item: ItemResponse): void {
     const data: TuiPromptData = {
       content: `This will delete Item <b>${item.name}</b> in Table <b>${item.table_name}</b> with Typecode <b>${item.typecode}</b>.`,
+      // The order of the "Yes" and "No" buttons is reversed in styles.scss (attribute selector _ngcontent-ng-c77178733)
       yes: 'Remove',
       no: 'Cancel',
     };
@@ -217,7 +238,7 @@ export class ItemEditorComponent implements OnInit {
           this.backendService.deleteItem(item.id).subscribe({
             next: response => {
               if (response.status === 204) {
-                console.log('Received response 204 from backend');
+                console.log('Received 204 response from backend');
                 this.messageService.showSuccessMessage(
                   'deleted',
                   'Item',
@@ -262,6 +283,7 @@ export class ItemEditorComponent implements OnInit {
       item: item,
       new_item_name: '',
       new_table_name: '',
+      wasCanceled: false,
     };
 
     const dialog$ = this.dialogs
@@ -283,6 +305,10 @@ export class ItemEditorComponent implements OnInit {
     dialog$.subscribe({
       next: (data: UpdateItemFormData) => {
         console.log('item-editor: Dialog closed with data:', data);
+        // necessary for cancel button in update-item dialog
+        if (data.wasCanceled === true) {
+          return;
+        }
         if (data.error?.error === true) {
           this.messageService.showFailureMessage(data.error.message);
         } else {
@@ -294,17 +320,15 @@ export class ItemEditorComponent implements OnInit {
             .subscribe({
               next: response => {
                 if (response.status === 204) {
-                  console.log('Received response 204 from backend');
-                  this.messageService.showSuccessMessage(
-                    'updated',
-                    'Item',
-                    item.id
+                  console.log('Received 204 response from backend');
+                  this.messageService.showSuccessMessageWithCustomMessage(
+                    `Item with ID ${item.id} (${data.item.project}, ${this.getExtensionName(data.item.extension_id)}, ${data.item.typecode}) updated!`
                   );
                   item.table_name = data.new_table_name;
                   item.name = data.new_item_name;
                 } else {
                   this.messageService.showFailureMessage(
-                    `Could not update item: ${item.id}! Received status code: ${response.status}`
+                    `Could not update item: ${item.id}!<br>Received status code: ${response.status}`
                   );
                 }
               },
@@ -318,13 +342,33 @@ export class ItemEditorComponent implements OnInit {
     });
   }
 
+  /**
+   * Allows the user to select an item. The selected item is highlighted.
+   * @param {ItemResponse} item - The item to select.
+   */
   selectItem(item: ItemResponse) {
-    this.selectedItem = item;
+    // Deselect the item if it is already selected
+    this.selectedItem = this.selectedItem === item ? null : item;
+    setTimeout(() => {
+      // Timeout as html is not yet rendered
+      if (this.codeElements) {
+        this.codeElements.forEach(element => {
+          element.nativeElement.classList.add('change-colors');
+          setTimeout(() => {
+            element.nativeElement.classList.remove('change-colors');
+          }, 500);
+        });
+      }
+    }, 10);
   }
 
-  copyText(text: string): void {
+  /**
+   * Copies the given text to the clipboard.
+   * @param {code} text - The code text to copy.
+   */
+  copyText(code: string): void {
     const textarea = document.createElement('textarea');
-    textarea.value = text;
+    textarea.value = code;
     document.body.appendChild(textarea);
     textarea.select();
     document.execCommand('copy');
@@ -337,6 +381,11 @@ export class ItemEditorComponent implements OnInit {
     );
   }
 
+  /**
+   * Returns the snippet for the given item.
+   * @param {any} item - The item to get the snippet for.
+   * @returns {string} The snippet for the item.
+   */
   getItemSnippet(item: any): string {
     return [
       `<itemtype code="${item.name}">`,
@@ -348,6 +397,11 @@ export class ItemEditorComponent implements OnInit {
     ].join('\n');
   }
 
+  /**
+   * Returns the snippet for the given item relation.
+   * @param {any} item - The item to get the relation snippet for.
+   * @returns {string} The relation snippet for the item.
+   */
   getRelationSnippet(item: any): string {
     return [
       `<relation code="${item.name}" localized="false">`,

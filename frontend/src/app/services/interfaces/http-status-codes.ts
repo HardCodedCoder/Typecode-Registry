@@ -15,8 +15,9 @@ export interface HttpStatusDetails {
   playfulMessage: string;
   description: string;
   guidance: string[];
-  buttonText?: string;
-  imgName?: string;
+  buttonText: string;
+  buttonLink: string;
+  imgName: string;
 }
 
 export const httpStatusCodes: Record<HttpStatusCode, HttpStatusDetails> = {
@@ -32,6 +33,7 @@ export const httpStatusCodes: Record<HttpStatusCode, HttpStatusDetails> = {
       'Use network debugging tools like Wireshark or Fiddler to diagnose the connection issue.',
     ],
     buttonText: 'Try Again',
+    buttonLink: '/',
     imgName: 'ship_wind.svg',
   },
   '204': {
@@ -45,7 +47,9 @@ export const httpStatusCodes: Record<HttpStatusCode, HttpStatusDetails> = {
       'Review the server logs to ensure that the request is being processed correctly and no data should be returned.',
       'Adjust the query or request parameters to test different responses from the server.',
     ],
-    buttonText: 'Return to Items',
+    buttonText: 'Continue',
+    // buttonLink is set in error-display-component.ts
+    buttonLink: '/',
     imgName: 'treasure_chest.png',
   },
   '404': {
@@ -59,6 +63,7 @@ export const httpStatusCodes: Record<HttpStatusCode, HttpStatusDetails> = {
       "Check server or API documentation to ensure the endpoint still exists and hasn't been deprecated or moved.",
     ],
     buttonText: 'Return to Items',
+    buttonLink: '/',
     imgName: 'diver.png',
   },
   '500': {
@@ -72,6 +77,7 @@ export const httpStatusCodes: Record<HttpStatusCode, HttpStatusDetails> = {
       `Use debugging tools to trace the server's execution flow and identify what might be causing the internal error.`,
     ],
     buttonText: 'Try Again',
+    buttonLink: '/',
     imgName: 'ship_engine.png',
   },
   '520': {
@@ -84,7 +90,8 @@ export const httpStatusCodes: Record<HttpStatusCode, HttpStatusDetails> = {
       'Validate your request payload and headers to ensure they conform to the expected formats.',
       'If using third-party services, check their status pages for any ongoing issues that could affect your requests.',
     ],
-    buttonText: 'Try Again',
+    buttonText: 'Return to Items',
+    buttonLink: '/',
     imgName: 'crew.png',
   },
 };

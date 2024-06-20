@@ -46,6 +46,7 @@ export interface UpdateItemFormData {
   item: ItemResponse;
   new_item_name: string;
   new_table_name: string;
+  wasCanceled: boolean;
   error?: Error;
 }
 

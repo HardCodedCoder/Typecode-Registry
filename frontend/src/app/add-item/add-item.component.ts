@@ -226,6 +226,13 @@ export class AddItemComponent implements OnInit, OnDestroy {
     this.context.completeWith(this.form.value);
   }
 
+  /*
+   * Closes the dialog box.
+   */
+  closeDialog(): void {
+    this.context.completeWith(this.form);
+  }
+
   /**
    * Validates the form.
    *

@@ -32,8 +32,8 @@
           formControlName="itemTable"
           tuiHintContent="Enter the item name that should be created here."
         >
-          Item Table Name
-          <input placeholder="New Item" tuiTextfield />
+          Table Name
+          <input placeholder="New Table" tuiTextfield />
         </tui-input>
         <tui-error
           formControlName="itemTable"
@@ -125,7 +125,17 @@
       (click)="submit()"
       [disabled]="this.form.invalid"
     >
-      Create
+      Add
+    </button>
+    <button
+      size="l"
+      tuiButton
+      appearance="flat"
+      type="button"
+      class="tui-form__button"
+      (click)="closeDialog()"
+    >
+      Cancel
     </button>
   </div>
 </form>

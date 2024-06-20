@@ -31,6 +31,19 @@ app-extension-editor {
   height: 100%;
 }
 
+tui-scrollbar {
+  height: 100%;
+}
+
+tui-notification {
+  // Affects both TUI notifications and TUI alerts
+  font-size: 1rem !important;
+}
+
+.fit-content {
+  width: fit-content !important;
+}
+
 .font-size-09 {
   font-size: 0.9rem !important;
 }
@@ -45,15 +58,6 @@ app-extension-editor {
 
 .no-wrap {
   white-space: nowrap;
-}
-
-tui-scrollbar {
-  height: 100%;
-}
-
-tui-notification {
-  width: fit-content;
-  font-size: 1rem !important;
 }
 
 .code {
@@ -147,4 +151,16 @@ tbody tr:nth-child(even) {
   button:last-child {
     margin-right: 0.5rem;
   }
+}
+
+// Delete Item Dialog Styles:
+[_ngcontent-ng-c77178733] {
+  justify-content: flex-start !important;
+  flex-direction: row-reverse !important;
+}
+
+// Alert Service Styles:
+[_ngcontent-ng-c3463963360] {
+  display: block;
+  margin-bottom: 0.125rem !important;
 }

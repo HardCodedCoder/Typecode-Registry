@@ -91,6 +91,7 @@
             width: 100%;
             display: flex;
             flex-direction: column;
+            transition: 200ms ease;
 
             div {
               width: 100%;
@@ -104,6 +105,12 @@
       }
     }
   }
+}
+
+.change-colors {
+  color: #ff7043;
+  border: 1px solid #ff7043 !important;
+  transition: 200ms ease;
 }
 
 .project-card-container {
@@ -132,6 +139,7 @@
 .selected {
   color: #ffffff;
   background-color: #ff7043 !important;
+  filter: brightness(116%);
 }
 
 .options {

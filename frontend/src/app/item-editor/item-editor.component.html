@@ -6,6 +6,7 @@
         <div class="table-menu">
           <form [formGroup]="searchForm" tuiTextfieldIcon="tuiIconSearchLarge">
             <tui-input
+              *ngIf="this.store.items"
               label="Search"
               formControlName="search"
               [tuiTextfieldCleaner]="true"
@@ -16,12 +17,14 @@
             </tui-input>
           </form>
           <button
+            *ngIf="this.store.items"
             appearance="destructive"
             icon="tuiIconFilterLarge"
             tuiIconButton
             type="button"
             [attr.aria-hidden]="true"
             size="m"
+            title="Filter items"
           ></button>
           <button
             data-testid="create-items"
@@ -32,6 +35,7 @@
             (click)="showDialog()"
             [attr.aria-hidden]="true"
             size="m"
+            title="Add item"
           ></button>
         </div>
 
@@ -135,7 +139,7 @@
       <h1>No items available.</h1>
     </ng-template>
 
-    <div class="item-display border-radius shadow">
+    <div *ngIf="this.store.items" class="item-display border-radius shadow">
       <div
         *ngIf="selectedItem; else noItemSelected"
         class="item-display-sub-container"
@@ -149,7 +153,7 @@
                 Copy
               </button>
             </div>
-            <div class="code-container code">
+            <div class="code-container code" #codeElements>
               <pre>{{ getItemSnippet(selectedItem) }}</pre>
             </div>
           </div>
@@ -163,7 +167,7 @@
                 Copy
               </button>
             </div>
-            <div class="code-container code">
+            <div class="code-container code" #codeElements>
               <pre>{{ getRelationSnippet(selectedItem) }}</pre>
             </div>
           </div>
@@ -173,11 +177,16 @@
 
     <ng-template #noItemSelected>
       <h2>Snippets</h2>
-      <tui-notification>Please select an item.</tui-notification>
+      <tui-notification status="info" class="fit-content"
+        >Please select an item.</tui-notification
+      >
     </ng-template>
   </div>
 
-  <div class="project-card-container shadow border-radius">
+  <div
+    class="project-card-container shadow border-radius"
+    *ngIf="this.store.projects.length > 0"
+  >
     <tui-scrollbar>
       <div class="project-card-sub-container">
         <tui-island
